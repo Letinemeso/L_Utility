@@ -3,6 +3,8 @@
 using namespace LDS;
 
 
+//	Vector
+
 template<typename Data_Type>
 Vector<Data_Type>::Vector()
 {
@@ -80,6 +82,80 @@ void Vector<Data_Type>::push(Data_Type&& _data)
 }
 
 
+template<typename Data_Type>
+typename Vector<Data_Type>::Iterator Vector<Data_Type>::pop(const Iterator& _where)
+{
+	L_ASSERT(m_elements_count > 0);
+	L_ASSERT(_where.m_it.m_parent == this);
+
+	unsigned int index = _where.m_it.m_current_index;
+	L_ASSERT(index >= 0 && index < m_elements_count);
+
+	delete m_array[index];
+
+	for(unsigned int i = index; i < m_elements_count; ++i)
+		m_array[i] = m_array[i + 1];
+
+	--m_elements_count;
+
+	m_array[m_elements_count] = nullptr;
+
+	Iterator return_it(this);
+
+	if(m_elements_count == 0)
+	{
+		return_it.m_it.m_end_reached = true;
+	}
+	else if(_where.m_it.m_current_index == m_elements_count)
+	{
+		return_it.m_it.m_current_index = m_elements_count - 1;
+		return_it.m_it.m_end_reached = true;
+	}
+	else
+	{
+		return_it.m_it.m_current_index = _where.m_it.m_current_index;
+	}
+
+	return return_it;
+}
+
+template<typename Data_Type>
+typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::pop(const Const_Iterator& _where)
+{
+	L_ASSERT(_where.m_it.m_parent == this);
+
+	unsigned int index = _where.m_it.m_current_index;
+	L_ASSERT(index >= 0 && index < m_elements_count);
+
+	delete m_array[index];
+
+	for(unsigned int i = index; i < m_elements_count; ++i)
+		m_array[i] = m_array[i + 1];
+
+	--m_elements_count;
+
+	m_array[m_elements_count] = nullptr;
+
+	Const_Iterator return_it(this);
+
+	if(m_elements_count == 0)
+	{
+		return_it.m_it.m_end_reached = true;
+	}
+	else if(_where.m_it.m_current_index == m_elements_count)
+	{
+		return_it.m_it.m_current_index = m_elements_count - 1;
+		return_it.m_it.m_end_reached = true;
+	}
+	else
+	{
+		return_it.m_it.m_current_index = _where.m_it.m_current_index;
+	}
+
+	return return_it;
+}
+
+
 
 template<typename Data_Type>
 unsigned int Vector<Data_Type>::size() const
@@ -108,6 +184,298 @@ const Data_Type& Vector<Data_Type>::operator[](unsigned int _index) const
 	L_ASSERT(_index < m_elements_count);
 
 	return *(m_array[_index]);
+}
+
+
+template<typename Data_Type>
+typename Vector<Data_Type>::Iterator Vector<Data_Type>::iterator()
+{
+	return Iterator(this);
+}
+
+template<typename Data_Type>
+typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::const_iterator() const
+{
+	return Const_Iterator(this);
+}
+
+
+
+
+//	Vector::Iterator_Base
+
+template<typename Data_Type>
+Vector<Data_Type>::Iterator_Base::Iterator_Base(Vector<Data_Type>* _parent)
+	: m_parent(_parent)
+{
+
+}
+
+template<typename Data_Type>
+Vector<Data_Type>::Iterator_Base::Iterator_Base(const Iterator_Base& _other)
+	: m_parent(_other.m_parent), m_current_index(_other.m_current_index)
+{
+
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator_Base::operator=(const Iterator_Base& _other)
+{
+	m_parent = _other.m_parent;
+	m_current_index = _other.m_current_index;
+}
+
+template<typename Data_Type>
+Vector<Data_Type>::Iterator_Base::~Iterator_Base()
+{
+
+}
+
+
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator_Base::operator++()
+{
+	L_ASSERT(!m_end_reached);
+
+	m_begin_reached = false;
+
+	if(m_current_index == m_parent->size() - 1)
+	{
+		m_end_reached = true;
+		return;
+	}
+
+	++m_current_index;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator_Base::operator--()
+{
+	L_ASSERT(!m_begin_reached);
+
+	m_end_reached = false;
+
+	if(m_current_index == 0)
+	{
+		m_begin_reached = true;
+		return;
+	}
+
+	--m_current_index;
+}
+
+
+
+template<typename Data_Type>
+Data_Type& Vector<Data_Type>::Iterator_Base::operator*()
+{
+	L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
+
+	return *(m_parent->m_array[m_current_index]);
+}
+
+template<typename Data_Type>
+const Data_Type& Vector<Data_Type>::Iterator_Base::operator*() const
+{
+	L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
+
+	return *(m_parent->m_array[m_current_index]);
+}
+
+template<typename Data_Type>
+Data_Type* Vector<Data_Type>::Iterator_Base::get_ptr()
+{
+	L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
+
+	return m_parent->m_array[m_current_index];
+}
+
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator_Base::begin_reached() const
+{
+	return m_begin_reached;
+}
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator_Base::end_reached() const
+{
+	return m_end_reached;
+}
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator_Base::is_ok() const
+{
+	return (m_current_index >= 0) && (m_current_index < m_parent->size());
+}
+
+
+
+
+
+//	Vector::Iterator
+
+template<typename Data_Type>
+Vector<Data_Type>::Iterator::Iterator(Vector<Data_Type>* _parent)
+	: m_it(_parent)
+{
+
+}
+
+
+
+template<typename Data_Type>
+Vector<Data_Type>::Iterator::Iterator(const Iterator& _other)
+	: m_it(_other.m_it)
+{
+
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator::operator=(const Iterator& _other)
+{
+	m_it = _other.m_it;
+}
+
+
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator::operator++()
+{
+	++m_it;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Iterator::operator--()
+{
+	--m_it;
+}
+
+
+
+template<typename Data_Type>
+Data_Type& Vector<Data_Type>::Iterator::operator*()
+{
+	return *m_it;
+}
+
+template<typename Data_Type>
+const Data_Type& Vector<Data_Type>::Iterator::operator*() const
+{
+	return *m_it;
+}
+
+template<typename Data_Type>
+Data_Type* Vector<Data_Type>::Iterator::operator->()
+{
+	return m_it.get_ptr();
+}
+
+template<typename Data_Type>
+const Data_Type* Vector<Data_Type>::Iterator::operator->() const
+{
+	return m_it.get_ptr();
+}
+
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator::begin_reached() const
+{
+	return m_it.begin_reached();
+}
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator::end_reached() const
+{
+	return m_it.end_reached();
+}
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Iterator::is_ok() const
+{
+	return m_it.is_ok();
+}
+
+
+
+
+
+//	Vector::Const_Iterator
+
+template<typename Data_Type>
+Vector<Data_Type>::Const_Iterator::Const_Iterator(Vector<Data_Type>* _parent)
+	: m_it(_parent)
+{
+
+}
+
+
+
+template<typename Data_Type>
+Vector<Data_Type>::Const_Iterator::Const_Iterator(const Const_Iterator& _other)
+	: m_it(_other.m_it)
+{
+
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Const_Iterator::operator=(const Const_Iterator& _other)
+{
+	m_it = _other.m_it;
+}
+
+
+
+template<typename Data_Type>
+void Vector<Data_Type>::Const_Iterator::operator++()
+{
+	++m_it;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::Const_Iterator::operator--()
+{
+	--m_it;
+}
+
+
+
+template<typename Data_Type>
+const Data_Type& Vector<Data_Type>::Const_Iterator::operator*() const
+{
+	return *m_it;
+}
+
+template<typename Data_Type>
+const Data_Type* Vector<Data_Type>::Const_Iterator::operator->() const
+{
+	return *m_it;
+}
+
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Const_Iterator::begin_reached() const
+{
+	return m_it.begin_reached();
+}
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Const_Iterator::end_reached() const
+{
+	return m_it.end_reached();
+}
+
+
+template<typename Data_Type>
+bool Vector<Data_Type>::Const_Iterator::is_ok() const
+{
+	return m_it.is_ok();
 }
 
 

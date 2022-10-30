@@ -9,18 +9,24 @@ namespace LDS
 
 	template<typename Data_Type>
 	class Vector final
-	{/*
+	{
 	private:
-		class Base_Iterator final
+		class Iterator_Base final
 		{
 		private:
+			friend class Vector;
+
+		private:
 			Vector<Data_Type>* m_parent = nullptr;
+			int m_current_index = 0;
+			bool m_begin_reached = false;
+			bool m_end_reached = false;
 
 		public:
-			Base_Iterator(Vector<Data_Type>* _parent);
-			Base_Iterator(const Base_Iterator& _other);
-			void operator=(const Base_Iterator& _other);
-			~Base_Iterator();
+			Iterator_Base(Vector<Data_Type>* _parent);
+			Iterator_Base(const Iterator_Base& _other);
+			void operator=(const Iterator_Base& _other);
+			~Iterator_Base();
 
 		public:
 			void operator++();
@@ -29,6 +35,13 @@ namespace LDS
 		public:
 			Data_Type& operator*();
 			const Data_Type& operator*() const;
+			Data_Type* get_ptr();
+
+		public:
+			bool begin_reached() const;
+			bool end_reached() const;
+
+			bool is_ok() const;
 
 		};
 
@@ -36,10 +49,17 @@ namespace LDS
 		class Iterator final
 		{
 		private:
-			Base_Iterator m_it;
+			friend class Vector;
+
+		private:
+			Iterator_Base m_it;
+
+		private:
+			Iterator(Vector<Data_Type>* _parent);
 
 		public:
-			Iterator();
+			Iterator(const Iterator& _other);
+			void operator=(const Iterator& _other);
 
 		public:
 			void operator++();
@@ -48,16 +68,31 @@ namespace LDS
 		public:
 			Data_Type& operator*();
 			const Data_Type& operator*() const;
+			Data_Type* operator->();
+			const Data_Type* operator->() const;
+
+		public:
+			bool begin_reached() const;
+			bool end_reached() const;
+
+			bool is_ok() const;
 
 		};
 
 		class Const_Iterator final
 		{
 		private:
-			Base_Iterator m_it;
+			friend class Vector;
+
+		private:
+			Iterator_Base m_it;
+
+		private:
+			Const_Iterator(Vector<Data_Type>* _parent);
 
 		public:
-			Const_Iterator();
+			Const_Iterator(const Const_Iterator& _other);
+			void operator=(const Const_Iterator& _other);
 
 		public:
 			void operator++();
@@ -65,9 +100,16 @@ namespace LDS
 
 		public:
 			const Data_Type& operator*() const;
+			const Data_Type* operator->() const;
+
+		public:
+			bool begin_reached() const;
+			bool end_reached() const;
+
+			bool is_ok() const;
 
 		};
-*/
+
 	private:
 		Data_Type** m_array = nullptr;
 		unsigned int m_elements_count = 0;
@@ -85,7 +127,8 @@ namespace LDS
 		void push(const Data_Type& _data);
 		void push(Data_Type&& _data);
 
-//		void pop();
+		Iterator pop(const Iterator& _where);
+		Const_Iterator pop(const Const_Iterator& _where);
 
 	public:
 		unsigned int size() const;
@@ -94,8 +137,8 @@ namespace LDS
 		Data_Type& operator[](unsigned int _index);
 		const Data_Type& operator[](unsigned int _index) const;
 
-//		Iterator begin();
-//		Const_Iterator begin() const;
+		Iterator iterator();
+		Const_Iterator const_iterator() const;
 
 	};
 
