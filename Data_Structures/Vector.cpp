@@ -16,6 +16,70 @@ Vector<Data_Type>::Vector()
 }
 
 template<typename Data_Type>
+Vector<Data_Type>::Vector(const Vector<Data_Type>& _other)
+{
+	m_size = _other.m_size;
+	m_elements_count = _other.m_elements_count;
+
+	m_array = new Data_Type * [m_size];
+	for(unsigned int i=0; i<m_elements_count; ++i)
+		m_array[i] = new Data_Type(_other[i]);
+	for(unsigned int i=m_elements_count; i < m_size; ++i)
+		m_array[i] = nullptr;
+}
+
+template<typename Data_Type>
+Vector<Data_Type>::Vector(Vector<Data_Type>&& _other)
+{
+	m_size = _other.m_size;
+	_other.m_size = 5;
+	m_elements_count = _other.m_elements_count;
+	_other.m_elements_count = 0;
+
+	m_array = _other.m_array;
+
+	_other.m_array = new Data_Type * [_other.m_size];
+	for(unsigned int i=0; i<_other.m_size; ++i)
+		_other.m_array[i] = nullptr;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::operator=(const Vector<Data_Type>& _other)
+{
+	for(unsigned int i=0; i<m_size; ++i)
+		delete m_array[i];
+	delete[] m_array;
+
+	m_size = _other.m_size;
+	m_elements_count = _other.m_elements_count;
+
+	m_array = new Data_Type * [m_size];
+	for(unsigned int i=0; i<_other.m_elements_count; ++i)
+		m_array[i] = new Data_Type(_other[i]);
+	for(unsigned int i=_other.m_elements_count; i < m_size; ++i)
+		m_array[i] = nullptr;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::operator=(Vector<Data_Type>&& _other)
+{
+	for(unsigned int i=0; i<m_size; ++i)
+		delete m_array[i];
+	delete[] m_array;
+
+	m_size = _other.m_size;
+	_other.m_size = 5;
+	m_elements_count = _other.m_elements_count;
+	_other.m_elements_count = 0;
+
+	m_array = _other.m_array;
+
+	_other.m_array = new Data_Type * [_other.m_size];
+	for(unsigned int i=0; i<_other.m_size; ++i)
+		_other.m_array[i] = nullptr;
+}
+
+template<typename Data_Type>
 Vector<Data_Type>::~Vector()
 {
 	for(unsigned int i=0; i<m_size; ++i)
@@ -81,6 +145,22 @@ void Vector<Data_Type>::push(Data_Type&& _data)
 	++m_elements_count;
 }
 
+
+template<typename Data_Type>
+void Vector<Data_Type>::pop(unsigned int _index)
+{
+	L_ASSERT(m_elements_count > 0);
+	L_ASSERT(_index < m_elements_count);
+
+	delete m_array[_index];
+
+	for(unsigned int i = _index; i < m_elements_count; ++i)
+		m_array[i] = m_array[i + 1];
+
+	--m_elements_count;
+
+	m_array[m_elements_count] = nullptr;
+}
 
 template<typename Data_Type>
 typename Vector<Data_Type>::Iterator Vector<Data_Type>::pop(const Iterator& _where)
@@ -156,6 +236,47 @@ typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::pop(const Const_It
 }
 
 
+template<typename Data_Type>
+void Vector<Data_Type>::swap(unsigned int _f_index, unsigned int _s_index)
+{
+	L_ASSERT(_f_index < m_elements_count);
+
+	L_ASSERT(_s_index < m_elements_count);
+
+	Data_Type* temp = m_array[_f_index];
+	m_array[_f_index] = m_array[_s_index];
+	m_array[_s_index] = temp;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::swap(const Iterator& _first, const Iterator& _second)
+{
+	L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
+
+	unsigned int first_index = _first.m_it.m_current_index;
+	L_ASSERT(first_index < m_elements_count);
+
+	unsigned int second_index = _second.m_it.m_current_index;
+	L_ASSERT(second_index < m_elements_count);
+
+	swap(first_index), second_index;
+}
+
+template<typename Data_Type>
+void Vector<Data_Type>::swap(const Const_Iterator& _first, const Const_Iterator& _second)
+{
+	L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
+
+	unsigned int first_index = _first.m_it.m_current_index;
+	L_ASSERT(first_index < m_elements_count);
+
+	unsigned int second_index = _second.m_it.m_current_index;
+	L_ASSERT(second_index < m_elements_count);
+
+	swap(first_index), second_index;
+}
+
+
 
 template<typename Data_Type>
 unsigned int Vector<Data_Type>::size() const
@@ -184,6 +305,27 @@ const Data_Type& Vector<Data_Type>::operator[](unsigned int _index) const
 	L_ASSERT(_index < m_elements_count);
 
 	return *(m_array[_index]);
+}
+
+
+template<typename Data_Type>
+typename Vector<Data_Type>::Iterator Vector<Data_Type>::at(unsigned int _index)
+{
+	L_ASSERT(_index < m_elements_count);
+
+	Iterator result(this);
+	result.m_it.m_current_index = _index;
+	return result;
+}
+
+template<typename Data_Type>
+typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::at(unsigned int _index) const
+{
+	L_ASSERT(_index < m_elements_count);
+
+	Const_Iterator result(this);
+	result.m_it.m_current_index = _index;
+	return result;
 }
 
 

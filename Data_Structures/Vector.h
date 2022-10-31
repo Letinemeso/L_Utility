@@ -117,6 +117,10 @@ namespace LDS
 
 	public:
 		Vector();
+		Vector(const Vector<Data_Type>& _other);
+		Vector(Vector<Data_Type>&& _other);
+		void operator=(const Vector<Data_Type>& _other);
+		void operator=(Vector<Data_Type>&& _other);
 		~Vector();
 
 	public:
@@ -127,8 +131,13 @@ namespace LDS
 		void push(const Data_Type& _data);
 		void push(Data_Type&& _data);
 
+		void pop(unsigned int _index);
 		Iterator pop(const Iterator& _where);
 		Const_Iterator pop(const Const_Iterator& _where);
+
+		void swap(unsigned int _f_index, unsigned int _s_index);
+		void swap(const Iterator& _first, const Iterator& _second);
+		void swap(const Const_Iterator& _first, const Const_Iterator& _second);
 
 	public:
 		unsigned int size() const;
@@ -136,6 +145,9 @@ namespace LDS
 
 		Data_Type& operator[](unsigned int _index);
 		const Data_Type& operator[](unsigned int _index) const;
+
+		Iterator at(unsigned int _index);
+		Const_Iterator at(unsigned int _index) const;
 
 		Iterator iterator();
 		Const_Iterator const_iterator() const;

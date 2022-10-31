@@ -4,99 +4,66 @@
 #include <ctime>
 
 #include "Data_Structures/Vector.h"
-
-int counter = 0;
-
-struct Test
-{
-	bool moved = false;
-
-	Test()
-	{
-		++counter;
-	}
-
-	Test(const Test& _other)
-	{
-		++counter;
-//		std::cout << "copy\n";
-	}
-
-	Test(Test&& _other)
-	{
-		_other.moved = true;
-
-//		std::cout << "move\n";
-	}
-
-	~Test()
-	{
-		if(!moved)
-			--counter;
-	}
-
-};
+#include "Data_Structures/Binary_Heap.h"
 
 
 int main()
 {
-	srand(time(nullptr));
+	LDS::Binary_Heap<unsigned int> heap;
 
-	while(true)
-	{
-		unsigned int random_count = (rand() % 10000) + 2;
+	LDS::Vector<unsigned int> raw;
+	raw.push(1);
+	raw.push(2);
+	raw.push(4);
+	raw.push(5);
+	raw.push(6);
+	raw.push(8);
+	raw.push(9);
+	raw.push(10);
+	raw.push(11);
+	raw.push(16);
 
-		std::cout << "random_count: " << random_count << "\n";
+	heap.build_from_raw(raw);
 
-		LDS::Vector<Test>* vec = new LDS::Vector<Test>;
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
-		for(unsigned int i=0; i<random_count; ++i)
-		{
-			bool need_to_copy = rand() % 2 == 0;
+	heap.push(20);
 
-			if(need_to_copy)
-			{
-				Test test;
-				vec->push(test);
-			}
-			else
-			{
-				vec->push(Test());
-			}
-		}
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
-		std::cout << "after initialization counter: " << counter << "\n";
+	heap.push(13);
 
-		LDS::Vector<Test>::Iterator it = vec->iterator();
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
-		while(!it.end_reached())
-		{
-			it->moved = it->moved;
+	heap.push(99);
 
-			++it;
-		}
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
-		while(!it.begin_reached())
-		{
-			it->moved = it->moved;
+	std::cout << "\n\n";
 
-			--it;
-		}
+	heap.sort();
 
-		unsigned int middle = vec->size() / 2;
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
-		for(unsigned int i=0; i<middle; ++i)
-			++it;
+	heap.heapify();
 
-		vec->pop(it);
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
 
 
-		std::cout << "after deleting element counter: " << counter << "\n";
+	raw = (LDS::Vector<unsigned int>&&)heap.array();
 
-		delete vec;
-
-		std::cout << "after deleting Vector counter: " << counter << "\n\n";
-	}
 
 	return 0;
 }
