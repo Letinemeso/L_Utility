@@ -32,7 +32,7 @@ Binary_Heap<Data_Type>::~Binary_Heap()
 
 
 template<typename Data_Type>
-void Binary_Heap<Data_Type>::heapify_subheap(unsigned int _index)
+void Binary_Heap<Data_Type>::subheapify(unsigned int _index)
 {
 	unsigned int left_child = (_index + 1) * 2 - 1;
 	unsigned int right_child = (_index + 1) * 2;
@@ -55,11 +55,11 @@ void Binary_Heap<Data_Type>::heapify_subheap(unsigned int _index)
 
 	m_array.swap(_index, larger);
 
-	heapify_subheap(larger);
+	subheapify(larger);
 }
 
 template<typename Data_Type>
-void Binary_Heap<Data_Type>::heapify_subheap_limited(unsigned int _index, unsigned int _limit)
+void Binary_Heap<Data_Type>::subheapify_limited(unsigned int _index, unsigned int _limit)
 {
 	L_ASSERT(_limit <= m_array.size());
 
@@ -84,7 +84,7 @@ void Binary_Heap<Data_Type>::heapify_subheap_limited(unsigned int _index, unsign
 
 	m_array.swap(_index, larger);
 
-	heapify_subheap_limited(larger, _limit);
+	subheapify_limited(larger, _limit);
 }
 
 template<typename Data_Type>
@@ -104,6 +104,42 @@ void Binary_Heap<Data_Type>::fix_after_push(unsigned int _index)
 
 	fix_after_push(parent_index);
 }
+
+
+template<typename Data_Type>
+bool Binary_Heap<Data_Type>::is_subhipifyed(unsigned int _index) const
+{
+	unsigned int left_child = (_index + 1) * 2 - 1;
+	unsigned int right_child = (_index + 1) * 2;
+
+	if(left_child < m_array.size())
+	{
+		if(m_array[_index] < m_array[left_child])
+			return false;
+	}
+	else
+	{
+		return true;
+	}
+
+	if(right_child < m_array.size())
+	{
+		if(m_array[_index] < m_array[right_child])
+			return false;
+	}
+	else
+	{
+		return true;
+	}
+
+	if(!is_subhipifyed(left_child))
+		return false;
+	if(!is_subhipifyed(right_child))
+		return false;
+
+	return true;
+}
+
 
 
 
@@ -135,15 +171,30 @@ void Binary_Heap<Data_Type>::push(Data_Type&& _from)
 	fix_after_push(m_array.size() - 1);
 }
 
+template<typename Data_Type>
+void Binary_Heap<Data_Type>::pop_max()
+{
+	L_ASSERT(m_array.size() > 0);
+	L_ASSERT(is_heapifyed());
+
+	if(m_array.size() == 1)
+	{
+		m_array.clear();
+		return;
+	}
+
+	m_array.swap(0, m_array.size() - 1);
+	m_array.pop(m_array.size() - 1);
+	subheapify(0);
+}
+
 
 template<typename Data_Type>
 void Binary_Heap<Data_Type>::heapify()
 {
 	for(int i = m_array.size() / 2; i >= 0; --i)
-		heapify_subheap(i);
+		subheapify(i);
 }
-
-#include <iostream>
 
 template<typename Data_Type>
 void Binary_Heap<Data_Type>::sort()
@@ -154,7 +205,7 @@ void Binary_Heap<Data_Type>::sort()
 	{
 		m_array.swap(0, last);
 
-		heapify_subheap_limited(0, last);
+		subheapify_limited(0, last);
 
 		--last;
 	}
@@ -179,6 +230,14 @@ const LDS::Vector<Data_Type>& Binary_Heap<Data_Type>::array() const
 {
 	return m_array;
 }
+
+
+template<typename Data_Type>
+bool Binary_Heap<Data_Type>::is_heapifyed() const
+{
+	return is_subhipifyed(0);
+}
+
 
 
 

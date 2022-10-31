@@ -55,11 +55,23 @@ int main()
 		std::cout << heap.array()[i] << " ";
 	std::cout << "\n";
 
+	std::cout << heap.is_heapifyed() << "\n";
+
 	heap.heapify();
 
 	for(unsigned int i=0; i<heap.size(); ++i)
 		std::cout << heap.array()[i] << " ";
 	std::cout << "\n";
+
+	std::cout << heap.is_heapifyed() << "\n";
+
+	heap.pop_max();
+
+	for(unsigned int i=0; i<heap.size(); ++i)
+		std::cout << heap.array()[i] << " ";
+	std::cout << "\n";
+
+	std::cout << heap.is_heapifyed() << "\n";
 
 
 	raw = (LDS::Vector<unsigned int>&&)heap.array();
