@@ -1,5 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef TREE_H
+#define TREE_H
 
 #include "Debug/Debug.h"
 
@@ -8,25 +8,46 @@ namespace LDS
 {
 
 	template<typename Data_Type>
-	class Vector final
+	class Tree final
 	{
+	private:
+		struct Node
+		{
+			Data_Type* data = nullptr;
+
+			Node* parent = nullptr;
+
+			Node* child_left = nullptr;
+			Node* child_right = nullptr;
+		};
+
+	private:
+		Node* m_root = nullptr;
+		unsigned int m_size = 0;
+
 	private:
 		class Iterator_Base final
 		{
 		private:
-			friend class LDS::Vector<Data_Type>;
+			friend class LDS::Tree<Data_Type>;
 
 		private:
-			Vector<Data_Type>* m_parent = nullptr;
-			int m_current_index = 0;
+			LDS::Tree<Data_Type>* m_parent = nullptr;
+
+			LDS::Tree<Data_Type>::Node* m_current_pos = nullptr;
+
 			bool m_begin_reached = false;
 			bool m_end_reached = false;
 
 		public:
-			Iterator_Base(Vector<Data_Type>* _parent);
+			Iterator_Base(LDS::Tree<Data_Type>* _parent);
 			Iterator_Base(const Iterator_Base& _other);
 			void operator=(const Iterator_Base& _other);
 			~Iterator_Base();
+
+		private:
+			bool is_left_child() const;
+			Tree<Data_Type>::Node* closest_right_child(Node* _closest_to) const;
 
 		public:
 			void operator++();
@@ -49,13 +70,13 @@ namespace LDS
 		class Iterator final
 		{
 		private:
-			friend class Vector;
+			friend class LDS::Tree<Data_Type>;
 
 		private:
 			Iterator_Base m_it;
 
 		private:
-			Iterator(Vector<Data_Type>* _parent);
+			Iterator(LDS::Tree<Data_Type>* _parent);
 
 		public:
 			Iterator(const Iterator& _other);
@@ -82,13 +103,13 @@ namespace LDS
 		class Const_Iterator final
 		{
 		private:
-			friend class Vector;
+			friend class LDS::Tree<Data_Type>;
 
 		private:
 			Iterator_Base m_it;
 
 		private:
-			Const_Iterator(Vector<Data_Type>* _parent);
+			Const_Iterator(LDS::Tree<Data_Type>* _parent);
 
 		public:
 			Const_Iterator(const Const_Iterator& _other);
@@ -110,55 +131,24 @@ namespace LDS
 
 		};
 
+	public:
+		Tree();
+		~Tree();
+
 	private:
-		Data_Type** m_array = nullptr;
-		unsigned int m_elements_count = 0;
-		unsigned int m_size = 0;
+		void insert_subtree(Node* _subtree, Node* _insert_where);
+		void erase_subtree(Node* _subroot);
 
 	public:
-		Vector();
-		Vector(const Vector<Data_Type>& _other);
-		Vector(Vector<Data_Type>&& _other);
-		void operator=(const Vector<Data_Type>& _other);
-		void operator=(Vector<Data_Type>&& _other);
-		~Vector();
+		void insert(const Data_Type& _data);
+		void insert(Data_Type&& _data);
 
-	public:
-		void resize(unsigned int _new_size);
-		void clear();
-
-	public:
-		void push(const Data_Type& _data);
-		void push(Data_Type&& _data);
-
-		void pop(unsigned int _index);
-		Iterator pop(const Iterator& _where);
-		Const_Iterator pop(const Const_Iterator& _where);
-
-		void swap(unsigned int _f_index, unsigned int _s_index);
-		void swap(const Iterator& _first, const Iterator& _second);
-		void swap(const Const_Iterator& _first, const Const_Iterator& _second);
-
-	public:
-		unsigned int size() const;
-		unsigned int capacity() const;
-
-		Data_Type& operator[](unsigned int _index);
-		const Data_Type& operator[](unsigned int _index) const;
-
-		Iterator at(unsigned int _index);
-		Const_Iterator at(unsigned int _index) const;
-
-		Iterator iterator();
-		Const_Iterator const_iterator() const;
+		void erase(const Iterator& _where);
+		void erase(const Const_Iterator& _where);
 
 	};
 
 }
 
 
-//	i just want to separate declaration from implementation as God intended!
-#include "Vector.cpp"
-
-
-#endif // VECTOR_H
+#endif // TREE_H

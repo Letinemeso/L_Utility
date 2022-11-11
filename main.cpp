@@ -6,7 +6,6 @@
 #include "Data_Structures/Vector.h"
 #include "Data_Structures/Binary_Heap.h"
 
-
 int main()
 {
 	LDS::Binary_Heap<unsigned int> heap;
