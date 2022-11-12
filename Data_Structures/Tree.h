@@ -136,8 +136,9 @@ namespace LDS
 		~Tree();
 
 	private:
-		void insert_subtree(Node* _subtree, Node* _insert_where);
+		void insert_node(Node* _subtree, Node* _insert_where);
 		void erase_subtree(Node* _subroot);
+		void erase_node(Node* _node);
 
 	public:
 		void insert(const Data_Type& _data);
@@ -146,9 +147,16 @@ namespace LDS
 		void erase(const Iterator& _where);
 		void erase(const Const_Iterator& _where);
 
+	public:
+		Iterator iterator();
+		Const_Iterator iterator() const;
+
+		unsigned int size() const;
+
 	};
 
 }
 
+#include "Tree.cpp"
 
 #endif // TREE_H

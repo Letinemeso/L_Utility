@@ -5,76 +5,59 @@
 
 #include "Data_Structures/Vector.h"
 #include "Data_Structures/Binary_Heap.h"
+#include "Data_Structures/Tree.h"
 
 int main()
 {
-	LDS::Binary_Heap<unsigned int> heap;
+	while(true)
+	{
+		LDS::Tree<int> tree;
 
-	LDS::Vector<unsigned int> raw;
-	raw.push(1);
-	raw.push(2);
-	raw.push(4);
-	raw.push(5);
-	raw.push(6);
-	raw.push(8);
-	raw.push(9);
-	raw.push(10);
-	raw.push(11);
-	raw.push(16);
+		tree.insert(6);
+		tree.insert(3);
+		tree.insert(1);
+		tree.insert(10);
+		tree.insert(5);
+		tree.insert(15);
 
-	heap.build_from_raw(raw);
+		LDS::Tree<int>::Iterator it = tree.iterator();
 
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
+		while(!it.end_reached())
+		{
+			std::cout << *it << "\n";
+			++it;
+		}
+		std::cout << "\n";
 
-	heap.push(20);
+		while(!it.begin_reached())
+		{
+			std::cout << *it << "\n";
+			--it;
+		}
+		std::cout << "\n";
 
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
+		while(tree.size() != 0)
+		{
+			it = tree.iterator();
+			tree.erase(it);
+		}
 
-	heap.push(13);
+		tree.insert(6);
+		tree.insert(3);
+		tree.insert(1);
+		tree.insert(10);
+		tree.insert(5);
+		tree.insert(15);
 
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
+		it = tree.iterator();
 
-	heap.push(99);
-
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
-
-	std::cout << "\n\n";
-
-	heap.sort();
-
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
-
-	std::cout << heap.is_heapifyed() << "\n";
-
-	heap.heapify();
-
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
-
-	std::cout << heap.is_heapifyed() << "\n";
-
-	heap.pop_max();
-
-	for(unsigned int i=0; i<heap.size(); ++i)
-		std::cout << heap.array()[i] << " ";
-	std::cout << "\n";
-
-	std::cout << heap.is_heapifyed() << "\n";
-
-
-	raw = (LDS::Vector<unsigned int>&&)heap.array();
-
+		while(!it.end_reached())
+		{
+			std::cout << *it << "\n";
+			++it;
+		}
+		std::cout << "\n";
+	}
 
 	return 0;
 }

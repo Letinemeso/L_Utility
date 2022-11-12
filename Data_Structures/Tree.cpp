@@ -20,12 +20,12 @@ Tree<Data_Type>::~Tree()
 
 
 template<typename Data_Type>
-void Tree<Data_Type>::insert_subtree(Node* _subtree, Node* _insert_where)
+void Tree<Data_Type>::insert_node(Node* _subtree, Node* _insert_where)
 {
 	Node* left_subtree = _insert_where->child_left;
 	Node* right_subtree = _insert_where->child_right;
 
-	if(_subtree->data < _insert_where->data)
+	if(*_subtree->data < *_insert_where->data)
 	{
 		if(left_subtree == nullptr)
 		{
@@ -34,16 +34,7 @@ void Tree<Data_Type>::insert_subtree(Node* _subtree, Node* _insert_where)
 			return;
 		}
 
-		if(left_subtree->data < _subtree->data)
-		{
-			_insert_where->child_left = _subtree;
-			_subtree->parent = _insert_where;
-			_subtree->child_left = left_subtree;
-			left_subtree->parent = _subtree;
-			return;
-		}
-
-		_insert_where(left_subtree);
+		insert_node(_subtree, left_subtree);
 	}
 	else
 	{
@@ -54,16 +45,7 @@ void Tree<Data_Type>::insert_subtree(Node* _subtree, Node* _insert_where)
 			return;
 		}
 
-		if(right_subtree->data >= _subtree->data)
-		{
-			_insert_where->child_right = _subtree;
-			_subtree->parent = _insert_where;
-			_subtree->child_right = right_subtree;
-			right_subtree->parent = _subtree;
-			return;
-		}
-
-		_insert_where(right_subtree);
+		insert_node(_subtree, right_subtree);
 	}
 }
 
@@ -83,6 +65,77 @@ void Tree<Data_Type>::erase_subtree(Node* _subroot)
 	delete _subroot;
 }
 
+template<typename Data_Type>
+void Tree<Data_Type>::erase_node(Node* _node)
+{
+	--m_size;
+
+	Node* where = _node;
+
+	Node* left = where->child_left;
+	Node* right = where->child_right;
+	Node* parent = where->parent;
+
+	if(left != nullptr)
+	{
+		if(parent != nullptr)
+		{
+			if(parent->child_right == where)
+				parent->child_right = left;
+			else
+				parent->child_left = left;
+		}
+		else
+		{
+			m_root = left;
+		}
+
+		left->parent = parent;
+
+		if(right != nullptr)
+		{
+			Node* max = left;
+			while(max->child_right != nullptr)
+				max = max->child_right;
+			max->child_right = right;
+			right->parent = max;
+		}
+	}
+	else if(right != nullptr)
+	{
+		if(parent != nullptr)
+		{
+			if(parent->child_right == where)
+				parent->child_right = right;
+			else
+				parent->child_left = right;
+		}
+		else
+		{
+			m_root = right;
+		}
+
+		right->parent = parent;
+	}
+	else
+	{
+		if(parent != nullptr)
+		{
+			if(parent->child_right == where)
+				parent->child_right = nullptr;
+			else
+				parent->child_left = nullptr;
+		}
+		else
+		{
+			m_root = nullptr;
+		}
+	}
+
+	delete where->data;
+	delete where;
+}
+
 
 
 template<typename Data_Type>
@@ -99,7 +152,7 @@ void Tree<Data_Type>::insert(const Data_Type& _data)
 		return;
 	}
 
-	insert_subtree(node, m_root);
+	insert_node(node, m_root);
 }
 
 template<typename Data_Type>
@@ -116,7 +169,47 @@ void Tree<Data_Type>::insert(Data_Type&& _data)
 		return;
 	}
 
-	insert_subtree(node, m_root);
+	insert_node(node, m_root);
+}
+
+
+template<typename Data_Type>
+void Tree<Data_Type>::erase(const Iterator& _where)
+{
+	L_ASSERT(_where.m_it.m_parent == this);
+	L_ASSERT(_where.is_ok());
+
+	erase_node(_where.m_it.m_current_pos);
+}
+
+template<typename Data_Type>
+void Tree<Data_Type>::erase(const Const_Iterator& _where)
+{
+	L_ASSERT(_where.m_it.m_parent == this);
+	L_ASSERT(_where.is_ok());
+
+	erase_node(_where.m_it.m_current_pos);
+}
+
+
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Iterator Tree<Data_Type>::iterator()
+{
+	return Iterator(this);
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::iterator() const
+{
+	return Const_Iterator(this);
+}
+
+
+template<typename Data_Type>
+unsigned int Tree<Data_Type>::size() const
+{
+	return m_size;
 }
 
 
@@ -191,8 +284,8 @@ typename Tree<Data_Type>::Node* Tree<Data_Type>::Iterator_Base::closest_right_ch
 template<typename Data_Type>
 void Tree<Data_Type>::Iterator_Base::operator++()
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 	L_ASSERT(!m_end_reached);
 
 	m_begin_reached = false;
@@ -216,15 +309,15 @@ void Tree<Data_Type>::Iterator_Base::operator++()
 template<typename Data_Type>
 void Tree<Data_Type>::Iterator_Base::operator--()
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 	L_ASSERT(!m_begin_reached);
 
 	m_end_reached = false;
 
 	if(m_current_pos->parent == nullptr)
 		m_begin_reached = true;
-	else if(is_left_child(m_current_pos))
+	else if(is_left_child())
 		m_current_pos = m_current_pos->parent;
 	else if(m_current_pos->parent->child_left == nullptr)
 		m_current_pos = m_current_pos->parent;
@@ -247,9 +340,8 @@ void Tree<Data_Type>::Iterator_Base::operator--()
 template<typename Data_Type>
 Data_Type& Tree<Data_Type>::Iterator_Base::operator*()
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
-	L_ASSERT(!m_begin_reached);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 
 	return *m_current_pos->data;
 }
@@ -257,9 +349,8 @@ Data_Type& Tree<Data_Type>::Iterator_Base::operator*()
 template<typename Data_Type>
 const Data_Type& Tree<Data_Type>::Iterator_Base::operator*() const
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
-	L_ASSERT(!m_begin_reached);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 
 	return *m_current_pos->data;
 }
@@ -267,9 +358,8 @@ const Data_Type& Tree<Data_Type>::Iterator_Base::operator*() const
 template<typename Data_Type>
 Data_Type* Tree<Data_Type>::Iterator_Base::get_ptr()
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
-	L_ASSERT(!m_begin_reached);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 
 	return m_current_pos->data;
 }
@@ -279,8 +369,8 @@ Data_Type* Tree<Data_Type>::Iterator_Base::get_ptr()
 template<typename Data_Type>
 bool Tree<Data_Type>::Iterator_Base::begin_reached() const
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 
 	return m_begin_reached;
 }
@@ -288,8 +378,8 @@ bool Tree<Data_Type>::Iterator_Base::begin_reached() const
 template<typename Data_Type>
 bool Tree<Data_Type>::Iterator_Base::end_reached() const
 {
-	L_ASSERT(m_current_pos == nullptr);
-	L_ASSERT(m_parent == nullptr);
+	L_ASSERT(m_current_pos != nullptr);
+	L_ASSERT(m_parent != nullptr);
 
 	return m_end_reached;
 }
@@ -298,7 +388,7 @@ bool Tree<Data_Type>::Iterator_Base::end_reached() const
 template<typename Data_Type>
 bool Tree<Data_Type>::Iterator_Base::is_ok() const
 {
-	return m_parent != nullptr && m_current_pos != nullptr && !m_begin_reached && !m_end_reached;
+	return m_parent != nullptr && m_current_pos != nullptr;
 }
 
 
