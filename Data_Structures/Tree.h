@@ -8,9 +8,9 @@ namespace LDS
 {
 
 	template<typename Data_Type>
-	class Tree final
+	class Tree
 	{
-	private:
+	protected:
 		struct Node
 		{
 			Data_Type* data = nullptr;
@@ -21,7 +21,7 @@ namespace LDS
 			Node* child_right = nullptr;
 		};
 
-	private:
+	protected:
 		Node* m_root = nullptr;
 		unsigned int m_size = 0;
 
@@ -133,7 +133,7 @@ namespace LDS
 
 	public:
 		Tree();
-		~Tree();
+		virtual ~Tree();
 
 	private:
 		void insert_node(Node* _subtree, Node* _insert_where);
@@ -141,11 +141,11 @@ namespace LDS
 		void erase_node(Node* _node);
 
 	public:
-		void insert(const Data_Type& _data);
-		void insert(Data_Type&& _data);
+		virtual void insert(const Data_Type& _data);
+		virtual void insert(Data_Type&& _data);
 
-		void erase(const Iterator& _where);
-		void erase(const Const_Iterator& _where);
+		virtual void erase(const Iterator& _where);
+		virtual void erase(const Const_Iterator& _where);
 
 	public:
 		Iterator iterator();
