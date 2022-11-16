@@ -6,21 +6,22 @@
 #include "Data_Structures/Vector.h"
 #include "Data_Structures/Binary_Heap.h"
 #include "Data_Structures/Tree.h"
+#include "Data_Structures/AVL_Tree.h"
 
 int main()
 {
-	while(true)
+//	while(true)
 	{
-		LDS::Tree<int> tree;
+		LDS::AVL_Tree<int> tree;
 
 		tree.insert(6);
 		tree.insert(3);
 		tree.insert(1);
-		tree.insert(10);
-		tree.insert(5);
-		tree.insert(15);
+//		tree.insert(10);
+//		tree.insert(5);
+//		tree.insert(15);
 
-		LDS::Tree<int>::Iterator it = tree.iterator();
+		LDS::AVL_Tree<int>::Iterator it = tree.iterator();
 
 		while(!it.end_reached())
 		{
@@ -42,12 +43,8 @@ int main()
 			tree.erase(it);
 		}
 
-		tree.insert(6);
-		tree.insert(3);
-		tree.insert(1);
-		tree.insert(10);
-		tree.insert(5);
-		tree.insert(15);
+		for(int i=1; i<=15; ++i)
+			tree.insert(i);
 
 		it = tree.iterator();
 

@@ -14,6 +14,9 @@ namespace LDS
 	{
 	private:
 		using typename Tree<Data_Type>::Node;
+		using Tree<Data_Type>::m_root;
+
+	public:
 		using typename Tree<Data_Type>::Iterator;
 		using typename Tree<Data_Type>::Const_Iterator;
 
@@ -41,6 +44,7 @@ namespace LDS
 		void M_rotate_subtree__right_left(Node* _subroot);
 
 		void M_balance_subtree(Node* _subroot);
+		void M_fix_root();
 
 	public:
 		void insert(const Data_Type& _data) override;
@@ -53,6 +57,6 @@ namespace LDS
 
 }
 
-
+#include "AVL_Tree.cpp"
 
 #endif // AVL_TREE_H

@@ -50,8 +50,8 @@ void AVL_Tree<Data_Type>::M_rotate_subtree__left(Node* _subroot)
 	Node* subroot_parent = subroot->parent;
 	Node** subroot_ptr_as_child = nullptr;
 	if(subroot_parent != nullptr)
-		subroot_ptr_as_child = subroot_parent->child_left == subroot ? subroot_parent->child_left : subroot_parent->child_right;
-	Node* right_child = subroot->child_left;
+		subroot_ptr_as_child = subroot_parent->child_left == subroot ? &subroot_parent->child_left : &subroot_parent->child_right;
+	Node* right_child = subroot->child_right;
 	Node* right_child_left_child = right_child->child_left;
 
 	subroot->parent = right_child;
@@ -72,7 +72,7 @@ void AVL_Tree<Data_Type>::M_rotate_subtree__right(Node* _subroot)
 	Node* subroot_parent = subroot->parent;
 	Node** subroot_ptr_as_child = nullptr;
 	if(subroot_parent != nullptr)
-		subroot_ptr_as_child = subroot_parent->child_left == subroot ? subroot_parent->child_left : subroot_parent->child_right;
+		subroot_ptr_as_child = subroot_parent->child_left == subroot ? &subroot_parent->child_left : &subroot_parent->child_right;
 	Node* left_child = subroot->child_left;
 	Node* left_child_right_child = left_child->child_right;
 
@@ -139,21 +139,61 @@ void AVL_Tree<Data_Type>::M_balance_subtree(Node* _subroot)
 	{
 	case (Rotation_Type::left):
 		M_rotate_subtree__left(_subroot);
-		return;
+		break;
 	case (Rotation_Type::right):
 		M_rotate_subtree__right(_subroot);
-		return;
+		break;
 	case (Rotation_Type::left_right):
 		M_rotate_subtree__left_right(_subroot);
-		return;
+		break;
 	case (Rotation_Type::right_left):
 		M_rotate_subtree__right_left(_subroot);
-		return;
+		break;
 	}
+
+	M_fix_root();
+}
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::M_fix_root()
+{
+	if(m_root == nullptr)
+		return;
+
+	while(m_root->parent != nullptr)
+		m_root = m_root->parent;
 }
 
 
 
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
+{
+	Tree<Data_Type>::insert(_data);
+	M_balance_subtree(m_root);
+}
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::insert(Data_Type&& _data)
+{
+	Tree<Data_Type>::insert((Data_Type&&)_data);
+	M_balance_subtree(m_root);
+}
+
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::erase(const Iterator& _where)
+{
+	Tree<Data_Type>::erase(_where);
+	M_balance_subtree((m_root));
+}
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::erase(const Const_Iterator& _where)
+{
+	Tree<Data_Type>::erase(_where);
+	M_balance_subtree((m_root));
+}
 
 
 
