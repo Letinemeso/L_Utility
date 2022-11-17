@@ -136,9 +136,10 @@ namespace LDS
 		virtual ~Tree();
 
 	private:
-		void insert_node(Node* _subtree, Node* _insert_where);
-		void erase_subtree(Node* _subroot);
-		void erase_node(Node* _node);
+		void M_insert_node(Node* _subtree, Node* _insert_where);
+		void M_erase_subtree(Node* _subroot);
+		Node* M_find_minimal_in_subtree(Node* _subroot) const;
+		void M_erase_node(Node* _node);
 
 	public:
 		virtual void insert(const Data_Type& _data);

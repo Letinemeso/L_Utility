@@ -37,17 +37,27 @@ int main()
 		}
 		std::cout << "\n";
 
-		while(tree.size() != 0)
+		while(tree.size() != 1)
 		{
 			it = tree.iterator();
 			tree.erase(it);
 		}
+		it = tree.iterator();
+		tree.erase(it);
 
 		for(int i=1; i<=15; ++i)
 			tree.insert(i);
 
 		it = tree.iterator();
 
+		while(*it != 8)
+		{
+			++it;
+		}
+
+		tree.erase(it);
+
+		it = tree.iterator();
 		while(!it.end_reached())
 		{
 			std::cout << *it << "\n";

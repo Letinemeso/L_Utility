@@ -14,13 +14,13 @@ Tree<Data_Type>::Tree()
 template<typename Data_Type>
 Tree<Data_Type>::~Tree()
 {
-	erase_subtree(m_root);
+	M_erase_subtree(m_root);
 }
 
 
 
 template<typename Data_Type>
-void Tree<Data_Type>::insert_node(Node* _subtree, Node* _insert_where)
+void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 {
 	Node* left_subtree = _insert_where->child_left;
 	Node* right_subtree = _insert_where->child_right;
@@ -34,7 +34,7 @@ void Tree<Data_Type>::insert_node(Node* _subtree, Node* _insert_where)
 			return;
 		}
 
-		insert_node(_subtree, left_subtree);
+		M_insert_node(_subtree, left_subtree);
 	}
 	else
 	{
@@ -45,95 +45,105 @@ void Tree<Data_Type>::insert_node(Node* _subtree, Node* _insert_where)
 			return;
 		}
 
-		insert_node(_subtree, right_subtree);
+		M_insert_node(_subtree, right_subtree);
 	}
 }
 
 template<typename Data_Type>
-void Tree<Data_Type>::erase_subtree(Node* _subroot)
+void Tree<Data_Type>::M_erase_subtree(Node* _subroot)
 {
 	if(_subroot == nullptr)
 		return;
 
-	erase_subtree(_subroot->child_left);
-	erase_subtree(_subroot->child_right);
-
-	if(_subroot->parent != nullptr)	//	TODO: move nullptr'ing parent into non-recursive function
-		_subroot->parent = nullptr;
+	M_erase_subtree(_subroot->child_left);
+	M_erase_subtree(_subroot->child_right);
 
 	delete _subroot->data;
 	delete _subroot;
 }
 
 template<typename Data_Type>
-void Tree<Data_Type>::erase_node(Node* _node)
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_find_minimal_in_subtree(Node* _subroot) const
 {
-	--m_size;
+	while(_subroot->child_left != nullptr)
+		_subroot = _subroot->child_left;
+	return _subroot;
+}
 
-	Node* where = _node;
+template<typename Data_Type>
+void Tree<Data_Type>::M_erase_node(Node* _node)
+{
+	L_ASSERT(_node);
 
-	Node* left = where->child_left;
-	Node* right = where->child_right;
-	Node* parent = where->parent;
-
-	if(left != nullptr)
+	if(_node->child_left == nullptr && _node->child_right == nullptr)
 	{
-		if(parent != nullptr)
+		if(_node->parent)
 		{
-			if(parent->child_right == where)
-				parent->child_right = left;
+			if(_node->parent->child_left == _node)
+				_node->parent->child_left = nullptr;
 			else
-				parent->child_left = left;
+				_node->parent->child_right = nullptr;
 		}
 		else
-		{
-			m_root = left;
-		}
+			m_root = nullptr;
 
-		left->parent = parent;
+		delete _node->data;
+		delete _node;
 
-		if(right != nullptr)
-		{
-			Node* max = left;
-			while(max->child_right != nullptr)
-				max = max->child_right;
-			max->child_right = right;
-			right->parent = max;
-		}
+		--m_size;
 	}
-	else if(right != nullptr)
+	else if(_node->child_left == nullptr && _node->child_right != nullptr)
 	{
-		if(parent != nullptr)
+		Node* right = _node->child_right;
+		if(_node->parent)
 		{
-			if(parent->child_right == where)
-				parent->child_right = right;
+			if(_node->parent->child_left == _node)
+				_node->parent->child_left = right;
 			else
-				parent->child_left = right;
+				_node->parent->child_right = right;
+			right->parent = _node->parent;
 		}
 		else
 		{
 			m_root = right;
+			right->parent = nullptr;
 		}
 
-		right->parent = parent;
+		delete _node->data;
+		delete _node;
+
+		--m_size;
 	}
-	else
+	else if(_node->child_left != nullptr && _node->child_right == nullptr)
 	{
-		if(parent != nullptr)
+		Node* left = _node->child_left;
+		if(_node->parent)
 		{
-			if(parent->child_right == where)
-				parent->child_right = nullptr;
+			if(_node->parent->child_left == _node)
+				_node->parent->child_left = left;
 			else
-				parent->child_left = nullptr;
+				_node->parent->child_right = left;
+			left->parent = _node->parent;
 		}
 		else
 		{
-			m_root = nullptr;
+			m_root = left;
+			left->parent = nullptr;
 		}
-	}
 
-	delete where->data;
-	delete where;
+		delete _node->data;
+		delete _node;
+
+		--m_size;
+	}
+	else
+	{
+		Node* next_minimal = M_find_minimal_in_subtree(_node->child_right);
+		delete _node->data;
+		_node->data = next_minimal->data;
+		next_minimal->data = nullptr;
+		M_erase_node(next_minimal);
+	}
 }
 
 
@@ -152,7 +162,7 @@ void Tree<Data_Type>::insert(const Data_Type& _data)
 		return;
 	}
 
-	insert_node(node, m_root);
+	M_insert_node(node, m_root);
 }
 
 template<typename Data_Type>
@@ -169,7 +179,7 @@ void Tree<Data_Type>::insert(Data_Type&& _data)
 		return;
 	}
 
-	insert_node(node, m_root);
+	M_insert_node(node, m_root);
 }
 
 
@@ -179,7 +189,7 @@ void Tree<Data_Type>::erase(const Iterator& _where)
 	L_ASSERT(_where.m_it.m_parent == this);
 	L_ASSERT(_where.is_ok());
 
-	erase_node(_where.m_it.m_current_pos);
+	M_erase_node(_where.m_it.m_current_pos);
 }
 
 template<typename Data_Type>
@@ -188,7 +198,7 @@ void Tree<Data_Type>::erase(const Const_Iterator& _where)
 	L_ASSERT(_where.m_it.m_parent == this);
 	L_ASSERT(_where.is_ok());
 
-	erase_node(_where.m_it.m_current_pos);
+	M_erase_node(_where.m_it.m_current_pos);
 }
 
 
