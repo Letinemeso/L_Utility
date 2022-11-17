@@ -133,9 +133,14 @@ namespace LDS
 
 	public:
 		Tree();
+		Tree(const Tree<Data_Type>& _other);
+		virtual void operator=(const Tree<Data_Type>& _other);
+		Tree(Tree<Data_Type>&& _other);
+		virtual void operator=(Tree<Data_Type>&& _other);
 		virtual ~Tree();
 
 	private:
+		void M_copy_subtree(Node* _subroot, Node*& _where);
 		void M_insert_node(Node* _subtree, Node* _insert_where);
 		void M_erase_subtree(Node* _subroot);
 		Node* M_find_minimal_in_subtree(Node* _subroot) const;
@@ -147,6 +152,8 @@ namespace LDS
 
 		virtual void erase(const Iterator& _where);
 		virtual void erase(const Const_Iterator& _where);
+
+		void clear();
 
 	public:
 		Iterator iterator();

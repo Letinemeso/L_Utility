@@ -12,12 +12,61 @@ Tree<Data_Type>::Tree()
 }
 
 template<typename Data_Type>
+Tree<Data_Type>::Tree(const Tree<Data_Type>& _other)
+{
+	m_size = _other.m_size;
+	M_copy_subtree(_other.m_root, m_root);
+}
+
+template<typename Data_Type>
+void Tree<Data_Type>::operator=(const Tree<Data_Type>& _other)
+{
+	clear();
+	m_size = _other.m_size;
+	M_copy_subtree(_other.m_root, m_root);
+}
+
+template<typename Data_Type>
+Tree<Data_Type>::Tree(Tree<Data_Type>&& _other)
+{
+	m_size = _other.m_size;
+	_other.m_size = 0;
+	m_root = _other.m_root;
+	_other.m_root = nullptr;
+}
+
+template<typename Data_Type>
+void Tree<Data_Type>::operator=(Tree<Data_Type>&& _other)
+{
+	clear();
+	m_size = _other.m_size;
+	_other.m_size = 0;
+	m_root = _other.m_root;
+	_other.m_root = nullptr;
+}
+
+template<typename Data_Type>
 Tree<Data_Type>::~Tree()
 {
 	M_erase_subtree(m_root);
 }
 
 
+
+template<typename Data_Type>
+void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
+{
+	if(_subroot == nullptr)
+		return;
+
+	L_ASSERT(_where == nullptr);
+
+	_where = new Node;
+	_where->data = new Data_Type(*_subroot->data);
+
+	M_copy_subtree(_subroot->child_left, _where->child_left);
+	M_copy_subtree(_subroot->child_right, _where->child_right);
+}
 
 template<typename Data_Type>
 void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
@@ -199,6 +248,15 @@ void Tree<Data_Type>::erase(const Const_Iterator& _where)
 	L_ASSERT(_where.is_ok());
 
 	M_erase_node(_where.m_it.m_current_pos);
+}
+
+
+template<typename Data_Type>
+void Tree<Data_Type>::clear()
+{
+	M_erase_subtree(m_root);
+	m_root = nullptr;
+	m_size = 0;
 }
 
 

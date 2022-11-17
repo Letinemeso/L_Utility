@@ -31,6 +31,10 @@ namespace LDS
 
 	public:
 		AVL_Tree();
+		AVL_Tree(const AVL_Tree<Data_Type>& _other);
+		void operator=(const AVL_Tree<Data_Type>& _other);
+		AVL_Tree(AVL_Tree<Data_Type>&& _other);
+		void operator=(AVL_Tree<Data_Type>&& _other);
 		~AVL_Tree();
 
 	private:

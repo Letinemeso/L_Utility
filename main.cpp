@@ -10,60 +10,27 @@
 
 int main()
 {
-//	while(true)
+	while(true)
 	{
 		LDS::AVL_Tree<int> tree;
 
 		tree.insert(6);
 		tree.insert(3);
 		tree.insert(1);
-//		tree.insert(10);
-//		tree.insert(5);
-//		tree.insert(15);
 
-		LDS::AVL_Tree<int>::Iterator it = tree.iterator();
+		LDS::AVL_Tree<int> copy = tree;
 
-		while(!it.end_reached())
-		{
-			std::cout << *it << "\n";
-			++it;
-		}
-		std::cout << "\n";
+		tree.clear();
 
-		while(!it.begin_reached())
-		{
-			std::cout << *it << "\n";
-			--it;
-		}
-		std::cout << "\n";
 
-		while(tree.size() != 1)
-		{
-			it = tree.iterator();
-			tree.erase(it);
-		}
-		it = tree.iterator();
-		tree.erase(it);
+		tree.insert(3);
+		tree.insert(2);
+		tree.insert(1);
 
-		for(int i=1; i<=15; ++i)
-			tree.insert(i);
+		copy = tree;
 
-		it = tree.iterator();
+		auto it = copy.iterator();
 
-		while(*it != 8)
-		{
-			++it;
-		}
-
-		tree.erase(it);
-
-		it = tree.iterator();
-		while(!it.end_reached())
-		{
-			std::cout << *it << "\n";
-			++it;
-		}
-		std::cout << "\n";
 	}
 
 	return 0;

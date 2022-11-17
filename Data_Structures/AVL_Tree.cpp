@@ -10,6 +10,30 @@ AVL_Tree<Data_Type>::AVL_Tree() : Tree<Data_Type> ()
 }
 
 template<typename Data_Type>
+AVL_Tree<Data_Type>::AVL_Tree(const AVL_Tree<Data_Type>& _other) : Tree<Data_Type> (_other)
+{
+
+}
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::operator=(const AVL_Tree<Data_Type>& _other)
+{
+	((Tree<Data_Type>*)this)->operator=(_other);
+}
+
+template<typename Data_Type>
+AVL_Tree<Data_Type>::AVL_Tree(AVL_Tree<Data_Type>&& _other) : Tree<Data_Type> ((Tree<Data_Type>&&)_other)
+{
+
+}
+
+template<typename Data_Type>
+void AVL_Tree<Data_Type>::operator=(AVL_Tree<Data_Type>&& _other)
+{
+	((Tree<Data_Type>*)this)->operator=((Tree<Data_Type>&&)_other);
+}
+
+template<typename Data_Type>
 AVL_Tree<Data_Type>::~AVL_Tree()
 {
 
