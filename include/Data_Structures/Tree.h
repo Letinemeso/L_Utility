@@ -40,6 +40,7 @@ namespace LDS
 			bool m_end_reached = false;
 
 		public:
+			Iterator_Base(){}
 			Iterator_Base(LDS::Tree<Data_Type>* _parent);
 			Iterator_Base(const Iterator_Base& _other);
 			void operator=(const Iterator_Base& _other);
@@ -79,6 +80,7 @@ namespace LDS
 			Iterator(LDS::Tree<Data_Type>* _parent);
 
 		public:
+			Iterator(){};
 			Iterator(const Iterator& _other);
 			void operator=(const Iterator& _other);
 
@@ -159,12 +161,15 @@ namespace LDS
 		Iterator iterator();
 		Const_Iterator iterator() const;
 
+		Iterator find(const Data_Type& _value);
+		Const_Iterator find(const Data_Type& _value) const;
+
 		unsigned int size() const;
 
 	};
 
 }
 
-#include "Tree.cpp"
+#include "../../source/Data_Structures/Tree.cpp"
 
 #endif // TREE_H

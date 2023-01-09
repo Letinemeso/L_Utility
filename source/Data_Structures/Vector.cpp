@@ -131,7 +131,7 @@ template<typename Data_Type>
 void Vector<Data_Type>::push(const Data_Type& _data)
 {
 	if(m_elements_count == m_size)
-		resize(m_size + 10);
+		resize(m_size * 2);
 	m_array[m_elements_count] = new Data_Type(_data);
 	++m_elements_count;
 }
@@ -140,7 +140,7 @@ template<typename Data_Type>
 void Vector<Data_Type>::push(Data_Type&& _data)
 {
 	if(m_elements_count == m_size)
-		resize(m_size + 10);
+		resize(m_size * 2);
 	m_array[m_elements_count] = new Data_Type((Data_Type&&)_data);
 	++m_elements_count;
 }

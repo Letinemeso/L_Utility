@@ -66,6 +66,11 @@ void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
 
 	M_copy_subtree(_subroot->child_left, _where->child_left);
 	M_copy_subtree(_subroot->child_right, _where->child_right);
+
+	if(_where->child_left != nullptr)
+		_where->child_left->parent = _where;
+	if(_where->child_right != nullptr)
+		_where->child_right->parent = _where;
 }
 
 template<typename Data_Type>
@@ -275,6 +280,49 @@ typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::iterator() const
 
 
 template<typename Data_Type>
+typename Tree<Data_Type>::Iterator Tree<Data_Type>::find(const Data_Type& _value)
+{
+	Node* search = m_root;
+	while(search != nullptr)
+	{
+		if(*search->data == _value)
+		{
+			Iterator result(this);
+			result.m_it.m_current_pos = search;
+			return result;
+		}
+
+		if(_value < *search->data)
+			search = search->child_left;
+		else
+			search = search->child_right;
+	}
+	return Iterator(nullptr);
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::find(const Data_Type& _value) const
+{
+	Node* search = m_root;
+	while(search != nullptr)
+	{
+		if(search == _value)
+		{
+			Const_Iterator result(this);
+			result.m_it.m_current_pos = search;
+			return result;
+		}
+
+		if(_value < *search->data)
+			search = search->child_left;
+		else
+			search = search->child_right;
+	}
+	return Const_Iterator(nullptr);
+}
+
+
+template<typename Data_Type>
 unsigned int Tree<Data_Type>::size() const
 {
 	return m_size;
@@ -291,6 +339,9 @@ unsigned int Tree<Data_Type>::size() const
 template<typename Data_Type>
 Tree<Data_Type>::Iterator_Base::Iterator_Base(Tree<Data_Type>* _parent)
 {
+	if(_parent == nullptr)
+		return;
+
 	m_parent = _parent;
 	m_current_pos = m_parent->m_root;
 	if(m_current_pos == nullptr)

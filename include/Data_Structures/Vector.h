@@ -158,7 +158,7 @@ namespace LDS
 
 
 //	i just want to separate declaration from implementation as God intended!
-#include "Vector.cpp"
+#include "../../source/Data_Structures/Vector.cpp"
 
 
 #endif // VECTOR_H

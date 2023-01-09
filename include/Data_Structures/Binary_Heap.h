@@ -47,6 +47,6 @@ namespace LDS
 
 }
 
-#include "Binary_Heap.cpp"
+#include "../../source/Data_Structures/Binary_Heap.cpp"
 
 #endif // BINARY_HEAP_H
