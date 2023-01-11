@@ -330,6 +330,13 @@ void Map<Key_Type, Data_Type>::erase(const Const_Iterator& _where)
 }
 
 
+template<typename Key_Type, typename Data_Type>
+void Map<Key_Type, Data_Type>::clear()
+{
+	m_tree.clear();
+}
+
+
 
 template<typename Key_Type, typename Data_Type>
 typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::iterator()

@@ -44,7 +44,7 @@ namespace LDS
 		};
 
 	private:
-		typedef typename LDS::AVL_Tree<Pair> Tree;
+		typedef typename LDS::Tree<Pair> Tree;
 
 	private:
 		Tree m_tree;
@@ -131,6 +131,8 @@ namespace LDS
 
 		void erase(const Iterator& _where);
 		void erase(const Const_Iterator& _where);
+
+		void clear();
 
 	public:
 		Iterator iterator();

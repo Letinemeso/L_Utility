@@ -21,7 +21,7 @@ void Stopwatch::stop()
 float Stopwatch::duration() const
 {
 	if(m_active == true)
-		return (std::chrono::high_resolution_clock::now() - m_time_point).count();
+		return (std::chrono::high_resolution_clock::now() - m_time_point).count() / 1000000000.0f;
 	else
-		return m_duration;
+		return m_duration / 1000000000.0f;
 }
