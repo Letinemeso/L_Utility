@@ -141,10 +141,14 @@ namespace LDS
 		virtual void operator=(Tree<Data_Type>&& _other);
 		virtual ~Tree();
 
+	protected:
+		void M_insert_node(Node* _subtree, Node* _insert_where);
+		Node* M_extract_pointer_from_iterator(const Iterator& _it);
+		virtual Node* M_allocate_node() const;
+
 	private:
 		void M_copy_subtree(Node* _subroot, Node*& _where);
-		void M_insert_node(Node* _subtree, Node* _insert_where);
-		void M_erase_subtree(Node* _subroot);
+		void M_erase_subtree(Node*& _subroot);
 		Node* M_find_minimal_in_subtree(Node* _subroot) const;
 		void M_erase_node(Node* _node);
 
@@ -153,7 +157,6 @@ namespace LDS
 		virtual void insert(Data_Type&& _data);
 
 		virtual void erase(const Iterator& _where);
-		virtual void erase(const Const_Iterator& _where);
 
 		void clear();
 

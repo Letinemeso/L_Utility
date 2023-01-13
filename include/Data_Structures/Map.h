@@ -44,7 +44,7 @@ namespace LDS
 		};
 
 	private:
-		typedef typename LDS::Tree<Pair> Tree;
+		typedef typename LDS::AVL_Tree<Pair> Tree;
 
 	private:
 		Tree m_tree;

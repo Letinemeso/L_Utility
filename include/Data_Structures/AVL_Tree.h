@@ -5,6 +5,8 @@
 
 #include "Tree.h"
 
+#include <Stuff/Stopwatch.h>
+
 
 namespace LDS
 {
@@ -12,6 +14,12 @@ namespace LDS
 	template<typename Data_Type>
 	class AVL_Tree : public Tree<Data_Type>
 	{
+	private:
+		struct AVL_Node : public Tree<Data_Type>::Node
+		{
+			int balance = 0;
+		};
+
 	private:
 		using typename Tree<Data_Type>::Node;
 		using Tree<Data_Type>::m_root;
@@ -38,24 +46,27 @@ namespace LDS
 		~AVL_Tree();
 
 	private:
-		int M_subtree_depth(const Node* _subroot) const;
-		int M_subtree_balance(const Node* _subroot) const;
+		int M_subtree_depth(const AVL_Node* _subroot) const;
+		int M_subtree_balance(const AVL_Node* _subroot) const;
 
 	private:
-		void M_rotate_subtree__left(Node* _subroot);
-		void M_rotate_subtree__right(Node* _subroot);
-		void M_rotate_subtree__left_right(Node* _subroot);
-		void M_rotate_subtree__right_left(Node* _subroot);
+		void M_rotate_subtree__left(AVL_Node* _subroot);
+		void M_rotate_subtree__right(AVL_Node* _subroot);
+		void M_rotate_subtree__left_right(AVL_Node* _subroot);
+		void M_rotate_subtree__right_left(AVL_Node* _subroot);
 
-		void M_balance_subtree(Node* _subroot);
+		void M_balance_subtree(AVL_Node* _subroot, int _depth = 0);
 		void M_fix_root();
+
+	protected:
+		Node* M_allocate_node() const override;
 
 	public:
 		void insert(const Data_Type& _data) override;
 		void insert(Data_Type&& _data) override;
 
 		void erase(const Iterator& _where) override;
-		void erase(const Const_Iterator& _where) override;
+//		void erase(const Const_Iterator& _where) override;
 
 	};
 

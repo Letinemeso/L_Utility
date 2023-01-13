@@ -54,6 +54,53 @@ Tree<Data_Type>::~Tree()
 
 
 template<typename Data_Type>
+void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
+{
+	Node* future_parent = _insert_where;
+
+	while(true)
+	{
+		if(!future_parent->child_left && !future_parent->child_right)
+			break;
+
+		if(*_subtree->data < *future_parent->data)
+		{
+			if(future_parent->child_left)
+				future_parent = future_parent->child_left;
+			else
+				future_parent = future_parent->child_right;
+		}
+		else
+		{
+			if(future_parent->child_right)
+				future_parent = future_parent->child_right;
+			else
+				future_parent = future_parent->child_left;
+		}
+	}
+
+	if(*_subtree->data < *future_parent->data)
+		future_parent->child_left = _subtree;
+	else
+		future_parent->child_right = _subtree;
+	_subtree->parent = future_parent;
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_extract_pointer_from_iterator(const Iterator& _it)
+{
+	return _it.m_it.m_current_pos;
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_allocate_node() const
+{
+	return new Node;
+}
+
+
+
+template<typename Data_Type>
 void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
 {
 	if(_subroot == nullptr)
@@ -61,7 +108,7 @@ void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
 
 	L_ASSERT(_where == nullptr);
 
-	_where = new Node;
+	_where = M_allocate_node();
 	_where->data = new Data_Type(*_subroot->data);
 
 	M_copy_subtree(_subroot->child_left, _where->child_left);
@@ -74,46 +121,40 @@ void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
 }
 
 template<typename Data_Type>
-void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
-{
-	Node* left_subtree = _insert_where->child_left;
-	Node* right_subtree = _insert_where->child_right;
-
-	if(*_subtree->data < *_insert_where->data)
-	{
-		if(left_subtree == nullptr)
-		{
-			_insert_where->child_left = _subtree;
-			_subtree->parent = _insert_where;
-			return;
-		}
-
-		M_insert_node(_subtree, left_subtree);
-	}
-	else
-	{
-		if(right_subtree == nullptr)
-		{
-			_insert_where->child_right = _subtree;
-			_subtree->parent = _insert_where;
-			return;
-		}
-
-		M_insert_node(_subtree, right_subtree);
-	}
-}
-
-template<typename Data_Type>
-void Tree<Data_Type>::M_erase_subtree(Node* _subroot)
+void Tree<Data_Type>::M_erase_subtree(Node*& _subroot)
 {
 	if(_subroot == nullptr)
 		return;
 
-	M_erase_subtree(_subroot->child_left);
-	M_erase_subtree(_subroot->child_right);
+	Node* parent = _subroot;
 
-	delete _subroot->data;
-	delete _subroot;
+	while(_subroot != nullptr)
+	{
+		if(parent->child_left)
+			parent = parent->child_left;
+		else if(parent->child_right)
+			parent = parent->child_right;
+		else
+		{
+			Node* parent_parent = parent->parent;
+			if(parent_parent == nullptr)
+			{
+				delete _subroot;
+				_subroot = nullptr;
+				return;
+			}
+
+			if(parent == parent_parent->child_left)
+				parent_parent->child_left = nullptr;
+			else
+				parent_parent->child_right = nullptr;
+
+			delete parent->data;
+			delete parent;
+
+			parent = parent_parent;
+		}
+	}
 }
 
 template<typename Data_Type>
@@ -205,7 +246,7 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 template<typename Data_Type>
 void Tree<Data_Type>::insert(const Data_Type& _data)
 {
-	Node* node = new Node;
+	Node* node = M_allocate_node();
 	node->data = new Data_Type(_data);
 
 	++m_size;
@@ -222,7 +263,7 @@ void Tree<Data_Type>::insert(const Data_Type& _data)
 template<typename Data_Type>
 void Tree<Data_Type>::insert(Data_Type&& _data)
 {
-	Node* node = new Node;
+	Node* node = M_allocate_node();
 	node->data = new Data_Type((Data_Type&&)_data);
 
 	++m_size;
@@ -239,15 +280,6 @@ void Tree<Data_Type>::insert(Data_Type&& _data)
 
 template<typename Data_Type>
 void Tree<Data_Type>::erase(const Iterator& _where)
-{
-	L_ASSERT(_where.m_it.m_parent == this);
-	L_ASSERT(_where.is_ok());
-
-	M_erase_node(_where.m_it.m_current_pos);
-}
-
-template<typename Data_Type>
-void Tree<Data_Type>::erase(const Const_Iterator& _where)
 {
 	L_ASSERT(_where.m_it.m_parent == this);
 	L_ASSERT(_where.is_ok());

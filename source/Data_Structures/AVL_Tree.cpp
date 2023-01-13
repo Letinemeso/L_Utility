@@ -1,4 +1,5 @@
 #include <Data_Structures/AVL_Tree.h>
+#include <iomanip>
 
 using namespace LDS;
 
@@ -42,7 +43,7 @@ AVL_Tree<Data_Type>::~AVL_Tree()
 
 
 template<typename Data_Type>
-int AVL_Tree<Data_Type>::M_subtree_depth(const Node* _subroot) const
+int AVL_Tree<Data_Type>::M_subtree_depth(const AVL_Node* _subroot) const
 {
     if(_subroot == nullptr)
 	return 0;
@@ -54,7 +55,7 @@ int AVL_Tree<Data_Type>::M_subtree_depth(const Node* _subroot) const
 }
 
 template<typename Data_Type>
-int AVL_Tree<Data_Type>::M_subtree_balance(const Node* _subroot) const
+int AVL_Tree<Data_Type>::M_subtree_balance(const AVL_Node* _subroot) const
 {
     if(_subroot == nullptr)
 	return 0;
@@ -68,15 +69,15 @@ int AVL_Tree<Data_Type>::M_subtree_balance(const Node* _subroot) const
 
 
 template<typename Data_Type>
-void AVL_Tree<Data_Type>::M_rotate_subtree__left(Node* _subroot)
+void AVL_Tree<Data_Type>::M_rotate_subtree__left(AVL_Node* _subroot)
 {
-    Node* subroot = _subroot;
-    Node* subroot_parent = subroot->parent;
-    Node** subroot_ptr_as_child = nullptr;
+    AVL_Node* subroot = _subroot;
+    AVL_Node* subroot_parent = subroot->parent;
+    AVL_Node** subroot_ptr_as_child = nullptr;
     if(subroot_parent != nullptr)
 	subroot_ptr_as_child = subroot_parent->child_left == subroot ? &subroot_parent->child_left : &subroot_parent->child_right;
-    Node* right_child = subroot->child_right;
-    Node* right_child_left_child = right_child->child_left;
+    AVL_Node* right_child = subroot->child_right;
+    AVL_Node* right_child_left_child = right_child->child_left;
 
     subroot->parent = right_child;
     right_child->child_left = subroot;
@@ -90,15 +91,15 @@ void AVL_Tree<Data_Type>::M_rotate_subtree__left(Node* _subroot)
 }
 
 template<typename Data_Type>
-void AVL_Tree<Data_Type>::M_rotate_subtree__right(Node* _subroot)
+void AVL_Tree<Data_Type>::M_rotate_subtree__right(AVL_Node* _subroot)
 {
-    Node* subroot = _subroot;
-    Node* subroot_parent = subroot->parent;
-    Node** subroot_ptr_as_child = nullptr;
+    AVL_Node* subroot = _subroot;
+    AVL_Node* subroot_parent = subroot->parent;
+    AVL_Node** subroot_ptr_as_child = nullptr;
     if(subroot_parent != nullptr)
 	subroot_ptr_as_child = subroot_parent->child_left == subroot ? &subroot_parent->child_left : &subroot_parent->child_right;
-    Node* left_child = subroot->child_left;
-    Node* left_child_right_child = left_child->child_right;
+    AVL_Node* left_child = subroot->child_left;
+    AVL_Node* left_child_right_child = left_child->child_right;
 
     subroot->parent = left_child;
     left_child->child_right = subroot;
@@ -112,14 +113,14 @@ void AVL_Tree<Data_Type>::M_rotate_subtree__right(Node* _subroot)
 }
 
 template<typename Data_Type>
-void AVL_Tree<Data_Type>::M_rotate_subtree__left_right(Node* _subroot)
+void AVL_Tree<Data_Type>::M_rotate_subtree__left_right(AVL_Node* _subroot)
 {
     M_rotate_subtree__left(_subroot->child_left);
     M_rotate_subtree__right(_subroot);
 }
 
 template<typename Data_Type>
-void AVL_Tree<Data_Type>::M_rotate_subtree__right_left(Node* _subroot)
+void AVL_Tree<Data_Type>::M_rotate_subtree__right_left(AVL_Node* _subroot)
 {
     M_rotate_subtree__right(_subroot->child_right);
     M_rotate_subtree__left(_subroot);
@@ -128,18 +129,39 @@ void AVL_Tree<Data_Type>::M_rotate_subtree__right_left(Node* _subroot)
 
 
 template<typename Data_Type>
-void AVL_Tree<Data_Type>::M_balance_subtree(Node* _subroot)
+void AVL_Tree<Data_Type>::M_balance_subtree(AVL_Node* _subroot, int _depth)
 {
     if(_subroot == nullptr)
 	return;
 
-    M_balance_subtree(_subroot->child_left);
-    M_balance_subtree(_subroot->child_right);
 
-    int balance = M_subtree_balance(_subroot);
+
+//    int balance = M_subtree_balance(_subroot);
+
+    int left_depth, right_depth;
+    if(_depth < 0)
+    {
+	right_depth = abs(_depth);
+	left_depth = M_subtree_depth(_subroot->child_left);
+    }
+    else if(_depth > 0)
+    {
+	left_depth = abs(_depth);
+	right_depth = M_subtree_depth(_subroot->child_right);
+    }
+    else
+    {
+	left_depth = M_subtree_depth(_subroot->child_left);
+	right_depth = M_subtree_depth(_subroot->child_right);
+    }
+
+    int balance = left_depth - right_depth;
 
     if(abs(balance) < 2)
+    {
+	M_balance_subtree(_subroot->parent, (left_depth > right_depth ? left_depth + 1 : -(right_depth + 1)));
 	return;
+    }
 
     Rotation_Type rt;
     if(balance < 0)
@@ -191,32 +213,58 @@ void AVL_Tree<Data_Type>::M_fix_root()
 
 
 template<typename Data_Type>
+typename Tree<Data_Type>::Node* AVL_Tree<Data_Type>::M_allocate_node() const
+{
+    return new AVL_Node;
+}
+
+
+
+template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
 {
-    Tree<Data_Type>::insert(_data);
-    M_balance_subtree(m_root);
+    Node* node = M_allocate_node();
+    node->data = new Data_Type(_data);
+
+    ++Tree<Data_Type>::m_size;
+
+    if(m_root == nullptr)
+    {
+	    m_root = node;
+	    return;
+    }
+
+    Tree<Data_Type>::M_insert_node(node, m_root);
+
+    M_balance_subtree(node);
 }
 
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(Data_Type&& _data)
 {
-    Tree<Data_Type>::insert((Data_Type&&)_data);
-    M_balance_subtree(m_root);
+    Node* node = M_allocate_node();
+    node->data = new Data_Type((Data_Type&&)_data);
+
+    ++Tree<Data_Type>::m_size;
+
+    if(m_root == nullptr)
+    {
+	    m_root = node;
+	    return;
+    }
+
+    Tree<Data_Type>::M_insert_node(node, m_root);
+
+    M_balance_subtree(node);
 }
 
 
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::erase(const Iterator& _where)
 {
+    Node* ptr = Tree<Data_Type>::M_extract_pointer_from_iterator(_where);
     Tree<Data_Type>::erase(_where);
-    M_balance_subtree((m_root));
-}
-
-template<typename Data_Type>
-void AVL_Tree<Data_Type>::erase(const Const_Iterator& _where)
-{
-    Tree<Data_Type>::erase(_where);
-    M_balance_subtree((m_root));
+    M_balance_subtree(ptr);
 }
 
 
