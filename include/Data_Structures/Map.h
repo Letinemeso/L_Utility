@@ -17,8 +17,8 @@ namespace LDS
 			friend class Map;
 
 		private:
-			Key_Type* m_key = nullptr;
-			Data_Type* m_data = nullptr;
+			Key_Type m_key;
+			Data_Type m_data;
 
 		private:
 			Pair(){}

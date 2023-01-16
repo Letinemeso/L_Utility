@@ -7,21 +7,21 @@ using namespace LDS;
 
 template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::Pair(const Key_Type& _key, const Data_Type& _data)
-	: m_key(new Key_Type(_key)), m_data(new Data_Type(_data))
+	: m_key(_key), m_data(_data)
 {
 
 }
 
 template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::Pair(Key_Type&& _key, Data_Type&& _data)
-	: m_key(new Key_Type((Key_Type&&)_key)), m_data(new Data_Type((Data_Type&&)_data))
+	: m_key((Key_Type&&)_key), m_data((Data_Type&&)_data)
 {
 
 }
 
 template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::Pair(const Pair& _other)
-	: m_key(new Key_Type(*_other.m_key)), m_data(new Data_Type(*_other.m_data))
+	: m_key(_other.m_key), m_data(_other.m_data)
 {
 
 }
@@ -29,17 +29,14 @@ Map<Key_Type, Data_Type>::Pair::Pair(const Pair& _other)
 template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::Pair(Pair&& _other)
 {
-	m_key = _other.m_key;
-	_other.m_key = nullptr;
-	m_data = _other.m_data;
-	_other.m_data = nullptr;
+	m_key = (Key_Type&&)_other.m_key;
+	m_data = (Data_Type&&)_other.m_data;
 }
 
 template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::~Pair()
 {
-	delete m_key;
-	delete m_data;
+
 }
 
 
@@ -47,19 +44,19 @@ Map<Key_Type, Data_Type>::Pair::~Pair()
 template<typename Key_Type, typename Data_Type>
 bool Map<Key_Type, Data_Type>::Pair::operator<(const Pair& _other) const
 {
-	return *m_key < *_other.m_key;
+	return m_key < _other.m_key;
 }
 
 template<typename Key_Type, typename Data_Type>
 bool Map<Key_Type, Data_Type>::Pair::operator>(const Pair& _other) const
 {
-	return *m_key > *_other.m_key;
+	return m_key > _other.m_key;
 }
 
 template<typename Key_Type, typename Data_Type>
 bool Map<Key_Type, Data_Type>::Pair::operator==(const Pair& _other) const
 {
-	return *m_key == *_other.m_key;
+	return m_key == _other.m_key;
 }
 
 
@@ -67,25 +64,25 @@ bool Map<Key_Type, Data_Type>::Pair::operator==(const Pair& _other) const
 template<typename Key_Type, typename Data_Type>
 Key_Type& Map<Key_Type, Data_Type>::Pair::key()
 {
-	return *m_key;
+	return m_key;
 }
 
 template<typename Key_Type, typename Data_Type>
 const Key_Type& Map<Key_Type, Data_Type>::Pair::key() const
 {
-	return *m_key;
+	return m_key;
 }
 
 template<typename Key_Type, typename Data_Type>
 Data_Type& Map<Key_Type, Data_Type>::Pair::data()
 {
-	return *m_data;
+	return m_data;
 }
 
 template<typename Key_Type, typename Data_Type>
 const Data_Type& Map<Key_Type, Data_Type>::Pair::data() const
 {
-	return *m_data;
+	return m_data;
 }
 
 
@@ -131,7 +128,7 @@ void Map<Key_Type, Data_Type>::Iterator::operator--()
 template<typename Key_Type, typename Data_Type>
 Data_Type& Map<Key_Type, Data_Type>::Iterator::operator*()
 {
-	return *m_it;
+	return m_it->data();
 }
 
 template<typename Key_Type, typename Data_Type>
@@ -355,7 +352,7 @@ template<typename Key_Type, typename Data_Type>
 typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const Key_Type& _key)
 {
 	Pair stub;
-	stub.m_key = new Key_Type(_key);
+	stub.m_key = _key;
 
 	return Iterator(m_tree.find(stub));
 }

@@ -142,15 +142,15 @@ namespace LDS
 		virtual ~Tree();
 
 	protected:
-		void M_insert_node(Node* _subtree, Node* _insert_where);
+		virtual void M_insert_node(Node* _subtree, Node* _insert_where);
 		Node* M_extract_pointer_from_iterator(const Iterator& _it);
 		virtual Node* M_allocate_node() const;
+		virtual void M_erase_node(Node* _node);
+		Node* M_find_minimal_in_subtree(Node* _subroot) const;
 
 	private:
 		void M_copy_subtree(Node* _subroot, Node*& _where);
 		void M_erase_subtree(Node*& _subroot);
-		Node* M_find_minimal_in_subtree(Node* _subroot) const;
-		void M_erase_node(Node* _node);
 
 	public:
 		virtual void insert(const Data_Type& _data);

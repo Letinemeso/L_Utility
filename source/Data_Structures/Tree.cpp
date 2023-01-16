@@ -98,73 +98,6 @@ typename Tree<Data_Type>::Node* Tree<Data_Type>::M_allocate_node() const
 	return new Node;
 }
 
-
-
-template<typename Data_Type>
-void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
-{
-	if(_subroot == nullptr)
-		return;
-
-	L_ASSERT(_where == nullptr);
-
-	_where = M_allocate_node();
-	_where->data = new Data_Type(*_subroot->data);
-
-	M_copy_subtree(_subroot->child_left, _where->child_left);
-	M_copy_subtree(_subroot->child_right, _where->child_right);
-
-	if(_where->child_left != nullptr)
-		_where->child_left->parent = _where;
-	if(_where->child_right != nullptr)
-		_where->child_right->parent = _where;
-}
-
-template<typename Data_Type>
-void Tree<Data_Type>::M_erase_subtree(Node*& _subroot)
-{
-	if(_subroot == nullptr)
-		return;
-
-	Node* parent = _subroot;
-
-	while(_subroot != nullptr)
-	{
-		if(parent->child_left)
-			parent = parent->child_left;
-		else if(parent->child_right)
-			parent = parent->child_right;
-		else
-		{
-			Node* parent_parent = parent->parent;
-			if(parent_parent == nullptr)
-			{
-				delete _subroot;
-				_subroot = nullptr;
-				return;
-			}
-
-			if(parent == parent_parent->child_left)
-				parent_parent->child_left = nullptr;
-			else
-				parent_parent->child_right = nullptr;
-
-			delete parent->data;
-			delete parent;
-
-			parent = parent_parent;
-		}
-	}
-}
-
-template<typename Data_Type>
-typename Tree<Data_Type>::Node* Tree<Data_Type>::M_find_minimal_in_subtree(Node* _subroot) const
-{
-	while(_subroot->child_left != nullptr)
-		_subroot = _subroot->child_left;
-	return _subroot;
-}
-
 template<typename Data_Type>
 void Tree<Data_Type>::M_erase_node(Node* _node)
 {
@@ -239,6 +172,81 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 		next_minimal->data = nullptr;
 		M_erase_node(next_minimal);
 	}
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_find_minimal_in_subtree(Node* _subroot) const
+{
+	while(_subroot->child_left != nullptr)
+		_subroot = _subroot->child_left;
+	return _subroot;
+}
+
+
+
+template<typename Data_Type>
+void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
+{
+	if(_subroot == nullptr)
+		return;
+
+	L_ASSERT(_where == nullptr);
+
+	_where = M_allocate_node();
+	_where->data = new Data_Type(*_subroot->data);
+
+	M_copy_subtree(_subroot->child_left, _where->child_left);
+	M_copy_subtree(_subroot->child_right, _where->child_right);
+
+	if(_where->child_left != nullptr)
+		_where->child_left->parent = _where;
+	if(_where->child_right != nullptr)
+		_where->child_right->parent = _where;
+}
+
+template<typename Data_Type>
+void Tree<Data_Type>::M_erase_subtree(Node*& _subroot)
+{
+	if(_subroot == nullptr)
+		return;
+
+	//	recursuve
+	M_erase_subtree(_subroot->child_left);
+	M_erase_subtree(_subroot->child_right);
+
+	delete _subroot->data;
+	delete _subroot;
+
+	//	iterative
+	/*Node* parent = _subroot;
+
+	while(_subroot != nullptr)
+	{
+		if(parent->child_left)
+			parent = parent->child_left;
+		else if(parent->child_right)
+			parent = parent->child_right;
+		else
+		{
+			Node* parent_parent = parent->parent;
+			if(parent_parent == nullptr)
+			{
+				delete _subroot;
+				_subroot = nullptr;
+				return;
+			}
+
+			if(parent == parent_parent->child_left)
+				parent_parent->child_left = nullptr;
+			else
+				parent_parent->child_right = nullptr;
+
+			delete parent->data;
+			delete parent;
+
+			parent = parent_parent;
+		}
+	}*/
 }
 
 
@@ -317,17 +325,16 @@ typename Tree<Data_Type>::Iterator Tree<Data_Type>::find(const Data_Type& _value
 	Node* search = m_root;
 	while(search != nullptr)
 	{
-		if(*search->data == _value)
+		if(_value < *search->data)
+			search = search->child_left;
+		else if(_value > *search->data)
+			search = search->child_right;
+		else
 		{
 			Iterator result(this);
 			result.m_it.m_current_pos = search;
 			return result;
 		}
-
-		if(_value < *search->data)
-			search = search->child_left;
-		else
-			search = search->child_right;
 	}
 	return Iterator(nullptr);
 }
@@ -338,17 +345,16 @@ typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::find(const Data_Type& 
 	Node* search = m_root;
 	while(search != nullptr)
 	{
-		if(search == _value)
+		if(_value < *search->data)
+			search = search->child_left;
+		else if(_value > *search->data)
+			search = search->child_right;
+		else
 		{
 			Const_Iterator result(this);
 			result.m_it.m_current_pos = search;
 			return result;
 		}
-
-		if(_value < *search->data)
-			search = search->child_left;
-		else
-			search = search->child_right;
 	}
 	return Const_Iterator(nullptr);
 }

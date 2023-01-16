@@ -15,9 +15,13 @@ namespace LDS
 	class AVL_Tree : public Tree<Data_Type>
 	{
 	private:
+		using Tree<Data_Type>::m_size;
+
+	private:
 		struct AVL_Node : public Tree<Data_Type>::Node
 		{
 			int balance = 0;
+			int depth = 1;
 		};
 
 	private:
@@ -56,10 +60,15 @@ namespace LDS
 		void M_rotate_subtree__right_left(AVL_Node* _subroot);
 
 		void M_balance_subtree(AVL_Node* _subroot, int _depth = 0);
+		void M_update_node_depth(AVL_Node* _node);
+		void M_update_node_balance(AVL_Node* _node);
+		void M_backtrace(Node* _from_where);
 		void M_fix_root();
 
 	protected:
 		Node* M_allocate_node() const override;
+		void M_erase_node(Node* _node) override;
+		void M_insert_node(Node* _subtree, Node* _insert_where) override;
 
 	public:
 		void insert(const Data_Type& _data) override;
