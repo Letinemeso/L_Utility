@@ -323,7 +323,7 @@ template<typename Data_Type>
 typename Tree<Data_Type>::Iterator Tree<Data_Type>::find(const Data_Type& _value)
 {
 	Node* search = m_root;
-	while(search != nullptr)
+	while(search)
 	{
 		if(_value < *search->data)
 			search = search->child_left;
@@ -343,7 +343,7 @@ template<typename Data_Type>
 typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::find(const Data_Type& _value) const
 {
 	Node* search = m_root;
-	while(search != nullptr)
+	while(search)
 	{
 		if(_value < *search->data)
 			search = search->child_left;
