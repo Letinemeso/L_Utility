@@ -22,6 +22,8 @@ namespace LDS
 		{
 			int balance = 0;
 			int depth = 1;
+			AVL_Node(const Data_Type& _data) : Tree<Data_Type>::Node(_data) { }
+			AVL_Node(Data_Type&& _data) : Tree<Data_Type>::Node((Data_Type&&)_data) { }
 		};
 
 	private:
@@ -66,7 +68,8 @@ namespace LDS
 		void M_fix_root();
 
 	protected:
-		Node* M_allocate_node() const override;
+		Node* M_allocate_node(const Data_Type& _data) const override;
+		Node* M_allocate_node(Data_Type&& _data) const override;
 		void M_erase_node(Node* _node) override;
 		void M_insert_node(Node* _subtree, Node* _insert_where) override;
 

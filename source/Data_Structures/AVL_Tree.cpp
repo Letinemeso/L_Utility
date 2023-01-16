@@ -250,9 +250,15 @@ void AVL_Tree<Data_Type>::M_fix_root()
 
 
 template<typename Data_Type>
-typename Tree<Data_Type>::Node* AVL_Tree<Data_Type>::M_allocate_node() const
+typename Tree<Data_Type>::Node* AVL_Tree<Data_Type>::M_allocate_node(const Data_Type& _data) const
 {
-    return new AVL_Node;
+	return new AVL_Node(_data);
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Node* AVL_Tree<Data_Type>::M_allocate_node(Data_Type&& _data) const
+{
+	return new AVL_Node((Data_Type&&)_data);
 }
 
 template<typename Data_Type>
@@ -274,7 +280,6 @@ void AVL_Tree<Data_Type>::M_erase_node(Node* _node)
 		else
 			m_root = nullptr;
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -296,7 +301,6 @@ void AVL_Tree<Data_Type>::M_erase_node(Node* _node)
 			right->parent = nullptr;
 		}
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -318,7 +322,6 @@ void AVL_Tree<Data_Type>::M_erase_node(Node* _node)
 			left->parent = nullptr;
 		}
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -327,9 +330,7 @@ void AVL_Tree<Data_Type>::M_erase_node(Node* _node)
 	{
 		Node* next_minimal = Tree<Data_Type>::M_find_minimal_in_subtree(_node->child_right);
 		parent = next_minimal->parent;
-		delete _node->data;
-		_node->data = next_minimal->data;
-		next_minimal->data = nullptr;
+		_node->data = (Data_Type&&)next_minimal->data;
 		M_erase_node(next_minimal);
 	}
 
@@ -350,8 +351,7 @@ void AVL_Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
 {
-    Node* node = M_allocate_node();
-    node->data = new Data_Type(_data);
+	Node* node = M_allocate_node(_data);
 
     ++Tree<Data_Type>::m_size;
 
@@ -369,8 +369,7 @@ void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(Data_Type&& _data)
 {
-    Node* node = M_allocate_node();
-    node->data = new Data_Type((Data_Type&&)_data);
+	Node* node = M_allocate_node((Data_Type&&)_data);
 
     ++Tree<Data_Type>::m_size;
 

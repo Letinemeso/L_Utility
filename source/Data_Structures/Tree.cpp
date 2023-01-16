@@ -63,7 +63,7 @@ void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 		if(!future_parent->child_left && !future_parent->child_right)
 			break;
 
-		if(*_subtree->data < *future_parent->data)
+		if(_subtree->data < future_parent->data)
 		{
 			if(future_parent->child_left)
 				future_parent = future_parent->child_left;
@@ -79,7 +79,7 @@ void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 		}
 	}
 
-	if(*_subtree->data < *future_parent->data)
+	if(_subtree->data < future_parent->data)
 		future_parent->child_left = _subtree;
 	else
 		future_parent->child_right = _subtree;
@@ -93,9 +93,15 @@ typename Tree<Data_Type>::Node* Tree<Data_Type>::M_extract_pointer_from_iterator
 }
 
 template<typename Data_Type>
-typename Tree<Data_Type>::Node* Tree<Data_Type>::M_allocate_node() const
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_allocate_node(const Data_Type& _data) const
 {
-	return new Node;
+	return new Node(_data);
+}
+
+template<typename Data_Type>
+typename Tree<Data_Type>::Node* Tree<Data_Type>::M_allocate_node(Data_Type&& _data) const
+{
+	return new Node((Data_Type&&)_data);
 }
 
 template<typename Data_Type>
@@ -115,7 +121,6 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 		else
 			m_root = nullptr;
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -137,7 +142,6 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 			right->parent = nullptr;
 		}
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -159,7 +163,6 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 			left->parent = nullptr;
 		}
 
-		delete _node->data;
 		delete _node;
 
 		--m_size;
@@ -167,9 +170,7 @@ void Tree<Data_Type>::M_erase_node(Node* _node)
 	else
 	{
 		Node* next_minimal = M_find_minimal_in_subtree(_node->child_right);
-		delete _node->data;
-		_node->data = next_minimal->data;
-		next_minimal->data = nullptr;
+		_node->data = (Data_Type&&)next_minimal->data;
 		M_erase_node(next_minimal);
 	}
 }
@@ -192,8 +193,7 @@ void Tree<Data_Type>::M_copy_subtree(Node* _subroot, Node*& _where)
 
 	L_ASSERT(_where == nullptr);
 
-	_where = M_allocate_node();
-	_where->data = new Data_Type(*_subroot->data);
+	_where = M_allocate_node(_subroot->data);
 
 	M_copy_subtree(_subroot->child_left, _where->child_left);
 	M_copy_subtree(_subroot->child_right, _where->child_right);
@@ -214,7 +214,6 @@ void Tree<Data_Type>::M_erase_subtree(Node*& _subroot)
 	M_erase_subtree(_subroot->child_left);
 	M_erase_subtree(_subroot->child_right);
 
-	delete _subroot->data;
 	delete _subroot;
 
 	//	iterative
@@ -254,8 +253,7 @@ void Tree<Data_Type>::M_erase_subtree(Node*& _subroot)
 template<typename Data_Type>
 void Tree<Data_Type>::insert(const Data_Type& _data)
 {
-	Node* node = M_allocate_node();
-	node->data = new Data_Type(_data);
+	Node* node = M_allocate_node(_data);
 
 	++m_size;
 
@@ -271,8 +269,7 @@ void Tree<Data_Type>::insert(const Data_Type& _data)
 template<typename Data_Type>
 void Tree<Data_Type>::insert(Data_Type&& _data)
 {
-	Node* node = M_allocate_node();
-	node->data = new Data_Type((Data_Type&&)_data);
+	Node* node = M_allocate_node((Data_Type&&)_data);
 
 	++m_size;
 
@@ -325,17 +322,19 @@ typename Tree<Data_Type>::Iterator Tree<Data_Type>::find(const Data_Type& _value
 	Node* search = m_root;
 	while(search)
 	{
-		if(_value < *search->data)
+		if(_value < search->data)
 			search = search->child_left;
-		else if(_value > *search->data)
+		else if(_value > search->data)
 			search = search->child_right;
 		else
 		{
 			Iterator result(this);
 			result.m_it.m_current_pos = search;
+
 			return result;
 		}
 	}
+
 	return Iterator(nullptr);
 }
 
@@ -518,7 +517,7 @@ Data_Type* Tree<Data_Type>::Iterator_Base::get_ptr()
 	L_ASSERT(m_current_pos != nullptr);
 	L_ASSERT(m_parent != nullptr);
 
-	return m_current_pos->data;
+	return &m_current_pos->data;
 }
 
 

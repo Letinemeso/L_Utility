@@ -24,22 +24,24 @@ namespace LDS
 			Pair(){}
 
 		public:
-			Pair(const Key_Type& _key, const Data_Type& _data);
-			Pair(Key_Type&& _key, Data_Type&& _data);
-			Pair(const Pair& _other);
-			Pair(Pair&& _other);
-			~Pair();
+			inline Pair(const Key_Type& _key, const Data_Type& _data);
+			inline Pair(Key_Type&& _key, Data_Type&& _data);
+			inline Pair(const Pair& _other);
+			inline Pair(Pair&& _other);
+			inline void operator=(const Pair& _other);
+			inline void operator=(Pair&& _other);
+			inline ~Pair();
 
 		public:
-			bool operator<(const Pair& _other) const;
-			bool operator>(const Pair& _other) const;
-			bool operator==(const Pair& _other) const;
+			inline bool operator<(const Pair& _other) const;
+			inline bool operator>(const Pair& _other) const;
+			inline bool operator==(const Pair& _other) const;
 
 		public:
-			Key_Type& key();
-			const Key_Type& key() const;
-			Data_Type& data();
-			const Data_Type& data() const;
+			inline Key_Type& key();
+			inline const Key_Type& key() const;
+			inline Data_Type& data();
+			inline const Data_Type& data() const;
 
 		};
 

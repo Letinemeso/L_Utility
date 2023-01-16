@@ -13,12 +13,15 @@ namespace LDS
 	protected:
 		struct Node
 		{
-			Data_Type* data = nullptr;
+			Data_Type data;
 
 			Node* parent = nullptr;
 
 			Node* child_left = nullptr;
 			Node* child_right = nullptr;
+
+			Node(const Data_Type& _data) : data(_data) { }
+			Node(Data_Type&& _data) : data((Data_Type&&)_data) { }
 		};
 
 	protected:
@@ -55,15 +58,15 @@ namespace LDS
 			void operator--();
 
 		public:
-			Data_Type& operator*();
-			const Data_Type& operator*() const;
-			Data_Type* get_ptr();
+			inline Data_Type& operator*();
+			inline const Data_Type& operator*() const;
+			inline Data_Type* get_ptr();
 
 		public:
-			bool begin_reached() const;
-			bool end_reached() const;
+			inline bool begin_reached() const;
+			inline bool end_reached() const;
 
-			bool is_ok() const;
+			inline bool is_ok() const;
 
 		};
 
@@ -144,7 +147,8 @@ namespace LDS
 	protected:
 		virtual void M_insert_node(Node* _subtree, Node* _insert_where);
 		Node* M_extract_pointer_from_iterator(const Iterator& _it);
-		virtual Node* M_allocate_node() const;
+		virtual Node* M_allocate_node(const Data_Type& _data) const;
+		virtual Node* M_allocate_node(Data_Type&& _data) const;
 		virtual void M_erase_node(Node* _node);
 		Node* M_find_minimal_in_subtree(Node* _subroot) const;
 
