@@ -68,14 +68,16 @@ void Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 			if(future_parent->child_left)
 				future_parent = future_parent->child_left;
 			else
-				future_parent = future_parent->child_right;
+//				future_parent = future_parent->child_right;
+				break;
 		}
 		else
 		{
 			if(future_parent->child_right)
 				future_parent = future_parent->child_right;
 			else
-				future_parent = future_parent->child_left;
+//				future_parent = future_parent->child_left;
+				break;
 		}
 	}
 

@@ -218,21 +218,21 @@ void AVL_Tree<Data_Type>::M_backtrace(Node* _from_where)
 	if(_from_where->parent == nullptr)
 		return;
 
-//	AVL_Node* parent = (AVL_Node*)_from_where->parent;
+	//	AVL_Node* parent = (AVL_Node*)_from_where->parent;
 	AVL_Node* parent = (AVL_Node*)_from_where;
 
 	while(parent != nullptr)
 	{
-		M_update_node_depth(parent);
-		M_update_node_balance(parent);
+	    M_update_node_depth(parent);
+	    M_update_node_balance(parent);
 
-		if(abs(parent->balance) > 1)
-		{
-			M_balance_subtree(parent);
-			return;
-		}
+	    if(abs(parent->balance) > 1)
+	    {
+		M_balance_subtree(parent);
+		return;
+	    }
 
-		parent = (AVL_Node*)parent->parent;
+	    parent = (AVL_Node*)parent->parent;
 	}
 }
 
@@ -350,37 +350,37 @@ void AVL_Tree<Data_Type>::M_insert_node(Node* _subtree, Node* _insert_where)
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
 {
-	Node* node = M_allocate_node(_data);
+    Node* node = M_allocate_node(_data);
 
     ++Tree<Data_Type>::m_size;
 
     if(m_root == nullptr)
     {
-	    m_root = node;
-	    return;
+	m_root = node;
+	return;
     }
 
-	M_insert_node(node, m_root);
+    M_insert_node(node, m_root);
 
-	M_balance_subtree((AVL_Node*)node);
+//    M_balance_subtree((AVL_Node*)node);
 }
 
 template<typename Data_Type>
 void AVL_Tree<Data_Type>::insert(Data_Type&& _data)
 {
-	Node* node = M_allocate_node((Data_Type&&)_data);
+    Node* node = M_allocate_node((Data_Type&&)_data);
 
     ++Tree<Data_Type>::m_size;
 
     if(m_root == nullptr)
     {
-	    m_root = node;
-	    return;
+	m_root = node;
+	return;
     }
 
-	M_insert_node(node, m_root);
+    M_insert_node(node, m_root);
 
-	M_balance_subtree((AVL_Node*)node);
+    //	M_balance_subtree((AVL_Node*)node);
 }
 
 
