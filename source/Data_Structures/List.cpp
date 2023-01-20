@@ -6,7 +6,7 @@ using namespace LDS;
 //	List::Iterator_Base
 
 template<typename Data_Type>
-List<Data_Type>::Iterator_Base::Iterator_Base(List<Data_Type>* _parent)
+List<Data_Type>::Iterator_Base::Iterator_Base(const List<Data_Type>* _parent)
 	: m_parent(_parent)
 {
 
@@ -86,6 +86,14 @@ const Data_Type& List<Data_Type>::Iterator_Base::operator*() const
 
 template<typename Data_Type>
 Data_Type* List<Data_Type>::Iterator_Base::get_ptr()
+{
+	L_ASSERT(is_ok());
+
+	return &m_current_pos->data;
+}
+
+template<typename Data_Type>
+const Data_Type* List<Data_Type>::Iterator_Base::get_ptr() const
 {
 	L_ASSERT(is_ok());
 
@@ -209,7 +217,7 @@ bool List<Data_Type>::Iterator::is_ok() const
 //	List::Const_Iterator
 
 template<typename Data_Type>
-List<Data_Type>::Const_Iterator::Const_Iterator(List<Data_Type>* _parent)
+List<Data_Type>::Const_Iterator::Const_Iterator(const List<Data_Type>* _parent)
 	: m_it(_parent)
 {
 
@@ -255,7 +263,7 @@ const Data_Type& List<Data_Type>::Const_Iterator::operator*() const
 template<typename Data_Type>
 const Data_Type* List<Data_Type>::Const_Iterator::operator->() const
 {
-	return *m_it;
+	return m_it.get_ptr();
 }
 
 

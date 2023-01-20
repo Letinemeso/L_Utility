@@ -29,7 +29,7 @@ namespace LDS
 			friend class LDS::List<Data_Type>;
 
 		private:
-			LDS::List<Data_Type>* m_parent = nullptr;
+			const LDS::List<Data_Type>* m_parent = nullptr;
 
 			LDS::List<Data_Type>::Node* m_current_pos = nullptr;
 
@@ -38,7 +38,7 @@ namespace LDS
 
 		public:
 			Iterator_Base(){}
-			Iterator_Base(LDS::List<Data_Type>* _parent);
+			Iterator_Base(const LDS::List<Data_Type>* _parent);
 			Iterator_Base(const Iterator_Base& _other);
 			void operator=(const Iterator_Base& _other);
 			~Iterator_Base();
@@ -51,6 +51,7 @@ namespace LDS
 			inline Data_Type& operator*();
 			inline const Data_Type& operator*() const;
 			inline Data_Type* get_ptr();
+			inline const Data_Type* get_ptr() const;
 
 		public:
 			inline bool begin_reached() const;
@@ -104,7 +105,7 @@ namespace LDS
 			Iterator_Base m_it;
 
 		private:
-			Const_Iterator(LDS::List<Data_Type>* _parent);
+			Const_Iterator(const LDS::List<Data_Type>* _parent);
 
 		public:
 			Const_Iterator(const Const_Iterator& _other);
