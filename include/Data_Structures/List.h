@@ -156,6 +156,8 @@ namespace LDS
 		void clear();
 
 	public:
+		inline unsigned int size() const { return m_size; }
+
 		Iterator begin();
 		Const_Iterator begin() const;
 		Iterator end();
