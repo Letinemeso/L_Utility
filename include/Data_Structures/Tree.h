@@ -1,7 +1,7 @@
 #ifndef TREE_H
 #define TREE_H
 
-#include "Debug/Debug.h"
+#include "L_Debug/L_Debug.h"
 
 
 namespace LDS

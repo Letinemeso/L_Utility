@@ -1,5 +1,5 @@
-#ifndef DEBUG_FILE
-#define DEBUG_FILE
+#ifndef L_DEBUG_H
+#define L_DEBUG_H
 
 #ifdef L_DEBUG
 	#undef L_DEBUG
@@ -96,4 +96,4 @@
 	#endif	//L_DEBUG == true
 #endif	//L_DEBUG
 
-#endif	//DEBUG_FILE
+#endif	//L_DEBUG_H

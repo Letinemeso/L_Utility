@@ -1,4 +1,4 @@
-#include "Debug.h"
+#include "L_Debug/L_Debug.h"
 
 #if L_DEBUG == true
 

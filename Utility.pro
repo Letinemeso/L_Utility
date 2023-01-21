@@ -16,7 +16,7 @@ SOURCES += \
 	source/Data_Structures/Tree.cpp \
 	source/Data_Structures/Vector.cpp \
 	source/Stuff/Stopwatch.cpp \
-	source/Debug/Debug.cpp \
+	source/L_Debug/L_Debug.cpp \
 
 HEADERS += \
 	include/Data_Structures/AVL_Tree.h \
@@ -26,4 +26,4 @@ HEADERS += \
 	include/Data_Structures/Tree.h \
 	include/Data_Structures/Vector.h \
 	include/Stuff/Stopwatch.h \
-	include/Debug/Debug.h \
+	include/L_Debug/L_Debug.h \
