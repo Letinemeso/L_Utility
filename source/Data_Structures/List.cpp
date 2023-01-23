@@ -531,6 +531,40 @@ void List<Data_Type>::clear()
 }
 
 
+template<typename Data_Type>
+void List<Data_Type>::append(const List<Data_Type>& _other)
+{
+	Node* ptr = _other.m_head;
+	while(ptr != nullptr)
+	{
+		push_back(ptr->data);
+		ptr = ptr->next;
+	}
+}
+
+template<typename Data_Type>
+void List<Data_Type>::append(List<Data_Type>&& _other)
+{
+	m_size += _other.m_size;
+
+	if(m_head == nullptr)
+	{
+		m_head = _other.m_head;
+		m_tail = _other.m_tail;
+	}
+	else
+	{
+		m_tail->next = _other.m_head;
+		if(_other.m_tail != nullptr)
+			m_tail = _other.m_tail;
+	}
+
+	_other.m_head = nullptr;
+	_other.m_tail = nullptr;
+	_other.m_size = 0;
+}
+
+
 
 template<typename Data_Type>
 typename List<Data_Type>::Iterator List<Data_Type>::begin()

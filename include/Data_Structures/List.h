@@ -156,6 +156,9 @@ namespace LDS
 
 		void clear();
 
+		void append(const List<Data_Type>& _other);
+		void append(List<Data_Type>&& _other);
+
 	public:
 		inline unsigned int size() const { return m_size; }
 
