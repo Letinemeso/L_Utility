@@ -122,7 +122,8 @@ void Vector<Data_Type>::clear()
 	{
 		delete m_array[i];
 		m_array[i] = nullptr;
-	}
+    }
+    m_elements_count = 0;
 }
 
 
