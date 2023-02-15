@@ -9,12 +9,6 @@ INCLUDEPATH += "include/Data_Structures"
 INCLUDEPATH += "include/Debug"
 
 SOURCES += \
-	source/Data_Structures/AVL_Tree.cpp \
-	source/Data_Structures/Binary_Heap.cpp \
-	source/Data_Structures/List.cpp \
-	source/Data_Structures/Map.cpp \
-	source/Data_Structures/Tree.cpp \
-	source/Data_Structures/Vector.cpp \
 	source/Stuff/Stopwatch.cpp \
 	source/L_Debug/L_Debug.cpp \
 
