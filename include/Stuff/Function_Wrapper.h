@@ -33,7 +33,7 @@ namespace LST
 
     public:
         template<typename F_Func_Return_Type, typename... F_Func_Args>
-        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_functor(F_Func_Return_Type(*_function)(F_Func_Args...));
+        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_wrapper(F_Func_Return_Type(*_function)(F_Func_Args...));
 
     public:
         Func_Return_Type invoke(Func_Args... _args) const override { return m_function(_args...); }
@@ -59,7 +59,7 @@ namespace LST
 
     public:
         template<typename F_Func_Return_Type, typename F_Owner_Class, typename... F_Func_Args>
-        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_functor(F_Owner_Class& _owner_class_object, F_Func_Return_Type(F_Owner_Class::*_function)(F_Func_Args...));
+        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_wrapper(F_Owner_Class& _owner_class_object, F_Func_Return_Type(F_Owner_Class::*_function)(F_Func_Args...));
 
     public:
         Func_Return_Type invoke(Func_Args... _args) const override { return (m_object->*(m_function))(_args...); }
@@ -85,7 +85,7 @@ namespace LST
 
     public:
         template<typename F_Func_Return_Type, typename F_Owner_Class, typename... F_Func_Args>
-        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_functor(const F_Owner_Class& _owner_class_object, F_Func_Return_Type(F_Owner_Class::*_function)(F_Func_Args...) const);
+        friend Function_Wrapper<F_Func_Return_Type, F_Func_Args...>* make_wrapper(const F_Owner_Class& _owner_class_object, F_Func_Return_Type(F_Owner_Class::*_function)(F_Func_Args...) const);
 
     public:
         Func_Return_Type invoke(Func_Args... _args) const override { return (m_object->*(m_function))(_args...); }
@@ -96,21 +96,21 @@ namespace LST
 
     //  caller is responsible for deleting created objects
     template<typename Func_Return_Type, typename... Func_Args>
-    Function_Wrapper<Func_Return_Type, Func_Args...>* make_functor(Func_Return_Type(*_function)(Func_Args...))
+    Function_Wrapper<Func_Return_Type, Func_Args...>* make_wrapper(Func_Return_Type(*_function)(Func_Args...))
     {
         return new Global_Function_Wrapper_Impl<Func_Return_Type, Func_Args...>(_function);
     }
 
     //  caller is responsible for deleting created objects
     template<typename Func_Return_Type, typename Owner_Class, typename... Func_Args>
-    Function_Wrapper<Func_Return_Type, Func_Args...>* make_functor(Owner_Class& _owner_class_object, Func_Return_Type(Owner_Class::*_function)(Func_Args...))
+    Function_Wrapper<Func_Return_Type, Func_Args...>* make_wrapper(Owner_Class& _owner_class_object, Func_Return_Type(Owner_Class::*_function)(Func_Args...))
     {
         return new Member_Function_Wrapper_Impl<Func_Return_Type, Owner_Class, Func_Args...>(&_owner_class_object, _function);
     }
 
     //  caller is responsible for deleting created objects
     template<typename Func_Return_Type, typename Owner_Class, typename... Func_Args>
-    Function_Wrapper<Func_Return_Type, Func_Args...>* make_functor(const Owner_Class& _owner_class_object, Func_Return_Type(Owner_Class::*_function)(Func_Args...) const)
+    Function_Wrapper<Func_Return_Type, Func_Args...>* make_wrapper(const Owner_Class& _owner_class_object, Func_Return_Type(Owner_Class::*_function)(Func_Args...) const)
     {
         return new Const_Member_Function_Wrapper_Impl<Func_Return_Type, Owner_Class, Func_Args...>(&_owner_class_object, _function);
     }
