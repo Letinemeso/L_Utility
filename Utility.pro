@@ -6,7 +6,6 @@ CONFIG -= qt
 
 INCLUDEPATH += "include"
 INCLUDEPATH += "include/Data_Structures"
-INCLUDEPATH += "include/Debug"
 
 SOURCES += \
 	source/Stuff/Stopwatch.cpp \
@@ -19,5 +18,6 @@ HEADERS += \
 	include/Data_Structures/Map.h \
 	include/Data_Structures/Tree.h \
 	include/Data_Structures/Vector.h \
+	include/Stuff/Function_Wrapper.h \
 	include/Stuff/Stopwatch.h \
 	include/L_Debug/L_Debug.h \
