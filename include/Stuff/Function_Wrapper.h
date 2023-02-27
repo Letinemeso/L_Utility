@@ -13,7 +13,7 @@ namespace LST
     public:
         virtual ~__I_Function() { };
         virtual __I_Function* copy() = 0;
-        virtual Return_Type invoke(Args... _args) = 0;
+        virtual Return_Type invoke(Args... _args) const = 0;
 
     };
 
@@ -30,7 +30,7 @@ namespace LST
         __I_Function<Return_Type(Args...)>* copy() override { return new __Function_Implementation(m_object_to_invoke); }
 
     public:
-        Return_Type invoke(Args... _args) override { return m_object_to_invoke(_args...); }
+        Return_Type invoke(Args... _args) const override { return m_object_to_invoke(_args...); }
 
     };
 
@@ -62,13 +62,29 @@ namespace LST
             m_func = new __Function_Implementation<Type, Return_Type, Args...>(_f);
         }
 
+        Function(const Function& _f)
+        {
+            if(_f.m_func)
+                m_func = _f.m_func->copy();
+        }
+
+        void operator=(const Function& _f)
+        {
+            delete m_func;
+            if(_f.m_func)
+                m_func = _f.m_func->copy();
+            else
+                m_func = nullptr;
+        }
+
         ~Function()
         {
             delete m_func;
         }
 
     public:
-        Return_Type operator()(Args... _args) { return m_func->invoke(_args...); }
+        operator bool() const { return m_func != nullptr; }
+        Return_Type operator()(Args... _args) const { return m_func->invoke(_args...); }
 
     };
 
