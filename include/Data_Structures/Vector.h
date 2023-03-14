@@ -17,7 +17,7 @@ namespace LDS
 			friend class LDS::Vector<Data_Type>;
 
 		private:
-			Vector<Data_Type>* m_parent = nullptr;
+            Vector<Data_Type>* m_parent = nullptr;
 			int m_current_index = 0;
 			bool m_begin_reached = false;
 			bool m_end_reached = false;
@@ -85,10 +85,10 @@ namespace LDS
 			friend class Vector;
 
 		private:
-			Iterator_Base m_it;
+            Iterator_Base m_it;
 
 		private:
-			Const_Iterator(Vector<Data_Type>* _parent);
+            Const_Iterator(const Vector<Data_Type>* _parent);
 
 		public:
 			Const_Iterator(const Const_Iterator& _other);
@@ -702,8 +702,8 @@ namespace LDS
     //	Vector::Const_Iterator
 
     template<typename Data_Type>
-    Vector<Data_Type>::Const_Iterator::Const_Iterator(Vector<Data_Type>* _parent)
-        : m_it(_parent)
+    Vector<Data_Type>::Const_Iterator::Const_Iterator(const Vector<Data_Type>* _parent)
+        : m_it((Vector<Data_Type>*)_parent)
     {
 
     }

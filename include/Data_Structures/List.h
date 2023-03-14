@@ -74,7 +74,7 @@ namespace LDS
 			Iterator(LDS::List<Data_Type>* _parent);
 
 		public:
-			Iterator(){};
+            Iterator(){}
 			Iterator(const Iterator& _other);
 			void operator=(const Iterator& _other);
 
