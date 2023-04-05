@@ -9,7 +9,8 @@ INCLUDEPATH += "include/Data_Structures"
 
 SOURCES += \
 	source/Stuff/Stopwatch.cpp \
-	source/L_Debug/L_Debug.cpp \
+        source/Stuff/Timer.cpp \
+        source/L_Debug/L_Debug.cpp \
 
 HEADERS += \
 	include/Data_Structures/AVL_Tree.h \
@@ -20,4 +21,5 @@ HEADERS += \
 	include/Data_Structures/Vector.h \
 	include/Stuff/Function_Wrapper.h \
 	include/Stuff/Stopwatch.h \
-	include/L_Debug/L_Debug.h \
+        include/Stuff/Timer.h \
+        include/L_Debug/L_Debug.h \
