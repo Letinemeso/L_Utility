@@ -181,7 +181,7 @@ namespace LDS
 
     template<typename Data_Type>
     List<Data_Type>::Iterator_Base::Iterator_Base(const Iterator_Base& _other)
-        : m_parent(_other.m_parent), m_current_pos(_other.m_current_pos)
+        : m_parent(_other.m_parent), m_current_pos(_other.m_current_pos), m_begin_reached(_other.m_begin_reached), m_end_reached(_other.m_end_reached)
     {
 
     }
@@ -191,6 +191,8 @@ namespace LDS
     {
         m_parent = _other.m_parent;
         m_current_pos = _other.m_current_pos;
+        m_begin_reached = _other.m_begin_reached;
+        m_end_reached = _other.m_end_reached;
     }
 
     template<typename Data_Type>

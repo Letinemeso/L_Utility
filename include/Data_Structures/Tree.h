@@ -83,7 +83,7 @@ namespace LDS
 			Iterator(LDS::Tree<Data_Type>* _parent);
 
 		public:
-			Iterator(){};
+            Iterator(){}
 			Iterator(const Iterator& _other);
 			void operator=(const Iterator& _other);
 
