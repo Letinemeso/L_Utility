@@ -290,19 +290,19 @@ namespace LDS
     template<typename Key_Type, typename Data_Type>
     const Data_Type& Map<Key_Type, Data_Type>::Iterator::operator*() const
     {
-        return *m_it;
+        return m_it->data();
     }
 
     template<typename Key_Type, typename Data_Type>
     Data_Type* Map<Key_Type, Data_Type>::Iterator::operator->()
     {
-        return m_it.get_ptr();
+        return &m_it->data();
     }
 
     template<typename Key_Type, typename Data_Type>
     const Data_Type* Map<Key_Type, Data_Type>::Iterator::operator->() const
     {
-        return m_it.get_ptr();
+        return &m_it->data();
     }
 
 
