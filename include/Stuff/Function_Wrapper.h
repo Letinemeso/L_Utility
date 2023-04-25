@@ -21,7 +21,7 @@ namespace LST
     class __Function_Implementation : public __I_Function<Return_Type(Args...)>
     {
     private:
-        Object_Type m_object_to_invoke;
+	mutable Object_Type m_object_to_invoke;
 
     public:
         __Function_Implementation(const Object_Type& _obj) : m_object_to_invoke(_obj) { }
