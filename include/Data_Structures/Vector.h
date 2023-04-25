@@ -10,6 +10,23 @@ namespace LDS
 	template<typename Data_Type>
 	class Vector final
 	{
+    private:
+        class Element_Wrapper
+        {
+        private:
+            friend class Vector;
+
+        private:
+            Data_Type** m_data_ptr = nullptr;
+
+        public:
+            void operator=(const Data_Type& _data);
+            void operator=(Data_Type&& _data);
+            operator const Data_Type&() const;
+            operator Data_Type&();
+
+        };
+
 	private:
 		class Iterator_Base final
 		{
@@ -143,7 +160,10 @@ namespace LDS
 		unsigned int size() const;
 		unsigned int capacity() const;
 
-		Data_Type& operator[](unsigned int _index);
+        //  adding new elements with this operator is possible, but not "safe" from vector's integrity point of view
+        //  it will not increase "size" of vector. push(...) will ignore already stored data and rewrite it
+        //  this should not cause any memory leaks though
+        Element_Wrapper operator[](unsigned int _index);
 		const Data_Type& operator[](unsigned int _index) const;
 
 		Iterator at(unsigned int _index);
@@ -245,7 +265,6 @@ namespace LDS
     {
         Data_Type** temp = new Data_Type * [_new_size];
 
-
         if(_new_size < m_size)
         {
             for(unsigned int i=0; i<_new_size; ++i)
@@ -284,7 +303,10 @@ namespace LDS
     {
         if(m_elements_count == m_size)
             resize(m_size * 2);
-        m_array[m_elements_count] = new Data_Type(_data);
+        if(m_array[m_elements_count] == nullptr)
+            m_array[m_elements_count] = new Data_Type(_data);
+        else
+            *m_array[m_elements_count] = _data;
         ++m_elements_count;
     }
 
@@ -293,7 +315,10 @@ namespace LDS
     {
         if(m_elements_count == m_size)
             resize(m_size * 2);
-        m_array[m_elements_count] = new Data_Type((Data_Type&&)_data);
+        if(m_array[m_elements_count] == nullptr)
+            m_array[m_elements_count] = new Data_Type((Data_Type&&)_data);
+        else
+            *m_array[m_elements_count] = (Data_Type&&)_data;
         ++m_elements_count;
     }
 
@@ -444,11 +469,14 @@ namespace LDS
 
 
     template<typename Data_Type>
-    Data_Type& Vector<Data_Type>::operator[](unsigned int _index)
+    typename Vector<Data_Type>::Element_Wrapper Vector<Data_Type>::operator[](unsigned int _index)
     {
-        L_ASSERT(_index < m_elements_count);
+        L_ASSERT(_index < m_size);
 
-        return *(m_array[_index]);
+        Element_Wrapper result;
+        result.m_data_ptr = m_array + _index;
+
+        return result;
     }
 
     template<typename Data_Type>
@@ -493,6 +521,44 @@ namespace LDS
         return Const_Iterator(this);
     }
 
+
+
+
+    //  Vector::Element_Wrapper
+
+    template<typename Data_Type>
+    void Vector<Data_Type>::Element_Wrapper::operator=(const Data_Type& _data)
+    {
+        L_ASSERT(m_data_ptr);
+
+        if(*m_data_ptr == nullptr)
+            *m_data_ptr = new Data_Type;
+
+        **m_data_ptr = _data;
+    }
+
+    template<typename Data_Type>
+    void Vector<Data_Type>::Element_Wrapper::operator=(Data_Type&& _data)
+    {
+        L_ASSERT(m_data_ptr);
+
+        if(*m_data_ptr == nullptr)
+            *m_data_ptr = new Data_Type;
+
+        **m_data_ptr = (Data_Type&&)_data;
+    }
+
+    template<typename Data_Type>
+    Vector<Data_Type>::Element_Wrapper::operator const Data_Type&() const
+    {
+        return **m_data_ptr;
+    }
+
+    template<typename Data_Type>
+    Vector<Data_Type>::Element_Wrapper::operator Data_Type&()
+    {
+        return **m_data_ptr;
+    }
 
 
 
