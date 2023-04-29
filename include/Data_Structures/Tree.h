@@ -35,7 +35,7 @@ namespace LDS
 			friend class LDS::Tree<Data_Type>;
 
 		private:
-			LDS::Tree<Data_Type>* m_parent = nullptr;
+            const LDS::Tree<Data_Type>* m_parent = nullptr;
 
 			LDS::Tree<Data_Type>::Node* m_current_pos = nullptr;
 
@@ -44,7 +44,7 @@ namespace LDS
 
 		public:
 			Iterator_Base(){}
-			Iterator_Base(LDS::Tree<Data_Type>* _parent);
+            Iterator_Base(const LDS::Tree<Data_Type>* _parent);
 			Iterator_Base(const Iterator_Base& _other);
 			void operator=(const Iterator_Base& _other);
 			~Iterator_Base();
@@ -61,6 +61,7 @@ namespace LDS
 			inline Data_Type& operator*();
 			inline const Data_Type& operator*() const;
 			inline Data_Type* get_ptr();
+            inline const Data_Type* get_ptr() const;
 
 		public:
 			inline bool begin_reached() const;
@@ -111,10 +112,10 @@ namespace LDS
 			friend class LDS::Tree<Data_Type>;
 
 		private:
-			Iterator_Base m_it;
+            Iterator_Base m_it;
 
 		private:
-			Const_Iterator(LDS::Tree<Data_Type>* _parent);
+            Const_Iterator(const LDS::Tree<Data_Type>* _parent);
 
 		public:
 			Const_Iterator(const Const_Iterator& _other);
@@ -518,9 +519,9 @@ namespace LDS
         Node* search = m_root;
         while(search)
         {
-            if(_value < *search->data)
+            if(_value < search->data)
                 search = search->child_left;
-            else if(_value > *search->data)
+            else if(_value > search->data)
                 search = search->child_right;
             else
             {
@@ -548,7 +549,7 @@ namespace LDS
     //	Iterator_Base
 
     template<typename Data_Type>
-    Tree<Data_Type>::Iterator_Base::Iterator_Base(Tree<Data_Type>* _parent)
+    Tree<Data_Type>::Iterator_Base::Iterator_Base(const Tree<Data_Type>* _parent)
     {
         if(_parent == nullptr)
             return;
@@ -694,6 +695,15 @@ namespace LDS
         return &m_current_pos->data;
     }
 
+    template<typename Data_Type>
+    const Data_Type* Tree<Data_Type>::Iterator_Base::get_ptr() const
+    {
+        L_ASSERT(m_current_pos != nullptr);
+        L_ASSERT(m_parent != nullptr);
+
+        return &m_current_pos->data;
+    }
+
 
 
     template<typename Data_Type>
@@ -813,7 +823,7 @@ namespace LDS
     //	Const_Iterator
 
     template<typename Data_Type>
-    Tree<Data_Type>::Const_Iterator::Const_Iterator(Tree<Data_Type>* _parent)
+    Tree<Data_Type>::Const_Iterator::Const_Iterator(const Tree<Data_Type>* _parent)
         : m_it(_parent)
     {
 

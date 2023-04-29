@@ -9,8 +9,7 @@
 #ifdef L_DEBUG
 	#if L_DEBUG == true
 
-		#include <iostream>
-		#include <map>
+        #include <iostream>
 
 		//	USE THIS ONLY WITH MACRO BELOW
 		namespace ___L_Debug
