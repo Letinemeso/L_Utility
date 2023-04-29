@@ -699,18 +699,16 @@ namespace LDS
     template<typename Data_Type>
     bool Tree<Data_Type>::Iterator_Base::begin_reached() const
     {
-        L_ASSERT(m_current_pos != nullptr);
-        L_ASSERT(m_parent != nullptr);
-
+        if(!is_ok())
+            return true;
         return m_begin_reached;
     }
 
     template<typename Data_Type>
     bool Tree<Data_Type>::Iterator_Base::end_reached() const
     {
-        L_ASSERT(m_current_pos != nullptr);
-        L_ASSERT(m_parent != nullptr);
-
+        if(!is_ok())
+            return true;
         return m_end_reached;
     }
 

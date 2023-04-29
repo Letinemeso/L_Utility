@@ -64,7 +64,7 @@ namespace LDS
 			Iterator(typename Tree::Iterator&& _it);
 
 		public:
-			Iterator(){};
+            Iterator(){}
 			Iterator(const Iterator& _other);
 			void operator=(const Iterator& _other);
 

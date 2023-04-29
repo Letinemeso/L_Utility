@@ -274,12 +274,16 @@ namespace LDS
     template<typename Data_Type>
     bool List<Data_Type>::Iterator_Base::begin_reached() const
     {
+        if(!is_ok())
+            return true;
         return m_begin_reached;
     }
 
     template<typename Data_Type>
     bool List<Data_Type>::Iterator_Base::end_reached() const
     {
+        if(!is_ok())
+            return true;
         return m_end_reached;
     }
 
