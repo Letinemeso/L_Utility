@@ -25,7 +25,9 @@ namespace LDS
 
         public:
             inline Pair(const Key_Type& _key, const Data_Type& _data);
+            inline Pair(const Key_Type& _key, Data_Type&& _data);
             inline Pair(Key_Type&& _key, Data_Type&& _data);
+            inline Pair(Key_Type&& _key, const Data_Type& _data);
             inline Pair(const Pair& _other);
             inline Pair(Pair&& _other);
             inline void operator=(const Pair& _other);
@@ -147,6 +149,8 @@ namespace LDS
         Iterator find(const Key_Type& _key);
         Const_Iterator find(const Key_Type& _key) const;
 
+        inline unsigned int size() const { return m_tree.size(); }
+
     };
 
 //	Pair
@@ -159,8 +163,22 @@ Map<Key_Type, Data_Type>::Pair::Pair(const Key_Type& _key, const Data_Type& _dat
 }
 
 template<typename Key_Type, typename Data_Type>
+Map<Key_Type, Data_Type>::Pair::Pair(const Key_Type& _key, Data_Type&& _data)
+    : m_key(_key), m_data((Data_Type&&)_data)
+{
+
+}
+
+template<typename Key_Type, typename Data_Type>
 Map<Key_Type, Data_Type>::Pair::Pair(Key_Type&& _key, Data_Type&& _data)
     : m_key((Key_Type&&)_key), m_data((Data_Type&&)_data)
+{
+
+}
+
+template<typename Key_Type, typename Data_Type>
+Map<Key_Type, Data_Type>::Pair::Pair(Key_Type&& _key, const Data_Type& _data)
+    : m_key((Key_Type&&)_key), m_data(_data)
 {
 
 }
