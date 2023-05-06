@@ -68,8 +68,8 @@ namespace LDS
 		void M_fix_root();
 
 	protected:
-		Node* M_allocate_node(const Data_Type& _data) const override;
-		Node* M_allocate_node(Data_Type&& _data) const override;
+        typename Tree<Data_Type>::Node* M_allocate_node(const Data_Type& _data) const override;
+        typename Tree<Data_Type>::Node* M_allocate_node(Data_Type&& _data) const override;
 		void M_erase_node(Node* _node) override;
 		void M_insert_node(Node* _subtree, Node* _insert_where) override;
 
