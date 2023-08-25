@@ -8,6 +8,7 @@ INCLUDEPATH += "include"
 INCLUDEPATH += "include/Data_Structures"
 
 SOURCES += \
+    source/Stuff/File.cpp \
 	source/Stuff/Stopwatch.cpp \
         source/Stuff/Timer.cpp \
         source/L_Debug/L_Debug.cpp \
@@ -19,6 +20,7 @@ HEADERS += \
 	include/Data_Structures/Map.h \
 	include/Data_Structures/Tree.h \
 	include/Data_Structures/Vector.h \
+    include/Stuff/File.h \
 	include/Stuff/Function_Wrapper.h \
 	include/Stuff/Stopwatch.h \
         include/Stuff/Timer.h \
