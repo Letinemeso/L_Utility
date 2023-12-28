@@ -162,6 +162,7 @@ namespace LDS
 		virtual void insert(Data_Type&& _data);
 
 		virtual void erase(const Iterator& _where);
+        Iterator erase_and_iterate_forward(const Iterator& _where);
 
 		void clear();
 
@@ -385,42 +386,10 @@ namespace LDS
         if(_subroot == nullptr)
             return;
 
-        //	recursuve
         M_erase_subtree(_subroot->child_left);
         M_erase_subtree(_subroot->child_right);
 
         delete _subroot;
-
-        //	iterative
-        /*Node* parent = _subroot;
-
-        while(_subroot != nullptr)
-        {
-            if(parent->child_left)
-                parent = parent->child_left;
-            else if(parent->child_right)
-                parent = parent->child_right;
-            else
-            {
-                Node* parent_parent = parent->parent;
-                if(parent_parent == nullptr)
-                {
-                    delete _subroot;
-                    _subroot = nullptr;
-                    return;
-                }
-
-                if(parent == parent_parent->child_left)
-                    parent_parent->child_left = nullptr;
-                else
-                    parent_parent->child_right = nullptr;
-
-                delete parent->data;
-                delete parent;
-
-                parent = parent_parent;
-            }
-        }*/
     }
 
 
@@ -465,6 +434,20 @@ namespace LDS
         L_ASSERT(_where.is_ok());
 
         M_erase_node(_where.m_it.m_current_pos);
+    }
+
+    template<typename Data_Type>
+    typename Tree<Data_Type>::Iterator Tree<Data_Type>::erase_and_iterate_forward(const Iterator& _where)
+    {
+        L_ASSERT(_where.m_it.m_parent == this);
+        L_ASSERT(_where.is_ok());
+
+        Iterator result = _where;
+        ++result;
+
+        erase(_where);
+
+        return result;
     }
 
 
@@ -674,7 +657,7 @@ namespace LDS
         L_ASSERT(m_current_pos != nullptr);
         L_ASSERT(m_parent != nullptr);
 
-        return *m_current_pos->data;
+        return m_current_pos->data;
     }
 
     template<typename Data_Type>
@@ -683,7 +666,7 @@ namespace LDS
         L_ASSERT(m_current_pos != nullptr);
         L_ASSERT(m_parent != nullptr);
 
-        return *m_current_pos->data;
+        return m_current_pos->data;
     }
 
     template<typename Data_Type>

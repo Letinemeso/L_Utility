@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 FILE(GLOB_RECURSE LibFiles "include/*.h")
-add_custom_target(L_Utility_include SOURCES ${LibFiles})
+add_custom_target(_L_Utility_include SOURCES ${LibFiles})
 
 add_library(L_Utility STATIC
     source/Stuff/File.cpp

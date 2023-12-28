@@ -138,7 +138,7 @@ namespace LDS
         void insert(const Key_Type& _key, Data_Type&& _data);
 
         void erase(const Iterator& _where);
-        void erase(const Const_Iterator& _where);
+        Iterator erase_and_iterate_forward(const Iterator& _where);
 
         void clear();
 
@@ -499,9 +499,9 @@ void Map<Key_Type, Data_Type>::erase(const Iterator& _where)
 }
 
 template<typename Key_Type, typename Data_Type>
-void Map<Key_Type, Data_Type>::erase(const Const_Iterator& _where)
+typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::erase_and_iterate_forward(const Iterator& _where)
 {
-    m_tree.erase(_where.m_it);
+    return m_tree.erase_and_iterate_forward(_where.m_it);
 }
 
 

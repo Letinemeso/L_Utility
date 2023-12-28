@@ -153,6 +153,7 @@ namespace LDS
 		void pop_front();
 
 		void erase(const Iterator& _where);
+        Iterator erase_and_iterate_forward(const Iterator& _where);
 
 		void clear();
 
@@ -689,6 +690,57 @@ namespace LDS
 
         --m_size;
     }
+
+    template<typename Data_Type>
+    typename List<Data_Type>::Iterator List<Data_Type>::erase_and_iterate_forward(const Iterator& _where)
+    {
+        L_ASSERT(m_head);
+        L_ASSERT(_where.is_ok());
+        L_ASSERT(_where.m_it.m_parent == this);
+
+        Iterator result(this);
+
+        if(m_size == 1)
+        {
+            L_ASSERT(_where.m_it.m_current_pos == m_head);
+            delete m_head;
+            m_head = nullptr;
+            m_tail = nullptr;
+        }
+        else if(_where.m_it.m_current_pos == m_head)
+        {
+            Node* node = m_head;
+            m_head = m_head->next;
+            m_head->prev = nullptr;
+            result.m_it.m_current_pos = m_head;
+            result.m_it.m_begin_reached = true;
+            delete node;
+        }
+        else if(_where.m_it.m_current_pos == m_tail)
+        {
+            Node* node = m_tail;
+            m_tail = m_tail->prev;
+            m_tail->next = nullptr;
+            result.m_it.m_current_pos = m_tail;
+            result.m_it.m_end_reached = true;
+            delete node;
+        }
+        else
+        {
+            Node* cur = _where.m_it.m_current_pos;
+            cur->prev->next = cur->next;
+            cur->next->prev = cur->prev;
+            result.m_it.m_current_pos = cur->next;
+            result.m_it.m_begin_reached = false;
+            result.m_it.m_end_reached = false;
+            delete cur;
+        }
+
+        --m_size;
+
+        return result;
+    }
+
 
     template<typename Data_Type>
     void List<Data_Type>::clear()
