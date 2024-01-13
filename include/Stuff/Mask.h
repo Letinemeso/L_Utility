@@ -30,7 +30,7 @@ namespace LST
         void operator=(const std::string& _raw_pattern);
 
     public:
-        bool compare(const std::string& _text);
+        bool compare(const std::string& _text) const;
 
     };
 

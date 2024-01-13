@@ -91,7 +91,7 @@ void Mask::operator=(const std::string& _raw_pattern)
 
 
 
-bool Mask::compare(const std::string &_text)
+bool Mask::compare(const std::string &_text) const
 {
     if(m_necessary_parts.size() == 0 && m_any_start && m_any_end)
         return true;
