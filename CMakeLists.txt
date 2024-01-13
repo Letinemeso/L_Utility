@@ -8,12 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 FILE(GLOB_RECURSE LibFiles "include/*.h")
 add_custom_target(_L_Utility_include SOURCES ${LibFiles})
 
-add_library(L_Utility STATIC
-    source/Stuff/File.cpp
-    source/Stuff/Stopwatch.cpp
-    source/Stuff/Timer.cpp
-    source/L_Debug/L_Debug.cpp
-)
+file(GLOB_RECURSE Sources "source/*.cpp")
+add_library(L_Utility STATIC ${Sources} )
 
 target_include_directories(L_Utility PUBLIC 
                             "${PROJECT_BINARY_DIR}" 

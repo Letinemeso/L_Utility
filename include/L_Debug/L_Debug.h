@@ -52,7 +52,7 @@
 		#ifdef L_ASSERT
 			#undef L_ASSERT
 		#endif
-		#define L_ASSERT(condition) if(!(condition)) { int a = 1; a /= 0; } 1 == 1
+        #define L_ASSERT(condition) if(!(condition)) { std::cout << #condition << "\n"; int a = 1; a /= 0; } 1 == 1
 
 
 	#else	//L_DEBUG == true
