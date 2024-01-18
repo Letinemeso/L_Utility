@@ -1,5 +1,4 @@
-#ifndef TREE_H
-#define TREE_H
+#pragma once
 
 #include "L_Debug/L_Debug.h"
 
@@ -158,17 +157,20 @@ namespace LDS
 		void M_erase_subtree(Node*& _subroot);
 
 	public:
-		virtual void insert(const Data_Type& _data);
-		virtual void insert(Data_Type&& _data);
+        void insert(const Data_Type& _data);
+        void insert(Data_Type&& _data);
 
-		virtual void erase(const Iterator& _where);
+        Iterator insert_and_get_iterator(const Data_Type& _data);
+        Iterator insert_and_get_iterator(Data_Type&& _data);
+
+        void erase(const Iterator& _where);
         Iterator erase_and_iterate_forward(const Iterator& _where);
 
 		void clear();
 
 	public:
 		Iterator iterator();
-		Const_Iterator iterator() const;
+        Const_Iterator iterator() const;
 
 		Iterator find(const Data_Type& _value);
 		Const_Iterator find(const Data_Type& _value) const;
@@ -402,12 +404,9 @@ namespace LDS
         ++m_size;
 
         if(m_root == nullptr)
-        {
             m_root = node;
-            return;
-        }
-
-        M_insert_node(node, m_root);
+        else
+            M_insert_node(node, m_root);
     }
 
     template<typename Data_Type>
@@ -418,12 +417,44 @@ namespace LDS
         ++m_size;
 
         if(m_root == nullptr)
-        {
             m_root = node;
-            return;
-        }
+        else
+            M_insert_node(node, m_root);
+    }
 
-        M_insert_node(node, m_root);
+
+    template<typename Data_Type>
+    typename Tree<Data_Type>::Iterator Tree<Data_Type>::insert_and_get_iterator(const Data_Type& _data)
+    {
+        Node* node = M_allocate_node(_data);
+
+        ++m_size;
+
+        if(m_root == nullptr)
+            m_root = node;
+        else
+            M_insert_node(node, m_root);
+
+        Iterator result(this);
+        result.m_it.m_current_pos = node;
+        return result;
+    }
+
+    template<typename Data_Type>
+    typename Tree<Data_Type>::Iterator Tree<Data_Type>::insert_and_get_iterator(Data_Type&& _data)
+    {
+        Node* node = M_allocate_node((Data_Type&&)_data);
+
+        ++m_size;
+
+        if(m_root == nullptr)
+            m_root = node;
+        else
+            M_insert_node(node, m_root);
+
+        Iterator result(this);
+        result.m_it.m_current_pos = node;
+        return result;
     }
 
 
@@ -875,7 +906,3 @@ namespace LDS
     }
 
 }
-
-
-
-#endif // TREE_H

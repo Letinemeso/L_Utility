@@ -1,5 +1,4 @@
-#ifndef AVL_TREE_H
-#define AVL_TREE_H
+#pragma once
 
 #include <cmath>
 
@@ -72,13 +71,6 @@ namespace LDS
         typename Tree<Data_Type>::Node* M_allocate_node(Data_Type&& _data) const override;
 		void M_erase_node(Node* _node) override;
 		void M_insert_node(Node* _subtree, Node* _insert_where) override;
-
-	public:
-		void insert(const Data_Type& _data) override;
-		void insert(Data_Type&& _data) override;
-
-		void erase(const Iterator& _where) override;
-//		void erase(const Const_Iterator& _where) override;
 
 	};
 
@@ -424,55 +416,4 @@ namespace LDS
         M_backtrace(_subtree->parent);
     }
 
-
-
-    template<typename Data_Type>
-    void AVL_Tree<Data_Type>::insert(const Data_Type& _data)
-    {
-        Node* node = M_allocate_node(_data);
-
-        ++Tree<Data_Type>::m_size;
-
-        if(m_root == nullptr)
-        {
-        m_root = node;
-        return;
-        }
-
-        M_insert_node(node, m_root);
-
-    //    M_balance_subtree((AVL_Node*)node);
-    }
-
-    template<typename Data_Type>
-    void AVL_Tree<Data_Type>::insert(Data_Type&& _data)
-    {
-        Node* node = M_allocate_node((Data_Type&&)_data);
-
-        ++Tree<Data_Type>::m_size;
-
-        if(m_root == nullptr)
-        {
-        m_root = node;
-        return;
-        }
-
-        M_insert_node(node, m_root);
-
-        //	M_balance_subtree((AVL_Node*)node);
-    }
-
-
-    template<typename Data_Type>
-    void AVL_Tree<Data_Type>::erase(const Iterator& _where)
-    {
-        Node* ptr = Tree<Data_Type>::M_extract_pointer_from_iterator(_where);
-        Tree<Data_Type>::erase(_where);
-    //	M_balance_subtree((AVL_Node*)ptr);
-    }
-
 }
-
-
-
-#endif // AVL_TREE_H
