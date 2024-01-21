@@ -34,7 +34,7 @@ namespace LST
         void register_message_type();
 
         template<typename Message_Type>
-        void subscribe(LST::Function<void(const Message_Type&)> _func);
+        void subscribe(const LST::Function<void(const Message_Type&)>& _func);
 
         template<typename Message_Type>
         void translate(const Message_Type& _msg);
@@ -52,7 +52,7 @@ namespace LST
     }
 
     template<typename Message_Type>
-    void Message_Translator::subscribe(LST::Function<void(const Message_Type&)> _func)
+    void Message_Translator::subscribe(const LST::Function<void(const Message_Type&)>& _func)
     {
         Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
