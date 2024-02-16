@@ -560,7 +560,7 @@ namespace LDS
         {
             m_tail->next = node;
             node->prev = m_tail;
-            m_tail = m_tail->next;
+            m_tail = node;
         }
 
         ++m_size;
