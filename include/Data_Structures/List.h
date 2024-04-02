@@ -149,6 +149,11 @@ namespace LDS
 		void push_front(const Data_Type& _data);
 		void push_front(Data_Type&& _data);
 
+        void push_after(const Iterator& _pos, const Data_Type& _data);
+        void push_after(const Iterator& _pos, Data_Type&& _data);
+        void push_before(const Iterator& _pos, const Data_Type& _data);
+        void push_before(const Iterator& _pos, Data_Type&& _data);
+
 		void pop_back();
 		void pop_front();
 
@@ -604,6 +609,129 @@ namespace LDS
         }
 
         ++m_size;
+    }
+
+
+    template<typename Data_Type>
+    void List<Data_Type>::push_after(const Iterator& _pos, const Data_Type& _data)
+    {
+        L_ASSERT(_pos.m_it.m_parent == this);
+
+        if(_pos.begin_reached())
+        {
+            push_front(_data);
+        }
+        else if(_pos.end_reached())
+        {
+            push_back(_data);
+        }
+        else
+        {
+            Node* pos = _pos.m_it.m_current_pos;
+            Node* prev_next = pos->next;
+            Node* new_next = new Node(_data);
+
+            pos->next = new_next;
+            new_next->next = prev_next;
+            new_next->prev = pos;
+
+            if(prev_next)
+                prev_next->prev = new_next;
+
+            ++m_size;
+        }
+
+    }
+
+    template<typename Data_Type>
+    void List<Data_Type>::push_after(const Iterator& _pos, Data_Type&& _data)
+    {
+        L_ASSERT(_pos.m_it.m_parent == this);
+
+        if(_pos.begin_reached())
+        {
+            push_front((Data_Type&&)_data);
+        }
+        else if(_pos.end_reached())
+        {
+            push_back((Data_Type&&)_data);
+        }
+        else
+        {
+            Node* pos = _pos.m_it.m_current_pos;
+            Node* prev_next = pos->next;
+            Node* new_next = new Node((Data_Type&&)_data);
+
+            pos->next = new_next;
+            new_next->next = prev_next;
+            new_next->prev = pos;
+
+            if(prev_next)
+                prev_next->prev = new_next;
+
+            ++m_size;
+        }
+
+    }
+
+    template<typename Data_Type>
+    void List<Data_Type>::push_before(const Iterator& _pos, const Data_Type& _data)
+    {
+        L_ASSERT(_pos.m_it.m_parent == this);
+
+        if(_pos.begin_reached())
+        {
+            push_front(_data);
+        }
+        else if(_pos.end_reached())
+        {
+            push_back(_data);
+        }
+        else
+        {
+            Node* pos = _pos.m_it.m_current_pos;
+            Node* prev_prev = pos->prev;
+            Node* new_prev = new Node(_data);
+
+            pos->prev = new_prev;
+            new_prev->next = pos;
+            new_prev->prev = prev_prev;
+
+            if(prev_prev)
+                prev_prev->next = new_prev;
+
+            ++m_size;
+        }
+    }
+
+    template<typename Data_Type>
+    void List<Data_Type>::push_before(const Iterator& _pos, Data_Type&& _data)
+    {
+        L_ASSERT(_pos.m_it.m_parent == this);
+
+        if(_pos.begin_reached())
+        {
+            push_front((Data_Type&&)_data);
+        }
+        else if(_pos.end_reached())
+        {
+            push_back((Data_Type&&)_data);
+        }
+        else
+        {
+            Node* pos = _pos.m_it.m_current_pos;
+            Node* prev_prev = pos->prev;
+            Node* new_prev = new Node((Data_Type&&)_data);
+
+            pos->prev = new_prev;
+            new_prev->next = pos;
+            new_prev->prev = prev_prev;
+
+            if(prev_prev)
+                prev_prev->next = new_prev;
+
+            ++m_size;
+        }
     }
 
 
