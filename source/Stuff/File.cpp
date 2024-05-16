@@ -86,7 +86,7 @@ std::string File::extract_block(unsigned int _offset, unsigned int _size) const
 
     result.resize(_size);
     char* buffer = (char*)result.c_str();
-    file.readsome(buffer, _size);
+    file.read(buffer, _size);
 
     file.close();
 
