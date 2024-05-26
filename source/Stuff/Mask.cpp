@@ -100,7 +100,7 @@ bool Mask::compare(const std::string &_text) const
 
     unsigned int offset = 0;
 
-    auto it = m_necessary_parts.begin();
+    String_List::Const_Iterator it = m_necessary_parts.begin();
     offset = M_substr_offset(_text, offset, *it);
     if(!m_any_start && offset > 0)
         return false;
@@ -109,13 +109,6 @@ bool Mask::compare(const std::string &_text) const
 
     offset += it->size();
     ++it;
-
-    if(it.end_reached())
-    {
-        if(offset < _text.size() && !m_any_end)
-            return false;
-        return true;
-    }
 
     for(; !it.end_reached(); ++it)
     {

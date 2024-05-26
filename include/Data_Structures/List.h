@@ -116,8 +116,10 @@ namespace LDS
 			void operator--();
 
 		public:
+            Data_Type& operator*();
 			const Data_Type& operator*() const;
-			const Data_Type* operator->() const;
+            Data_Type* operator->();
+            const Data_Type* operator->() const;
 
 		public:
 			bool begin_reached() const;
@@ -434,9 +436,21 @@ namespace LDS
 
 
     template<typename Data_Type>
+    Data_Type& List<Data_Type>::Const_Iterator::operator*()
+    {
+        return *m_it;
+    }
+
+    template<typename Data_Type>
     const Data_Type& List<Data_Type>::Const_Iterator::operator*() const
     {
         return *m_it;
+    }
+
+    template<typename Data_Type>
+    Data_Type* List<Data_Type>::Const_Iterator::operator->()
+    {
+        return m_it.get_ptr();
     }
 
     template<typename Data_Type>
