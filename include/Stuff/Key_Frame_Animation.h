@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Data_Structures/List.h>
+#include <Stuff/Function_Wrapper.h>
 
 
 namespace LST
@@ -33,7 +34,11 @@ namespace LST
         float m_current_timestamp = 0.0f;
         Type m_current_value;
 
+        LST::Function<void(const Type&)> m_on_update;
+
     public:
+        inline void set_on_update_func(const LST::Function<void(const Type&)>& _func) { m_on_update = _func; }
+
         void add_frame(float _timestamp, const Type& _target);
         void clear();
 
@@ -155,6 +160,9 @@ namespace LST
 
         float ratio = (m_current_timestamp - m_offset_timestamp) / m_stride_timestamp;
         m_current_value = m_stride * ratio + m_offset;
+
+        if(m_on_update)
+            m_on_update(m_current_value);
     }
 
 
