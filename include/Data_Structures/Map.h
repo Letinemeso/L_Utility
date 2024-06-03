@@ -101,6 +101,7 @@ namespace LDS
             Const_Iterator(typename Tree::Const_Iterator&& _it);
 
         public:
+            Const_Iterator(){}
             Const_Iterator(const Const_Iterator& _other);
             void operator=(const Const_Iterator& _other);
 
