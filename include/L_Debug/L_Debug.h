@@ -1,15 +1,13 @@
-#ifndef L_DEBUG_H
-#define L_DEBUG_H
+#pragma once
+
+#include <iostream>
+
+//#ifdef L_DEBUG
+//	#undef L_DEBUG
+//#endif
+//#define L_DEBUG true
 
 #ifdef L_DEBUG
-	#undef L_DEBUG
-#endif
-#define L_DEBUG true
-
-#ifdef L_DEBUG
-	#if L_DEBUG == true
-
-        #include <iostream>
 
 		//	USE THIS ONLY WITH MACRO BELOW
 		namespace ___L_Debug
@@ -52,10 +50,10 @@
 		#ifdef L_ASSERT
 			#undef L_ASSERT
 		#endif
-        #define L_ASSERT(condition) if(!(condition)) { std::cout << #condition << "\n"; int a = 1; a /= 0; } 1 == 1
+        #define L_ASSERT(condition) if(!(condition)) { std::cout << #condition << "\n"; int a = 1; a /= 0; std::cout.flush(); } 1 == 1
 
 
-	#else	//L_DEBUG == true
+    #else	//L_DEBUG == true
 
 		#ifdef L_LOG
 			#undef L_LOG
@@ -92,7 +90,4 @@
 		#endif
 		#define L_ASSERT(condition)
 
-	#endif	//L_DEBUG == true
 #endif	//L_DEBUG
-
-#endif	//L_DEBUG_H

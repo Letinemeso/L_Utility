@@ -21,8 +21,11 @@ void ___L_Debug::___debug_remove_log_level(const std::string& _level_name)
 
 void ___L_Debug::___debug_log(const std::string& _level_name, const std::string& _message)
 {
-    if(___AVAILIBLE_LOG_LEVELS.find(_level_name).is_ok())
-		std::cout << '[' << _level_name << "]: " << _message << "\n";
+    if(!___AVAILIBLE_LOG_LEVELS.find(_level_name).is_ok())
+        return;
+
+    std::cout << '[' << _level_name << "]: " << _message << "\n";
+    std::cout.flush();
 }
 
 #endif
