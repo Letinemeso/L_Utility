@@ -116,7 +116,7 @@ namespace LDS
 		unsigned int m_size = 0;
 
 	public:
-		Vector();
+        Vector(unsigned int _initial_capacity = 5);
 		Vector(const Vector<Data_Type>& _other);
 		Vector(Vector<Data_Type>&& _other);
 		void operator=(const Vector<Data_Type>& _other);
@@ -157,9 +157,9 @@ namespace LDS
     //	Vector
 
     template<typename Data_Type>
-    Vector<Data_Type>::Vector()
+    Vector<Data_Type>::Vector(unsigned int _initial_capacity)
     {
-        m_size = 5;
+        m_size = _initial_capacity;
         m_array = new Data_Type[m_size];
     }
 
@@ -248,6 +248,7 @@ namespace LDS
         delete[] m_array;
 
         m_size = 5;
+        m_elements_count = 0;
         m_array = new Data_Type[m_size];
     }
 
