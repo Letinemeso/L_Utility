@@ -52,6 +52,9 @@ namespace LDS
     private:
         Tree m_tree;
 
+        LST::Function<bool(const Key_Type&, const Pair&)> m_less_search_func;
+        LST::Function<bool(const Key_Type&, const Pair&)> m_equals_search_func;
+
     public:
         class Iterator final
         {
@@ -130,6 +133,9 @@ namespace LDS
         Map(Map<Key_Type, Data_Type>&& _other);
         void operator=(Map<Key_Type, Data_Type>&& _other);
         ~Map();
+
+    private:
+        void M_init_search_functions();
 
     public:
         inline void insert(const Key_Type& _key, const Data_Type& _data);
@@ -435,39 +441,59 @@ namespace LDS
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::Map()
     {
-
+        M_init_search_functions();
     }
 
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::Map(const Map<Key_Type, Data_Type>& _other)
         : m_tree(_other.m_tree)
     {
-
+        M_init_search_functions();
     }
 
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::operator=(const Map<Key_Type, Data_Type>& _other)
     {
         m_tree = _other.m_tree;
+
+        M_init_search_functions();
     }
 
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::Map(Map<Key_Type, Data_Type>&& _other)
         : m_tree((Tree&&)_other.m_tree)
     {
-
+        M_init_search_functions();
     }
 
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::operator=(Map<Key_Type, Data_Type>&& _other)
     {
         m_tree = (Tree&&)_other.m_tree;
+
+        M_init_search_functions();
     }
 
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::~Map()
     {
         m_tree.clear();
+    }
+
+
+
+    template<typename Key_Type, typename Data_Type>
+    void Map<Key_Type, Data_Type>::M_init_search_functions()
+    {
+        m_less_search_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _search_key < _pair.m_key;
+        };
+
+        m_equals_search_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _search_key == _pair.m_key;
+        };
     }
 
 
@@ -558,19 +584,39 @@ namespace LDS
     template<typename Key_Type, typename Data_Type>
     typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const Key_Type& _key)
     {
-        Pair stub;
-        stub.m_key = _key;
+        // Pair stub;
+        // stub.m_key = _key;
 
-        return Iterator(m_tree.find(stub));
+        // typename LDS::Tree<Pair>::Compare_Function less = [&_key](const Pair& _pair)->bool
+        // {
+        //     return _key < _pair.m_key;
+        // };
+
+        // typename LDS::Tree<Pair>::Compare_Function equals = [&_key](const Pair& _pair)->bool
+        // {
+        //     return _key == _pair.m_key;
+        // };
+
+        return Iterator(m_tree.find(m_less_search_func, m_equals_search_func, _key));
     }
 
     template<typename Key_Type, typename Data_Type>
     typename Map<Key_Type, Data_Type>::Const_Iterator Map<Key_Type, Data_Type>::find(const Key_Type& _key) const
     {
-        Pair stub;
-        stub.m_key = _key;
+        // Pair stub;
+        // stub.m_key = _key;
 
-        return Const_Iterator(m_tree.find(stub));
+        // typename LDS::Tree<Pair>::Compare_Function less = [&_key](const Pair& _pair)->bool
+        // {
+        //     return _key < _pair.m_key;
+        // };
+
+        // typename LDS::Tree<Pair>::Compare_Function equals = [&_key](const Pair& _pair)->bool
+        // {
+        //     return _key == _pair.m_key;
+        // };
+
+        return Const_Iterator(m_tree.find(m_less_search_func, m_equals_search_func, _key));
     }
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "L_Debug/L_Debug.h"
+#include <L_Debug/L_Debug.h>
+#include <Stuff/Function_Wrapper.h>
 
 
 namespace LDS
@@ -175,6 +176,11 @@ namespace LDS
 
 		Iterator find(const Data_Type& _value);
 		Const_Iterator find(const Data_Type& _value) const;
+
+        template<typename Search_Key_Type>
+        Iterator find(const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _less, const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _equals, const Search_Key_Type& _search_key);
+        template<typename Search_Key_Type>
+        Const_Iterator find(const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _less, const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _equals, const Search_Key_Type& _search_key) const;
 
 		unsigned int size() const;
 
@@ -545,6 +551,55 @@ namespace LDS
                 return result;
             }
         }
+        return Const_Iterator(nullptr);
+    }
+
+
+    template<typename Data_Type>
+    template<typename Search_Key_Type>
+    typename Tree<Data_Type>::Iterator Tree<Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _less, const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _equals, const Search_Key_Type& _search_key)
+    {
+        Node* search = m_root;
+        while(search)
+        {
+            if(_equals(_search_key, search->data))
+            {
+                Iterator result(this);
+                result.m_it.m_current_pos = search;
+
+                return result;
+            }
+
+            if(_less(_search_key, search->data))
+                search = search->child_left;
+            else
+                search = search->child_right;
+        }
+
+        return Iterator(nullptr);
+    }
+
+    template<typename Data_Type>
+    template<typename Search_Key_Type>
+    typename Tree<Data_Type>::Const_Iterator Tree<Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _less, const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _equals, const Search_Key_Type& _search_key) const
+    {
+        Node* search = m_root;
+        while(search)
+        {
+            if(_equals(_search_key, search->data))
+            {
+                Const_Iterator result(this);
+                result.m_it.m_current_pos = search;
+
+                return result;
+            }
+
+            if(_less(_search_key, search->data))
+                search = search->child_left;
+            else
+                search = search->child_right;
+        }
+
         return Const_Iterator(nullptr);
     }
 
