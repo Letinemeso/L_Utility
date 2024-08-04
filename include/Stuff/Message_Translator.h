@@ -11,7 +11,7 @@ namespace LST
     class Message_Translator final
     {
     private:
-        using Subscribers_List = LDS::List<LST::Function<void(const void*)>>;
+        using Subscribers_List = LDS::List<LST::Function<void(void*)>>;
         using Registred_Message_Types = LDS::Map<std::string, Subscribers_List>;
 
     private:
@@ -34,10 +34,10 @@ namespace LST
         void register_message_type();
 
         template<typename Message_Type>
-        void subscribe(const LST::Function<void(const Message_Type&)>& _func);
+        void subscribe(const LST::Function<void(Message_Type&)>& _func);
 
         template<typename Message_Type>
-        void translate(const Message_Type& _msg);
+        void translate(Message_Type& _msg);
 
     };
 
@@ -52,27 +52,27 @@ namespace LST
     }
 
     template<typename Message_Type>
-    void Message_Translator::subscribe(const LST::Function<void(const Message_Type&)>& _func)
+    void Message_Translator::subscribe(const LST::Function<void(Message_Type&)>& _func)
     {
         Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
-        subscribers_list.push_back([_func](const void* _msg_voidptr)
+        subscribers_list.push_back([_func](void* _msg_voidptr)
         {
-            const Message_Type* _msg = (const Message_Type*)_msg_voidptr;
+            Message_Type* _msg = (Message_Type*)_msg_voidptr;
             _func(*_msg);
         });
     }
 
     template<typename Message_Type>
-    void Message_Translator::translate(const Message_Type& _msg)
+    void Message_Translator::translate(Message_Type& _msg)
     {
         Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
-        const void* msg_voidptr = (const void*)&_msg;
+        void* msg_voidptr = (void*)&_msg;
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
