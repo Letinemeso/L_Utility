@@ -22,6 +22,7 @@ namespace LST
         Frames_List m_frames;
 
         bool m_is_active = false;
+        bool m_run_in_loop = false;
 
         typename Frames_List::Iterator m_offset_it;
         typename Frames_List::Iterator m_target_it;
@@ -38,6 +39,7 @@ namespace LST
 
     public:
         inline void set_on_update_func(const LST::Function<void(const Type&)>& _func) { m_on_update = _func; }
+        inline void set_run_in_loop(bool _value) { m_run_in_loop = _value; }
 
         void add_frame(float _timestamp, const Type& _target);
         void clear();
@@ -155,8 +157,8 @@ namespace LST
 
         M_skip_to_current_frame();
 
-        if(!m_is_active)
-            return;
+        if(!m_is_active && m_run_in_loop)
+            return start();
 
         float ratio = (m_current_timestamp - m_offset_timestamp) / m_stride_timestamp;
         m_current_value = m_stride * ratio + m_offset;
