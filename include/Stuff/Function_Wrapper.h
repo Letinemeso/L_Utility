@@ -83,6 +83,9 @@ namespace LST
         }
 
     public:
+        inline void reset() { delete m_func; m_func = nullptr; }
+
+    public:
         inline operator bool() const { return m_func != nullptr; }
         inline Return_Type operator()(Args... _args) const { return m_func->invoke((Args&&)_args...); }
 
