@@ -10,11 +10,40 @@ namespace LST
 
     class Message_Translator final
     {
+    public:
+        template<typename Message_Type>
+        class Handle
+        {
+        private:
+            unsigned int handle = 0;
+
+        private:
+            Handle(unsigned int _handle) : handle(_handle) { }
+
+        public:
+            Handle() { }
+            Handle(const Handle& _other) : handle(_other.handle) { }
+            Handle(Handle&& _other) : handle(_other.handle) { }
+            void operator=(const Handle& _other) { handle = _other.handle; }
+            void operator=(Handle&& _other) {  handle = _other.handle; }
+
+        public:
+            friend class Message_Translator;
+
+        };
+
     private:
-        using Subscribers_List = LDS::List<LST::Function<void(void*)>>;
+        struct Subscriber
+        {
+            unsigned int handle = 0;
+            LST::Function<void(void*)> function;
+        };
+
+        using Subscribers_List = LDS::List<Subscriber>;
         using Registred_Message_Types = LDS::Map<std::string, Subscribers_List>;
 
     private:
+        unsigned int m_handle_counter = 0;
         Registred_Message_Types m_registred_message_types;
 
     private:
@@ -34,13 +63,15 @@ namespace LST
         void register_message_type();
 
         template<typename Message_Type>
-        void subscribe(const LST::Function<void(Message_Type&)>& _func);
+        Handle<Message_Type> subscribe(const LST::Function<void(Message_Type&)>& _func);
+
+        template<typename Message_Type>
+        void unsubscribe(const Handle<Message_Type>& _handle);
 
         template<typename Message_Type>
         void translate(Message_Type& _msg);
 
     };
-
 
 
     template<typename Message_Type>
@@ -52,18 +83,46 @@ namespace LST
     }
 
     template<typename Message_Type>
-    void Message_Translator::subscribe(const LST::Function<void(Message_Type&)>& _func)
+    typename Message_Translator::Handle<Message_Type> Message_Translator::subscribe(const LST::Function<void(Message_Type&)>& _func)
     {
         Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
-        subscribers_list.push_back([_func](void* _msg_voidptr)
+        subscribers_list.push_back(
+            {
+                m_handle_counter,
+                [_func](void* _msg_voidptr)
+                {
+                    Message_Type* _msg = (Message_Type*)_msg_voidptr;
+                    _func(*_msg);
+                }
+            });
+
+        Handle<Message_Type> handle(m_handle_counter);
+        ++m_handle_counter;
+        return handle;
+    }
+
+    template<typename Message_Type>
+    void Message_Translator::unsubscribe(const Handle<Message_Type>& _handle)
+    {
+        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
+        L_ASSERT(maybe_registred_type_it.is_ok());
+
+        Subscribers_List& subscribers_list = *maybe_registred_type_it;
+
+        for(Subscribers_List::Iterator it = subscribers_list.begin(); !it.end_reached(); ++it)
         {
-            Message_Type* _msg = (Message_Type*)_msg_voidptr;
-            _func(*_msg);
-        });
+            if(it->handle != _handle.handle)
+                continue;
+
+            subscribers_list.erase(it);
+            return;
+        }
+
+        L_ASSERT(false);    //  attempt to unsubscribe non-subscriber
     }
 
     template<typename Message_Type>
@@ -77,10 +136,7 @@ namespace LST
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
         for(Subscribers_List::Iterator it = subscribers_list.begin(); !it.end_reached(); ++it)
-            (*it)(msg_voidptr);
+            it->function(msg_voidptr);
     }
-
-
-
 
 }
