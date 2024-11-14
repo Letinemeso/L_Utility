@@ -25,6 +25,7 @@ namespace LST
 
     private:
         unsigned int M_get_length(std::ifstream& _file) const;
+        std::string M_parse_directory() const;
 
     public:
         void set_path(const std::string& _path);

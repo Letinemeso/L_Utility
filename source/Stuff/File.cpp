@@ -1,5 +1,7 @@
 #include <Stuff/File.h>
 
+#include <filesystem>
+
 using namespace LST;
 
 
@@ -50,6 +52,24 @@ unsigned int File::M_get_length(std::ifstream &_file) const
     _file.seekg(position, std::fstream::beg);
 
     return result;
+}
+
+std::string File::M_parse_directory() const
+{
+    if(m_path.size() == 0)
+        return "";
+
+    unsigned int slash_position = m_path.size() - 1;
+    for(; slash_position > 0; --slash_position)
+    {
+        if(m_path[slash_position] == '/')
+            break;
+    }
+
+    if(slash_position == 0)
+        return "";
+
+    return m_path.substr(0, slash_position + 1);
 }
 
 
@@ -103,6 +123,9 @@ void File::clear()
 
 void File::append_block(const std::string& _block)
 {
+    if(!exists())
+        std::filesystem::create_directories(M_parse_directory());
+
     std::ofstream file(m_path, std::ofstream::binary | std::ofstream::app);
     if(!file.is_open())
         return;
