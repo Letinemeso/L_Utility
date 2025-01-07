@@ -980,10 +980,11 @@ namespace LDS
         while(!result.end_reached())
         {
             if(*result == _what)
-                break;
+                return result;
             ++result;
         }
-        return result;
+
+        return Iterator(nullptr);
     }
 
     template<typename Data_Type>
@@ -993,10 +994,11 @@ namespace LDS
         while(!result.end_reached())
         {
             if(*result == _what)
-                break;
+                return result;
             ++result;
         }
-        return result;
+
+        return Const_Iterator(nullptr);
     }
 
 }
