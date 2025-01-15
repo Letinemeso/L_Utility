@@ -44,7 +44,7 @@ namespace LDS
         inline const Weights_Map& weights_map() const { return m_weights_map; }
 
     public:
-        Data_Type& get_by_weight(unsigned int _weight) const;
+        const Data_Type& get_by_weight(unsigned int _weight) const;
 
     };
 
@@ -90,7 +90,7 @@ namespace LDS
 
 
     template<typename Data_Type>
-    Data_Type& Weighted_Container<Data_Type>::get_by_weight(unsigned int _weight) const
+    const Data_Type& Weighted_Container<Data_Type>::get_by_weight(unsigned int _weight) const
     {
         typename Weights_Map::Const_Iterator data = m_weights_map.find(_weight);
         L_ASSERT(data.is_ok());

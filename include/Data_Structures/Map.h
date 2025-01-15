@@ -579,11 +579,11 @@ namespace LDS
     {
         LST::Function<bool(const Search_Key_Type&, const Pair&)> less_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
         {
-            return _search_key < _pair.m_key;
+            return _pair.m_key > _search_key;
         };
         LST::Function<bool(const Search_Key_Type&, const Pair&)> equals_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
         {
-            return _search_key == _pair.m_key;
+            return _pair.m_key == _search_key;
         };
 
         return Const_Iterator(m_tree.find(less_search_func, equals_search_func, _key));
