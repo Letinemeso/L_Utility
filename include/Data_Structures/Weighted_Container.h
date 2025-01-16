@@ -40,6 +40,7 @@ namespace LDS
         void clear_elements();
 
     public:
+        inline unsigned int max_weight() const { return m_total_weight - 1; }
         inline unsigned int total_weight() const { return m_total_weight; }
         inline const Weights_Map& weights_map() const { return m_weights_map; }
 
