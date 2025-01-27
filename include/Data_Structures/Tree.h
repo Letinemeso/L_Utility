@@ -243,24 +243,17 @@ namespace LDS
 
         while(true)
         {
-            if(!future_parent->child_left && !future_parent->child_right)
-                break;
-
             if(_subtree->data < future_parent->data)
             {
-                if(future_parent->child_left)
-                    future_parent = future_parent->child_left;
-                else
-    //				future_parent = future_parent->child_right;
+                if(!future_parent->child_left)
                     break;
+                future_parent = future_parent->child_left;
             }
             else
             {
-                if(future_parent->child_right)
-                    future_parent = future_parent->child_right;
-                else
-    //				future_parent = future_parent->child_left;
+                if(!future_parent->child_right)
                     break;
+                future_parent = future_parent->child_right;
             }
         }
 
