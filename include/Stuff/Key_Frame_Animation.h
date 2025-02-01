@@ -160,6 +160,9 @@ namespace LST
         if(!m_is_active && m_run_in_loop)
             return start();
 
+        if(!m_is_active)
+            return;
+
         float ratio = (m_current_timestamp - m_offset_timestamp) / m_stride_timestamp;
         m_current_value = m_stride * ratio + m_offset;
 
