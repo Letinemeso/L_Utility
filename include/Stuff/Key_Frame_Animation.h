@@ -163,12 +163,14 @@ namespace LST
         if(!m_is_active)
             return;
 
-        float ratio = (m_current_timestamp - m_offset_timestamp) / m_stride_timestamp;
+        float ratio = 1.0f;;
+        if(m_stride_timestamp > 0.0f)
+            ratio = (m_current_timestamp - m_offset_timestamp) / m_stride_timestamp;
+
         m_current_value = m_stride * ratio + m_offset;
 
         if(m_on_update)
             m_on_update(m_current_value);
     }
-
 
 }
