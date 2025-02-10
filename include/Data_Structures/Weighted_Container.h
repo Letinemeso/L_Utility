@@ -93,7 +93,16 @@ namespace LDS
     template<typename Data_Type>
     const Data_Type& Weighted_Container<Data_Type>::get_by_weight(unsigned int _weight) const
     {
-        typename Weights_Map::Const_Iterator data = m_weights_map.find(_weight);
+        LST::Function<bool(const unsigned int&, const typename Weights_Map::Pair&)> less_func = [](const unsigned int& _weight, const typename Weights_Map::Pair& _pair)
+        {
+            return _pair.key() > _weight;
+        };
+        LST::Function<bool(const unsigned int&, const typename Weights_Map::Pair&)> equals_func = [](const unsigned int& _weight, const typename Weights_Map::Pair& _pair)
+        {
+            return _pair.key() == _weight;
+        };
+
+        typename Weights_Map::Const_Iterator data = m_weights_map.find(less_func, equals_func, _weight);
         L_ASSERT(data.is_ok());
 
         return *data;

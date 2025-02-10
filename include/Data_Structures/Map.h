@@ -48,9 +48,13 @@ namespace LDS
 
     private:
         typedef typename LDS::AVL_Tree<Pair> Tree;
+        using Compare_Function = LST::Function<bool(const Key_Type&, const Pair&)>;
 
     private:
         Tree m_tree;
+
+        Compare_Function m_less_func;
+        Compare_Function m_equals_func;
 
     public:
         class Iterator final
@@ -153,10 +157,13 @@ namespace LDS
         inline Iterator iterator();
         inline Const_Iterator iterator() const;
 
+        inline Iterator find(const Key_Type& _key);
+        inline Const_Iterator find(const Key_Type& _key) const;
+
         template<typename Search_Key_Type>
-        inline Iterator find(const Search_Key_Type& _key);
+        inline Iterator find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key);
         template<typename Search_Key_Type>
-        inline Const_Iterator find(const Search_Key_Type& _key) const;
+        inline Const_Iterator find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key) const;
 
     };
 
@@ -437,14 +444,30 @@ namespace LDS
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::Map()
     {
+        m_less_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key > _search_key;
+        };
 
+        m_equals_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key == _search_key;
+        };
     }
 
     template<typename Key_Type, typename Data_Type>
     Map<Key_Type, Data_Type>::Map(const Map<Key_Type, Data_Type>& _other)
         : m_tree(_other.m_tree)
     {
+        m_less_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key > _search_key;
+        };
 
+        m_equals_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key == _search_key;
+        };
     }
 
     template<typename Key_Type, typename Data_Type>
@@ -457,7 +480,15 @@ namespace LDS
     Map<Key_Type, Data_Type>::Map(Map<Key_Type, Data_Type>&& _other)
         : m_tree((Tree&&)_other.m_tree)
     {
+        m_less_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key > _search_key;
+        };
 
+        m_equals_func = [](const Key_Type& _search_key, const Pair& _pair)->bool
+        {
+            return _pair.m_key == _search_key;
+        };
     }
 
     template<typename Key_Type, typename Data_Type>
@@ -558,35 +589,29 @@ namespace LDS
     }
 
     template<typename Key_Type, typename Data_Type>
-    template<typename Search_Key_Type>
-    typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const Search_Key_Type& _key)
+    typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const Key_Type& _key)
     {
-        LST::Function<bool(const Search_Key_Type&, const Pair&)> less_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
-        {
-            return _search_key < _pair.m_key;
-        };
-        LST::Function<bool(const Search_Key_Type&, const Pair&)> equals_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
-        {
-            return _search_key == _pair.m_key;
-        };
+        return Iterator(m_tree.find(m_less_func, m_equals_func, _key));
+    }
 
-        return Iterator(m_tree.find(less_search_func, equals_search_func, _key));
+    template<typename Key_Type, typename Data_Type>
+    typename Map<Key_Type, Data_Type>::Const_Iterator Map<Key_Type, Data_Type>::find(const Key_Type& _key) const
+    {
+        return Const_Iterator(m_tree.find(m_less_func, m_equals_func, _key));
     }
 
     template<typename Key_Type, typename Data_Type>
     template<typename Search_Key_Type>
-    typename Map<Key_Type, Data_Type>::Const_Iterator Map<Key_Type, Data_Type>::find(const Search_Key_Type& _key) const
+    typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key)
     {
-        LST::Function<bool(const Search_Key_Type&, const Pair&)> less_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
-        {
-            return _pair.m_key > _search_key;
-        };
-        LST::Function<bool(const Search_Key_Type&, const Pair&)> equals_search_func = [](const Search_Key_Type& _search_key, const Pair& _pair)->bool
-        {
-            return _pair.m_key == _search_key;
-        };
+        return Iterator(m_tree.find(_less_func, _equals_func, _key));
+    }
 
-        return Const_Iterator(m_tree.find(less_search_func, equals_search_func, _key));
+    template<typename Key_Type, typename Data_Type>
+    template<typename Search_Key_Type>
+    typename Map<Key_Type, Data_Type>::Const_Iterator Map<Key_Type, Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key) const
+    {
+        return Const_Iterator(m_tree.find(_less_func, _equals_func, _key));
     }
 
 }
