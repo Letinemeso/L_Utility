@@ -140,8 +140,11 @@ namespace LDS
 		void swap(const Const_Iterator& _first, const Const_Iterator& _second);
 
 	public:
-		unsigned int size() const;
-		unsigned int capacity() const;
+        inline Data_Type* raw_data() { return m_array; }
+        inline const Data_Type* raw_data() const { return m_array; }
+
+        inline unsigned int size() const { return m_elements_count; }
+        inline unsigned int capacity() const { return m_size; }
 
         Data_Type& operator[](unsigned int _index);
 		const Data_Type& operator[](unsigned int _index) const;
@@ -392,19 +395,6 @@ namespace LDS
         swap(first_index, second_index);
     }
 
-
-
-    template<typename Data_Type>
-    unsigned int Vector<Data_Type>::size() const
-    {
-        return m_elements_count;
-    }
-
-    template<typename Data_Type>
-    unsigned int Vector<Data_Type>::capacity() const
-    {
-        return m_size;
-    }
 
 
     template<typename Data_Type>
