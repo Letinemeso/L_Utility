@@ -3,7 +3,6 @@
 #include <thread>
 #include <condition_variable>
 #include <mutex>
-#include <atomic>
 
 #include <Data_Structures/Vector.h>
 #include <Data_Structures/List.h>
@@ -35,8 +34,11 @@ namespace LST
         std::condition_variable m_wait_for_completion_condition;
 
     public:
-        Thread_Pool();
+        Thread_Pool(unsigned int _amount = 0);
         ~Thread_Pool();
+
+        Thread_Pool(const Thread_Pool&) = delete;
+        Thread_Pool(Thread_Pool&&) = delete;
 
     private:
         void M_thread_cycle();

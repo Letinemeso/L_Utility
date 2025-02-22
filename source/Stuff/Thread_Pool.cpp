@@ -3,9 +3,12 @@
 using namespace LST;
 
 
-Thread_Pool::Thread_Pool()
+Thread_Pool::Thread_Pool(unsigned int _amount)
 {
-    m_threads.resize(std::thread::hardware_concurrency());
+    if(_amount == 0)
+        _amount = std::thread::hardware_concurrency();
+
+    m_threads.resize(_amount);
     for(unsigned int i=0; i<m_threads.capacity(); ++i)
         m_threads.push(new std::thread([this](){ M_thread_cycle(); }));
 }
