@@ -182,6 +182,8 @@ namespace LDS
         template<typename Search_Key_Type>
         Const_Iterator find(const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _less, const LST::Function<bool(const Search_Key_Type&, const Data_Type&)>& _equals, const Search_Key_Type& _search_key) const;
 
+        Iterator find_or_insert(const Data_Type& _value);
+
 		unsigned int size() const;
 
 	};
@@ -545,6 +547,15 @@ namespace LDS
             }
         }
         return Const_Iterator(nullptr);
+    }
+
+    template<typename Data_Type>
+    typename Tree<Data_Type>::Iterator Tree<Data_Type>::find_or_insert(const Data_Type& _value)
+    {
+        Tree<Data_Type>::Iterator maybe_it = find(_value);
+        if(maybe_it)
+            return maybe_it;
+        return insert_and_get_iterator(_value);
     }
 
 
