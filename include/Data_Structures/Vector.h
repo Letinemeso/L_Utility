@@ -117,6 +117,7 @@ namespace LDS
 
 	public:
         Vector(unsigned int _initial_capacity = 5);
+        Vector(unsigned int _initial_capacity, const Data_Type& _fill_with);
 		Vector(const Vector<Data_Type>& _other);
 		Vector(Vector<Data_Type>&& _other);
 		void operator=(const Vector<Data_Type>& _other);
@@ -125,6 +126,7 @@ namespace LDS
 
 	public:
 		void resize(unsigned int _new_size);
+        void resize_and_fill(unsigned int _new_size, const Data_Type& _fill_with);
 		void clear();
 
 	public:
@@ -164,6 +166,14 @@ namespace LDS
     {
         m_size = _initial_capacity;
         m_array = new Data_Type[m_size];
+    }
+
+    template<typename Data_Type>
+    Vector<Data_Type>::Vector(unsigned int _initial_capacity, const Data_Type& _fill_with)
+    {
+        m_size = _initial_capacity;
+        m_elements_count = m_size;
+        m_array = new Data_Type[m_size]{ _fill_with };
     }
 
     template<typename Data_Type>
@@ -243,6 +253,18 @@ namespace LDS
         delete[] m_array;
         m_array = temp;
         m_size = _new_size;
+
+        if(m_elements_count > m_size)
+            m_elements_count = m_size;
+    }
+
+    template<typename Data_Type>
+    void Vector<Data_Type>::resize_and_fill(unsigned int _new_size, const Data_Type& _fill_with)
+    {
+        resize(_new_size);
+        for(unsigned int i=m_elements_count; i<m_size; ++i)
+            m_array[i] = _fill_with;
+        m_elements_count = m_size;
     }
 
     template<typename Data_Type>
