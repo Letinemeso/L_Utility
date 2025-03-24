@@ -59,6 +59,8 @@ namespace LDS
 
 			inline bool is_ok() const;
 
+            inline bool operator==(const Iterator_Base& _other) const { return m_parent == _other.m_parent && m_current_pos == _other.m_current_pos; }
+
 		};
 
 	public:
@@ -94,6 +96,8 @@ namespace LDS
 
 			bool is_ok() const;
 
+            bool operator==(const Iterator& _other) const;
+
 		};
 
 		class Const_Iterator final
@@ -127,6 +131,8 @@ namespace LDS
 			bool end_reached() const;
 
 			bool is_ok() const;
+
+            bool operator==(const Const_Iterator& _other) const;
 
 		};
 
@@ -396,6 +402,13 @@ namespace LDS
     }
 
 
+    template<typename Data_Type>
+    bool List<Data_Type>::Iterator::operator==(const Iterator& _other) const
+    {
+        return m_it == _other.m_it;
+    }
+
+
 
 
 
@@ -482,6 +495,13 @@ namespace LDS
     bool List<Data_Type>::Const_Iterator::is_ok() const
     {
         return m_it.is_ok();
+    }
+
+
+    template<typename Data_Type>
+    bool List<Data_Type>::Const_Iterator::operator==(const Const_Iterator& _other) const
+    {
+        return m_it == _other.m_it;
     }
 
 
