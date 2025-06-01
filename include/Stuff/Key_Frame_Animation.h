@@ -54,6 +54,7 @@ namespace LST
 
     public:
         inline bool active() const { return m_is_active; }
+        inline unsigned int frames_amount() const { return m_frames.size(); }
 
     private:
         void M_skip_to_current_frame();
