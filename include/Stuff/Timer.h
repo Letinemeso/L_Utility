@@ -21,6 +21,7 @@ namespace LST
         void update(float _time_passed);
 
         inline bool is_active() const { return m_active; }
+        inline float current_time() const { return m_current_time; }
         inline float time_left() const { return m_alarm_time - m_current_time; }
 
     };
