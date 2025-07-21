@@ -46,6 +46,7 @@ namespace LDS
 
     public:
         const Data_Type& get_by_weight(unsigned int _weight) const;
+        const Data_Type& get_random() const;
 
     };
 
@@ -106,6 +107,15 @@ namespace LDS
         L_ASSERT(data.is_ok());
 
         return *data;
+    }
+
+    template<typename Data_Type>
+    const Data_Type& Weighted_Container<Data_Type>::get_random() const
+    {
+        unsigned int random_weight = 0;
+        if(m_total_weight > 1)
+            random_weight = rand() % m_total_weight;
+        return get_by_weight(random_weight);
     }
 
 }
