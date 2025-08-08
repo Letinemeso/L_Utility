@@ -31,6 +31,7 @@ namespace LST
     public:
         void set_parameters(unsigned int _offset = 0, unsigned int _size = Unlimited_Size);
         void move_offset(int _increment);
+        void modify_size(int _increment);
 
     public:
         char& operator[](unsigned int _index);
@@ -65,9 +66,11 @@ namespace LST
     public:
         void set_parameters(unsigned int _offset = 0, unsigned int _size = Unlimited_Size);
         void move_offset(int _increment);
+        void modify_size(int _increment);
 
     public:
         char operator[](unsigned int _index) const;
+        bool operator==(const std::string& _what) const;
 
         std::string copy_substring() const;
 

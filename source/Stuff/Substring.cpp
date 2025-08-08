@@ -54,6 +54,22 @@ void Substring::move_offset(int _increment)
     m_size -= _increment;
 }
 
+void Substring::modify_size(int _increment)
+{
+    if(_increment == 0)
+        return;
+
+    L_DEBUG_FUNC_NOARG([&]()
+    {
+        if(_increment < 0)
+            L_ASSERT(-_increment < m_size);
+        if(_increment > 0)
+            L_ASSERT(m_size + _increment + m_offset <= m_raw_string.size());
+    });
+
+    m_size += _increment;
+}
+
 
 
 char& Substring::operator[](unsigned int _index)
@@ -138,6 +154,22 @@ void Const_Substring::move_offset(int _increment)
     m_size -= _increment;
 }
 
+void Const_Substring::modify_size(int _increment)
+{
+    if(_increment == 0)
+        return;
+
+    L_DEBUG_FUNC_NOARG([&]()
+    {
+        if(_increment < 0)
+            L_ASSERT(-_increment < m_size);
+        if(_increment > 0)
+            L_ASSERT(m_size + _increment + m_offset <= m_raw_string.size());
+    });
+
+    m_size += _increment;
+}
+
 
 
 char Const_Substring::operator[](unsigned int _index) const
@@ -148,6 +180,19 @@ char Const_Substring::operator[](unsigned int _index) const
     L_ASSERT(raw_index < m_raw_string.size());
 
     return m_raw_string[raw_index];
+}
+
+bool Const_Substring::operator==(const std::string& _what) const
+{
+    if(m_size != _what.size())
+        return false;
+
+    for(unsigned int i = 0; i < m_size; ++i)
+    {
+        if((*this)[i] != _what[i])
+            return false;
+    }
+    return true;
 }
 
 
