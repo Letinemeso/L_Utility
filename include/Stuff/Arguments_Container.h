@@ -92,6 +92,8 @@ namespace LST
 
         template <typename _Type, typename... _Args>
         void M_init_reference_impl(unsigned int _index, Argument_Reference<_Type>& _ref, __Utility::Subcontainer<_Args...>& _container);
+        template <typename _Type, typename... _Args>
+        void M_init_pointer_impl(unsigned int _index, _Type*& _ptr, __Utility::Subcontainer<_Args...>& _container);
 
         template <typename _Callable, unsigned int... _Indices>
         auto M_call_with_args_impl(const _Callable& _callable, __Utility::Indices<_Indices...>);
@@ -111,6 +113,8 @@ namespace LST
 
         template <typename _Type>
         void init_reference(unsigned int _index, Argument_Reference<_Type>& _ref);
+        template <typename _Type>
+        void init_pointer(unsigned int _index, _Type*& _ptr);
 
     public:
         template <typename _Callable>
@@ -158,6 +162,16 @@ namespace LST
             _ref.setup((_Type*)_container.get_data());  //  this is completely type-unsafe but to hell with it! fucking templates
         else
             M_init_reference_impl(_index - 1, _ref, *_container.get_subcontainer());
+    }
+
+    template <typename... _Arg_Types>
+    template <typename _Type, typename... _Args>
+    void Arguments_Container<_Arg_Types...>::M_init_pointer_impl(unsigned int _index, _Type*& _ptr, __Utility::Subcontainer<_Args...>& _container)
+    {
+        if(_index == 0)
+            _ptr = (_Type*)_container.get_data();  //  this is completely type-unsafe but to hell with it! fucking templates
+        else
+            M_init_pointer_impl(_index - 1, _ptr, *_container.get_subcontainer());
     }
 
 
@@ -217,6 +231,13 @@ namespace LST
     void Arguments_Container<_Arg_Types...>::init_reference(unsigned int _index, Argument_Reference<_Type>& _ref)
     {
         M_init_reference_impl(_index, _ref, m_subcontainer);
+    }
+
+    template <typename... _Arg_Types>
+    template <typename _Type>
+    void Arguments_Container<_Arg_Types...>::init_pointer(unsigned int _index, _Type*& _ptr)
+    {
+        M_init_pointer_impl(_index, _ptr, m_subcontainer);
     }
 
 
