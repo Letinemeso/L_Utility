@@ -123,6 +123,29 @@ namespace LST
     };
 
 
+    template <>
+    class Arguments_Container<>
+    {
+    public:
+        template <unsigned int _Index>
+        auto& get_argument() { L_ASSERT(false); return nullptr; }
+        template <unsigned int _Index>
+        const auto& get_argument() const { L_ASSERT(false); return nullptr; }
+
+        auto& get_argument(unsigned int _index) { L_ASSERT(false); return *this; }
+        const auto& get_argument(unsigned int _index) const { L_ASSERT(false); return *this; }
+
+        template <typename _Type>
+        void init_reference(unsigned int _index, Argument_Reference<_Type>& _ref) { L_ASSERT(false); }
+        template <typename _Type>
+        void init_pointer(unsigned int _index, _Type*& _ptr) { L_ASSERT(false); }
+
+    public:
+        template <typename _Callable>
+        auto call_with_args(const _Callable& _callable) { return _callable(); }
+    };
+
+
 
 
 
