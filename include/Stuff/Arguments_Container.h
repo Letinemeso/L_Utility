@@ -97,6 +97,8 @@ namespace LST
 
         template <typename _Callable, unsigned int... _Indices>
         auto M_call_with_args_impl(const _Callable& _callable, __Utility::Indices<_Indices...>);
+        template <typename _Owner_Object_Type, typename _Function_Ptr_Type, unsigned int... _Indices>
+        auto M_call_with_args_impl(_Owner_Object_Type& _object, const _Function_Ptr_Type& _function_ptr, __Utility::Indices<_Indices...>);
 
     public:
         Arguments_Container();
@@ -108,9 +110,6 @@ namespace LST
         template <unsigned int _Index>
         const auto& get_argument() const;
 
-        auto& get_argument(unsigned int _index);
-        const auto& get_argument(unsigned int _index) const;
-
         template <typename _Type>
         void init_reference(unsigned int _index, Argument_Reference<_Type>& _ref);
         template <typename _Type>
@@ -119,6 +118,8 @@ namespace LST
     public:
         template <typename _Callable>
         auto call_with_args(const _Callable& _callable);
+        template <typename _Owner_Object_Type, typename _Function_Ptr_Type>
+        auto call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr);
 
     };
 
@@ -205,6 +206,13 @@ namespace LST
         return _callable( (_Arg_Types&&)get_argument<_Indices>()... );
     }
 
+    template <typename... _Arg_Types>
+    template <typename _Owner_Object_Type, typename _Function_Ptr_Type, unsigned int... _Indices>
+    auto Arguments_Container<_Arg_Types...>::M_call_with_args_impl(_Owner_Object_Type& _object, const _Function_Ptr_Type& _function_ptr, __Utility::Indices<_Indices...>)
+    {
+        return (_object.*_function_ptr)( (_Arg_Types&&)get_argument<_Indices>()... );
+    }
+
 
 
     template <typename... _Arg_Types>
@@ -237,19 +245,6 @@ namespace LST
 
 
     template <typename... _Arg_Types>
-    auto& Arguments_Container<_Arg_Types...>::get_argument(unsigned int _index)
-    {
-        return M_get_argument_impl(_index, Indices_Sequence_Helper());
-    }
-
-    template <typename... _Arg_Types>
-    const auto& Arguments_Container<_Arg_Types...>::get_argument(unsigned int _index) const
-    {
-        return M_get_argument_impl(_index, Indices_Sequence_Helper());
-    }
-
-
-    template <typename... _Arg_Types>
     template <typename _Type>
     void Arguments_Container<_Arg_Types...>::init_reference(unsigned int _index, Argument_Reference<_Type>& _ref)
     {
@@ -270,6 +265,13 @@ namespace LST
     auto Arguments_Container<_Arg_Types...>::call_with_args(const _Callable& _callable)
     {
         return M_call_with_args_impl<_Callable>(_callable, Indices_Sequence_Helper());
+    }
+
+    template <typename... _Arg_Types>
+    template <typename _Owner_Object_Type, typename _Function_Ptr_Type>
+    auto Arguments_Container<_Arg_Types...>::call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr)
+    {
+        return M_call_with_args_impl(_object, _function_ptr, Indices_Sequence_Helper());
     }
 
 
