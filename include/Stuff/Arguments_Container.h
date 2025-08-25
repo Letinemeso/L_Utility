@@ -128,6 +128,9 @@ namespace LST
     class Arguments_Container<>
     {
     public:
+        inline static constexpr unsigned int arguments_amount() { return 0; }
+
+    public:
         template <unsigned int _Index>
         auto& get_argument() { L_ASSERT(false); return nullptr; }
         template <unsigned int _Index>
@@ -144,6 +147,8 @@ namespace LST
     public:
         template <typename _Callable>
         auto call_with_args(const _Callable& _callable) { return _callable(); }
+        template <typename _Owner_Object_Type, typename _Function_Ptr_Type>
+        auto call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr) { return (_object.*_function_ptr)(); }
     };
 
 
