@@ -44,6 +44,8 @@ namespace LST
 
     private:
         unsigned int m_handle_counter = 0;
+        LDS::List<unsigned int> m_released_handles;
+
         Registred_Message_Types m_registred_message_types;
 
     private:
@@ -90,9 +92,22 @@ namespace LST
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
+        unsigned int handle_number = 0;
+
+        if(m_released_handles.size() > 0)
+        {
+            handle_number = *m_released_handles.begin();
+            m_released_handles.pop_front();
+        }
+        else
+        {
+            handle_number = m_handle_counter;
+            ++m_handle_counter;
+        }
+
         subscribers_list.push_back(
             {
-                m_handle_counter,
+                handle_number,
                 [_func](void* _msg_voidptr)
                 {
                     Message_Type* _msg = (Message_Type*)_msg_voidptr;
@@ -100,8 +115,7 @@ namespace LST
                 }
             });
 
-        Handle<Message_Type> handle(m_handle_counter);
-        ++m_handle_counter;
+        Handle<Message_Type> handle(handle_number);
         return handle;
     }
 
@@ -110,6 +124,8 @@ namespace LST
     {
         Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
+
+        m_released_handles.push_back(_handle.handle);
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
 
