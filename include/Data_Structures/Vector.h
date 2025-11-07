@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 #include "L_Debug/L_Debug.h"
 
@@ -128,6 +127,7 @@ namespace LDS
 		void resize(unsigned int _new_size);
         void resize_and_fill(unsigned int _new_size, const Data_Type& _fill_with);
 		void clear();
+        void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
 
 	public:
 		void push(const Data_Type& _data);
@@ -275,6 +275,12 @@ namespace LDS
         m_size = 5;
         m_elements_count = 0;
         m_array = new Data_Type[m_size];
+    }
+
+    template<typename Data_Type>
+    void Vector<Data_Type>::mark_empty()
+    {
+        m_elements_count = 0;
     }
 
 
@@ -756,6 +762,3 @@ namespace LDS
     }
 
 }
-
-
-#endif // VECTOR_H
