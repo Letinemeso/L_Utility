@@ -6,23 +6,23 @@
 namespace LDS
 {
 
-	template<typename Data_Type>
+    template<typename _Data_Type>
 	class Vector final
     {
 	private:
 		class Iterator_Base final
 		{
 		private:
-			friend class LDS::Vector<Data_Type>;
+            friend class LDS::Vector<_Data_Type>;
 
 		private:
-            Vector<Data_Type>* m_parent = nullptr;
+            Vector<_Data_Type>* m_parent = nullptr;
 			int m_current_index = 0;
 			bool m_begin_reached = false;
 			bool m_end_reached = false;
 
 		public:
-			Iterator_Base(Vector<Data_Type>* _parent);
+            Iterator_Base(Vector<_Data_Type>* _parent);
 			Iterator_Base(const Iterator_Base& _other);
 			void operator=(const Iterator_Base& _other);
 			~Iterator_Base();
@@ -32,9 +32,9 @@ namespace LDS
 			void operator--();
 
 		public:
-			Data_Type& operator*();
-			const Data_Type& operator*() const;
-			Data_Type* get_ptr();
+            _Data_Type& operator*();
+            const _Data_Type& operator*() const;
+            _Data_Type* get_ptr();
 
 		public:
 			bool begin_reached() const;
@@ -54,7 +54,7 @@ namespace LDS
 			Iterator_Base m_it;
 
 		private:
-			Iterator(Vector<Data_Type>* _parent);
+            Iterator(Vector<_Data_Type>* _parent);
 
 		public:
 			Iterator(const Iterator& _other);
@@ -65,10 +65,10 @@ namespace LDS
 			void operator--();
 
 		public:
-			Data_Type& operator*();
-			const Data_Type& operator*() const;
-			Data_Type* operator->();
-			const Data_Type* operator->() const;
+            _Data_Type& operator*();
+            const _Data_Type& operator*() const;
+            _Data_Type* operator->();
+            const _Data_Type* operator->() const;
 
 		public:
 			bool begin_reached() const;
@@ -87,7 +87,7 @@ namespace LDS
             Iterator_Base m_it;
 
 		private:
-            Const_Iterator(const Vector<Data_Type>* _parent);
+            Const_Iterator(const Vector<_Data_Type>* _parent);
 
 		public:
 			Const_Iterator(const Const_Iterator& _other);
@@ -98,8 +98,8 @@ namespace LDS
 			void operator--();
 
 		public:
-			const Data_Type& operator*() const;
-			const Data_Type* operator->() const;
+            const _Data_Type& operator*() const;
+            const _Data_Type* operator->() const;
 
 		public:
 			bool begin_reached() const;
@@ -110,28 +110,28 @@ namespace LDS
 		};
 
 	private:
-        Data_Type* m_array = nullptr;
+        _Data_Type* m_array = nullptr;
 		unsigned int m_elements_count = 0;
 		unsigned int m_size = 0;
 
 	public:
         Vector(unsigned int _initial_capacity = 5);
-        Vector(unsigned int _initial_capacity, const Data_Type& _fill_with);
-		Vector(const Vector<Data_Type>& _other);
-		Vector(Vector<Data_Type>&& _other);
-		void operator=(const Vector<Data_Type>& _other);
-		void operator=(Vector<Data_Type>&& _other);
+        Vector(unsigned int _initial_capacity, const _Data_Type& _fill_with);
+        Vector(const Vector<_Data_Type>& _other);
+        Vector(Vector<_Data_Type>&& _other);
+        void operator=(const Vector<_Data_Type>& _other);
+        void operator=(Vector<_Data_Type>&& _other);
 		~Vector();
 
 	public:
 		void resize(unsigned int _new_size);
-        void resize_and_fill(unsigned int _new_size, const Data_Type& _fill_with);
+        void resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with);
 		void clear();
         void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
 
 	public:
-		void push(const Data_Type& _data);
-		void push(Data_Type&& _data);
+        void push(const _Data_Type& _data);
+        void push(_Data_Type&& _data);
 
 		void pop(unsigned int _index);
 		Iterator pop(const Iterator& _where);
@@ -141,15 +141,17 @@ namespace LDS
 		void swap(const Iterator& _first, const Iterator& _second);
 		void swap(const Const_Iterator& _first, const Const_Iterator& _second);
 
+        void append(const Vector<_Data_Type>& _what);
+
 	public:
-        inline Data_Type* raw_data() { return m_array; }
-        inline const Data_Type* raw_data() const { return m_array; }
+        inline _Data_Type* raw_data() { return m_array; }
+        inline const _Data_Type* raw_data() const { return m_array; }
 
         inline unsigned int size() const { return m_elements_count; }
         inline unsigned int capacity() const { return m_size; }
 
-        Data_Type& operator[](unsigned int _index);
-		const Data_Type& operator[](unsigned int _index) const;
+        _Data_Type& operator[](unsigned int _index);
+        const _Data_Type& operator[](unsigned int _index) const;
 
 		Iterator at(unsigned int _index);
 		Const_Iterator at(unsigned int _index) const;
@@ -161,34 +163,34 @@ namespace LDS
 
     //	Vector
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Vector(unsigned int _initial_capacity)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Vector(unsigned int _initial_capacity)
     {
         m_size = _initial_capacity;
-        m_array = new Data_Type[m_size];
+        m_array = new _Data_Type[m_size];
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Vector(unsigned int _initial_capacity, const Data_Type& _fill_with)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Vector(unsigned int _initial_capacity, const _Data_Type& _fill_with)
     {
         m_size = _initial_capacity;
         m_elements_count = m_size;
-        m_array = new Data_Type[m_size]{ _fill_with };
+        m_array = new _Data_Type[m_size]{ _fill_with };
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Vector(const Vector<Data_Type>& _other)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Vector(const Vector<_Data_Type>& _other)
     {
         m_size = _other.m_size;
         m_elements_count = _other.m_elements_count;
 
-        m_array = new Data_Type[m_size];
+        m_array = new _Data_Type[m_size];
         for(unsigned int i=0; i<m_elements_count; ++i)
             m_array[i] = _other[i];
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Vector(Vector<Data_Type>&& _other)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Vector(Vector<_Data_Type>&& _other)
     {
         m_size = _other.m_size;
         _other.m_size = 5;
@@ -196,24 +198,24 @@ namespace LDS
         _other.m_elements_count = 0;
 
         m_array = _other.m_array;
-        _other.m_array = new Data_Type[_other.m_size];
+        _other.m_array = new _Data_Type[_other.m_size];
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::operator=(const Vector<Data_Type>& _other)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::operator=(const Vector<_Data_Type>& _other)
     {
         delete[] m_array;
 
         m_size = _other.m_size;
         m_elements_count = _other.m_elements_count;
 
-        m_array = new Data_Type[m_size];
+        m_array = new _Data_Type[m_size];
         for(unsigned int i=0; i<_other.m_elements_count; ++i)
             m_array[i] = _other[i];
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::operator=(Vector<Data_Type>&& _other)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::operator=(Vector<_Data_Type>&& _other)
     {
         delete[] m_array;
 
@@ -223,21 +225,21 @@ namespace LDS
         _other.m_elements_count = 0;
 
         m_array = _other.m_array;
-        _other.m_array = new Data_Type[_other.m_size];
+        _other.m_array = new _Data_Type[_other.m_size];
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::~Vector()
+    template<typename _Data_Type>
+    Vector<_Data_Type>::~Vector()
     {
         delete[] m_array;
     }
 
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::resize(unsigned int _new_size)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::resize(unsigned int _new_size)
     {
-        Data_Type* temp = new Data_Type[_new_size];
+        _Data_Type* temp = new _Data_Type[_new_size];
 
         if(_new_size < m_size)
         {
@@ -258,8 +260,8 @@ namespace LDS
             m_elements_count = m_size;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::resize_and_fill(unsigned int _new_size, const Data_Type& _fill_with)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with)
     {
         resize(_new_size);
         for(unsigned int i=m_elements_count; i<m_size; ++i)
@@ -267,26 +269,26 @@ namespace LDS
         m_elements_count = m_size;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::clear()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::clear()
     {
         delete[] m_array;
 
         m_size = 5;
         m_elements_count = 0;
-        m_array = new Data_Type[m_size];
+        m_array = new _Data_Type[m_size];
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::mark_empty()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::mark_empty()
     {
         m_elements_count = 0;
     }
 
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::push(const Data_Type& _data)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::push(const _Data_Type& _data)
     {
         if(m_elements_count == m_size)
             resize(m_size * 2);
@@ -296,20 +298,20 @@ namespace LDS
         ++m_elements_count;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::push(Data_Type&& _data)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::push(_Data_Type&& _data)
     {
         if(m_elements_count == m_size)
             resize(m_size * 2);
 
-        m_array[m_elements_count] = (Data_Type&&)_data;
+        m_array[m_elements_count] = (_Data_Type&&)_data;
 
         ++m_elements_count;
     }
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::pop(unsigned int _index)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::pop(unsigned int _index)
     {
         L_ASSERT(m_elements_count > 0);
         L_ASSERT(_index < m_elements_count);
@@ -320,8 +322,8 @@ namespace LDS
         --m_elements_count;
     }
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Iterator Vector<Data_Type>::pop(const Iterator& _where)
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::pop(const Iterator& _where)
     {
         L_ASSERT(m_elements_count > 0);
         L_ASSERT(_where.m_it.m_parent == this);
@@ -349,8 +351,8 @@ namespace LDS
         return return_it;
     }
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::pop(const Const_Iterator& _where)
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::pop(const Const_Iterator& _where)
     {
         L_ASSERT(m_elements_count > 0);
         L_ASSERT(_where.m_it.m_parent == this);
@@ -379,20 +381,20 @@ namespace LDS
     }
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::swap(unsigned int _f_index, unsigned int _s_index)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::swap(unsigned int _f_index, unsigned int _s_index)
     {
         L_ASSERT(_f_index < m_elements_count);
 
         L_ASSERT(_s_index < m_elements_count);
 
-        Data_Type temp = m_array[_f_index];
+        _Data_Type temp = m_array[_f_index];
         m_array[_f_index] = m_array[_s_index];
         m_array[_s_index] = temp;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::swap(const Iterator& _first, const Iterator& _second)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::swap(const Iterator& _first, const Iterator& _second)
     {
         L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
 
@@ -407,8 +409,8 @@ namespace LDS
         swap(first_index, second_index);
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::swap(const Const_Iterator& _first, const Const_Iterator& _second)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::swap(const Const_Iterator& _first, const Const_Iterator& _second)
     {
         L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
 
@@ -424,17 +426,34 @@ namespace LDS
     }
 
 
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::append(const Vector<_Data_Type>& _what)
+    {
+        unsigned int total_size = size() + _what.size();
+        _Data_Type* new_data = new _Data_Type[total_size];
+        for(unsigned int i = 0; i < size(); ++i)
+            new_data[i] = m_array[i];
+        for(unsigned int i = 0; i < _what.size(); ++i)
+            new_data[size() + i] = m_array[i];
 
-    template<typename Data_Type>
-    Data_Type& Vector<Data_Type>::operator[](unsigned int _index)
+        delete[] m_array;
+        m_array = new_data;
+        m_size = total_size;
+        m_elements_count = total_size;
+    }
+
+
+
+    template<typename _Data_Type>
+    _Data_Type& Vector<_Data_Type>::operator[](unsigned int _index)
     {
         L_ASSERT(_index < m_size);
 
         return m_array[_index];
     }
 
-    template<typename Data_Type>
-    const Data_Type& Vector<Data_Type>::operator[](unsigned int _index) const
+    template<typename _Data_Type>
+    const _Data_Type& Vector<_Data_Type>::operator[](unsigned int _index) const
     {
         L_ASSERT(_index < m_elements_count);
 
@@ -442,8 +461,8 @@ namespace LDS
     }
 
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Iterator Vector<Data_Type>::at(unsigned int _index)
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::at(unsigned int _index)
     {
         L_ASSERT(_index < m_elements_count);
 
@@ -452,8 +471,8 @@ namespace LDS
         return result;
     }
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::at(unsigned int _index) const
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::at(unsigned int _index) const
     {
         L_ASSERT(_index < m_elements_count);
 
@@ -463,14 +482,14 @@ namespace LDS
     }
 
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Iterator Vector<Data_Type>::iterator()
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::iterator()
     {
         return Iterator(this);
     }
 
-    template<typename Data_Type>
-    typename Vector<Data_Type>::Const_Iterator Vector<Data_Type>::const_iterator() const
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::const_iterator() const
     {
         return Const_Iterator(this);
     }
@@ -481,22 +500,22 @@ namespace LDS
 
     //	Vector::Iterator_Base
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Iterator_Base::Iterator_Base(Vector<Data_Type>* _parent)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Iterator_Base::Iterator_Base(Vector<_Data_Type>* _parent)
         : m_parent(_parent)
     {
 
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Iterator_Base::Iterator_Base(const Iterator_Base& _other)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Iterator_Base::Iterator_Base(const Iterator_Base& _other)
         : m_parent(_other.m_parent), m_current_index(_other.m_current_index)
     {
 
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator_Base::operator=(const Iterator_Base& _other)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator_Base::operator=(const Iterator_Base& _other)
     {
         m_parent = _other.m_parent;
         m_current_index = _other.m_current_index;
@@ -504,16 +523,16 @@ namespace LDS
         m_end_reached = _other.m_end_reached;
     }
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Iterator_Base::~Iterator_Base()
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Iterator_Base::~Iterator_Base()
     {
 
     }
 
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator_Base::operator++()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator_Base::operator++()
     {
         L_ASSERT(!m_end_reached);
 
@@ -528,8 +547,8 @@ namespace LDS
         ++m_current_index;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator_Base::operator--()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator_Base::operator--()
     {
         L_ASSERT(!m_begin_reached);
 
@@ -546,24 +565,24 @@ namespace LDS
 
 
 
-    template<typename Data_Type>
-    Data_Type& Vector<Data_Type>::Iterator_Base::operator*()
+    template<typename _Data_Type>
+    _Data_Type& Vector<_Data_Type>::Iterator_Base::operator*()
     {
         L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
 
         return m_parent->m_array[m_current_index];
     }
 
-    template<typename Data_Type>
-    const Data_Type& Vector<Data_Type>::Iterator_Base::operator*() const
+    template<typename _Data_Type>
+    const _Data_Type& Vector<_Data_Type>::Iterator_Base::operator*() const
     {
         L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
 
         return m_parent->m_array[m_current_index];
     }
 
-    template<typename Data_Type>
-    Data_Type* Vector<Data_Type>::Iterator_Base::get_ptr()
+    template<typename _Data_Type>
+    _Data_Type* Vector<_Data_Type>::Iterator_Base::get_ptr()
     {
         L_ASSERT(m_current_index >= 0 || m_current_index < m_parent->size());
 
@@ -572,16 +591,16 @@ namespace LDS
 
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator_Base::begin_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator_Base::begin_reached() const
     {
         if(!is_ok())
             return true;
         return m_begin_reached;
     }
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator_Base::end_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator_Base::end_reached() const
     {
         if(!is_ok())
             return true;
@@ -589,8 +608,8 @@ namespace LDS
     }
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator_Base::is_ok() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator_Base::is_ok() const
     {
         return (m_current_index >= 0) && (m_current_index < m_parent->size());
     }
@@ -601,8 +620,8 @@ namespace LDS
 
     //	Vector::Iterator
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Iterator::Iterator(Vector<Data_Type>* _parent)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Iterator::Iterator(Vector<_Data_Type>* _parent)
         : m_it(_parent)
     {
 
@@ -610,76 +629,76 @@ namespace LDS
 
 
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Iterator::Iterator(const Iterator& _other)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Iterator::Iterator(const Iterator& _other)
         : m_it(_other.m_it)
     {
 
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator::operator=(const Iterator& _other)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator::operator=(const Iterator& _other)
     {
         m_it = _other.m_it;
     }
 
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator::operator++()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator::operator++()
     {
         ++m_it;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Iterator::operator--()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Iterator::operator--()
     {
         --m_it;
     }
 
 
 
-    template<typename Data_Type>
-    Data_Type& Vector<Data_Type>::Iterator::operator*()
+    template<typename _Data_Type>
+    _Data_Type& Vector<_Data_Type>::Iterator::operator*()
     {
         return *m_it;
     }
 
-    template<typename Data_Type>
-    const Data_Type& Vector<Data_Type>::Iterator::operator*() const
+    template<typename _Data_Type>
+    const _Data_Type& Vector<_Data_Type>::Iterator::operator*() const
     {
         return *m_it;
     }
 
-    template<typename Data_Type>
-    Data_Type* Vector<Data_Type>::Iterator::operator->()
+    template<typename _Data_Type>
+    _Data_Type* Vector<_Data_Type>::Iterator::operator->()
     {
         return m_it.get_ptr();
     }
 
-    template<typename Data_Type>
-    const Data_Type* Vector<Data_Type>::Iterator::operator->() const
+    template<typename _Data_Type>
+    const _Data_Type* Vector<_Data_Type>::Iterator::operator->() const
     {
         return m_it.get_ptr();
     }
 
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator::begin_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator::begin_reached() const
     {
         return m_it.begin_reached();
     }
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator::end_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator::end_reached() const
     {
         return m_it.end_reached();
     }
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Iterator::is_ok() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Iterator::is_ok() const
     {
         return m_it.is_ok();
     }
@@ -690,73 +709,73 @@ namespace LDS
 
     //	Vector::Const_Iterator
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Const_Iterator::Const_Iterator(const Vector<Data_Type>* _parent)
-        : m_it((Vector<Data_Type>*)_parent)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Const_Iterator::Const_Iterator(const Vector<_Data_Type>* _parent)
+        : m_it((Vector<_Data_Type>*)_parent)
     {
 
     }
 
 
 
-    template<typename Data_Type>
-    Vector<Data_Type>::Const_Iterator::Const_Iterator(const Const_Iterator& _other)
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Const_Iterator::Const_Iterator(const Const_Iterator& _other)
         : m_it(_other.m_it)
     {
 
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Const_Iterator::operator=(const Const_Iterator& _other)
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Const_Iterator::operator=(const Const_Iterator& _other)
     {
         m_it = _other.m_it;
     }
 
 
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Const_Iterator::operator++()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Const_Iterator::operator++()
     {
         ++m_it;
     }
 
-    template<typename Data_Type>
-    void Vector<Data_Type>::Const_Iterator::operator--()
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::Const_Iterator::operator--()
     {
         --m_it;
     }
 
 
 
-    template<typename Data_Type>
-    const Data_Type& Vector<Data_Type>::Const_Iterator::operator*() const
+    template<typename _Data_Type>
+    const _Data_Type& Vector<_Data_Type>::Const_Iterator::operator*() const
     {
         return *m_it;
     }
 
-    template<typename Data_Type>
-    const Data_Type* Vector<Data_Type>::Const_Iterator::operator->() const
+    template<typename _Data_Type>
+    const _Data_Type* Vector<_Data_Type>::Const_Iterator::operator->() const
     {
         return *m_it;
     }
 
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Const_Iterator::begin_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Const_Iterator::begin_reached() const
     {
         return m_it.begin_reached();
     }
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Const_Iterator::end_reached() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Const_Iterator::end_reached() const
     {
         return m_it.end_reached();
     }
 
 
-    template<typename Data_Type>
-    bool Vector<Data_Type>::Const_Iterator::is_ok() const
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::Const_Iterator::is_ok() const
     {
         return m_it.is_ok();
     }
