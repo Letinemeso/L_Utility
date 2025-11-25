@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 namespace LST
 {
@@ -12,6 +11,7 @@ namespace LST
 
     public:
         Timer() { }
+        Timer(float _alarm_time) { start(_alarm_time); }
         ~Timer() { }
 
     public:
@@ -27,5 +27,3 @@ namespace LST
     };
 
 }
-
-#endif // TIMER_H
