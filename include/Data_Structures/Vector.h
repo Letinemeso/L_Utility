@@ -266,9 +266,9 @@ namespace LDS
     void Vector<_Data_Type>::resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with)
     {
         resize(_new_size);
-        for(unsigned int i = m_elements_count; i < m_size; ++i)
-            m_array[i] = _fill_with;
         m_elements_count = m_size;
+        for(unsigned int i = 0; i < m_size; ++i)
+            m_array[i] = _fill_with;
     }
 
     template<typename _Data_Type>
