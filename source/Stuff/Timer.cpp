@@ -7,6 +7,10 @@ void Timer::start(float _alarm_time)
 {
     m_alarm_time = _alarm_time;
     m_current_time = 0.0f;
+
+    if(m_alarm_time < 1e-6f)
+        return;
+
     m_active = true;
 }
 
