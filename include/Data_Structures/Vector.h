@@ -125,6 +125,7 @@ namespace LDS
 
 	public:
 		void resize(unsigned int _new_size);
+        void fill(const _Data_Type& _fill_with);
         void resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with);
 		void clear();
         void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
@@ -263,12 +264,18 @@ namespace LDS
     }
 
     template<typename _Data_Type>
-    void Vector<_Data_Type>::resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with)
+    void Vector<_Data_Type>::fill(const _Data_Type& _fill_with)
     {
-        resize(_new_size);
         m_elements_count = m_size;
         for(unsigned int i = 0; i < m_size; ++i)
             m_array[i] = _fill_with;
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with)
+    {
+        resize(_new_size);
+        fill(_fill_with);
     }
 
     template<typename _Data_Type>
