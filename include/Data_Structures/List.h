@@ -182,6 +182,11 @@ namespace LDS
 		Iterator end();
 		Const_Iterator end() const;
 
+        Data_Type& front();
+        const Data_Type& front() const;
+        Data_Type& back();
+        const Data_Type& back() const;
+
         Iterator find(const Data_Type& _what);
         Const_Iterator find(const Data_Type& _what) const;
 
@@ -991,6 +996,39 @@ namespace LDS
         result.m_it.m_begin_reached = false;
         result.m_it.m_end_reached = true;
         return result;
+    }
+
+
+    template<typename Data_Type>
+    Data_Type& List<Data_Type>::front()
+    {
+        L_ASSERT(m_head);
+
+        return m_head->data;
+    }
+
+    template<typename Data_Type>
+    const Data_Type& List<Data_Type>::front() const
+    {
+        L_ASSERT(m_head);
+
+        return m_head->data;
+    }
+
+    template<typename Data_Type>
+    Data_Type& List<Data_Type>::back()
+    {
+        L_ASSERT(m_tail);
+
+        return m_tail->data;
+    }
+
+    template<typename Data_Type>
+    const Data_Type& List<Data_Type>::back() const
+    {
+        L_ASSERT(m_tail);
+
+        return m_tail->data;
     }
 
 
