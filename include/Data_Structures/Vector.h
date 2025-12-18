@@ -160,6 +160,9 @@ namespace LDS
 		Iterator iterator();
 		Const_Iterator const_iterator() const;
 
+        Iterator find(const _Data_Type& _what);
+        Const_Iterator find(const _Data_Type& _what) const;
+
 	};
 
     //	Vector
@@ -504,6 +507,39 @@ namespace LDS
     }
 
 
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::find(const _Data_Type& _what)
+    {
+        for(unsigned int i = 0; i < m_elements_count; ++i)
+        {
+            if(m_array[i] != _what)
+                continue;
+
+            Iterator result(this);
+            result.m_it.m_current_index = i;
+            return result;
+        }
+
+        return Iterator(nullptr);
+    }
+
+    template<typename _Data_Type>
+    typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::find(const _Data_Type& _what) const
+    {
+        for(unsigned int i = 0; i < m_elements_count; ++i)
+        {
+            if(m_array[i] != _what)
+                continue;
+
+            Const_Iterator result(this);
+            result.m_it.m_current_index = i;
+            return result;
+        }
+
+        return Const_Iterator(nullptr);
+    }
+
+
 
 
 
@@ -620,7 +656,7 @@ namespace LDS
     template<typename _Data_Type>
     bool Vector<_Data_Type>::Iterator_Base::is_ok() const
     {
-        return (m_current_index >= 0) && (m_current_index < m_parent->size());
+        return m_parent && (m_current_index >= 0) && (m_current_index < m_parent->size());
     }
 
 
