@@ -36,7 +36,7 @@ namespace LDS
             const _Data_Type& operator*() const;
             _Data_Type* get_ptr();
 
-		public:
+        public:
 			bool begin_reached() const;
 			bool end_reached() const;
 
@@ -70,7 +70,9 @@ namespace LDS
             _Data_Type* operator->();
             const _Data_Type* operator->() const;
 
-		public:
+        public:
+            inline int index() const { return m_it.m_current_index; }
+
 			bool begin_reached() const;
 			bool end_reached() const;
 
@@ -102,6 +104,8 @@ namespace LDS
             const _Data_Type* operator->() const;
 
 		public:
+            inline int index() const { return m_it.m_current_index; }
+
 			bool begin_reached() const;
 			bool end_reached() const;
 
