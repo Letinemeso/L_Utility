@@ -40,6 +40,9 @@ namespace LST
         Thread_Pool(const Thread_Pool&) = delete;
         Thread_Pool(Thread_Pool&&) = delete;
 
+    public:
+        inline unsigned int threads_amount() const { return m_threads.size(); }
+
     private:
         void M_thread_cycle();
 
