@@ -27,6 +27,9 @@ void Timer::update(float _time_passed)
         return;
 
     m_current_time += _time_passed;
-    if(m_current_time >= m_alarm_time)
-        reset();
+    if(m_current_time < m_alarm_time)
+        return;
+
+    m_active = false;
+    m_current_time = m_alarm_time;
 }
