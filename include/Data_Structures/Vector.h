@@ -167,6 +167,8 @@ namespace LDS
         Iterator find(const _Data_Type& _what);
         Const_Iterator find(const _Data_Type& _what) const;
 
+        bool contains(const _Data_Type& _what) const;
+
 	};
 
     //	Vector
@@ -541,6 +543,13 @@ namespace LDS
         }
 
         return Const_Iterator(nullptr);
+    }
+
+
+    template<typename _Data_Type>
+    bool Vector<_Data_Type>::contains(const _Data_Type& _what) const
+    {
+        return find(_what).is_ok();
     }
 
 
