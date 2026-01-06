@@ -549,7 +549,13 @@ namespace LDS
     template<typename _Data_Type>
     bool Vector<_Data_Type>::contains(const _Data_Type& _what) const
     {
-        return find(_what).is_ok();
+        for(unsigned int i = 0; i < m_elements_count; ++i)
+        {
+            if(m_array[i] == _what)
+                return true;
+        }
+
+        return false;
     }
 
 
