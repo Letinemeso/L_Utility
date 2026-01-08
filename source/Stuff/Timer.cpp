@@ -18,11 +18,14 @@ void Timer::reset()
 {
     m_current_time = 0.0f;
     m_active = false;
+    m_just_stopped = false;
 }
 
 
 void Timer::update(float _time_passed)
 {
+    m_just_stopped = false;
+
     if(!m_active)
         return;
 
@@ -32,4 +35,5 @@ void Timer::update(float _time_passed)
 
     m_active = false;
     m_current_time = m_alarm_time;
+    m_just_stopped = true;
 }
