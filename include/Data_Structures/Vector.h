@@ -459,7 +459,7 @@ namespace LDS
         for(unsigned int i = 0; i < size(); ++i)
             new_data[i] = m_array[i];
         for(unsigned int i = 0; i < _what.size(); ++i)
-            new_data[size() + i] = m_array[i];
+            new_data[size() + i] = _what[i];
 
         delete[] m_array;
         m_array = new_data;
