@@ -133,6 +133,7 @@ namespace LDS
         void resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with);
 		void clear();
         void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
+        void mark_full();      //  sets elements count to actual array size
 
 	public:
         void push(const _Data_Type& _data);
@@ -301,6 +302,12 @@ namespace LDS
     void Vector<_Data_Type>::mark_empty()
     {
         m_elements_count = 0;
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::mark_full()
+    {
+        m_elements_count = m_size;
     }
 
 
