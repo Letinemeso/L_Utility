@@ -39,6 +39,7 @@ namespace LST
 
     public:
         inline void set_on_update_func(const LST::Function<void(const Type&)>& _func) { m_on_update = _func; }
+        inline void reset_on_update_func() { m_on_update.reset(); }
         inline void set_run_in_loop(bool _value) { m_run_in_loop = _value; }
 
         void add_frame(float _timestamp, const Type& _target);
