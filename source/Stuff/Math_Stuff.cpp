@@ -294,6 +294,9 @@ unsigned int Math::random_number(unsigned int _lower_limimt, unsigned int _upper
         return _lower_limimt;
 
     unsigned int limit = _upper_limit - _lower_limimt;
+    if(limit == 1)
+        return _lower_limimt;
+
     return rand() % limit + _lower_limimt;
 }
 
