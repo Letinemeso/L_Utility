@@ -257,12 +257,12 @@ namespace LDS
         if(_new_size < m_size)
         {
             for(unsigned int i=0; i<_new_size; ++i)
-                temp[i] = m_array[i];
+                temp[i] = (_Data_Type&&)m_array[i];
         }
         else
         {
             for(unsigned int i=0; i<m_size; ++i)
-                temp[i] = m_array[i];
+                temp[i] = (_Data_Type&&)m_array[i];
         }
 
         delete[] m_array;
