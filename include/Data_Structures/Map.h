@@ -165,6 +165,8 @@ namespace LDS
         template<typename Search_Key_Type>
         inline Const_Iterator find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key) const;
 
+        inline Iterator find_or_insert(const Key_Type& _key);
+
     };
 
 //	Pair
@@ -600,6 +602,7 @@ namespace LDS
         return Const_Iterator(m_tree.find(m_less_func, m_equals_func, _key));
     }
 
+
     template<typename Key_Type, typename Data_Type>
     template<typename Search_Key_Type>
     typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key)
@@ -612,6 +615,16 @@ namespace LDS
     typename Map<Key_Type, Data_Type>::Const_Iterator Map<Key_Type, Data_Type>::find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key) const
     {
         return Const_Iterator(m_tree.find(_less_func, _equals_func, _key));
+    }
+
+
+    template<typename Key_Type, typename Data_Type>
+    typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find_or_insert(const Key_Type& _key)
+    {
+        Iterator maybe_it = find(_key);
+        if(!maybe_it.is_ok())
+            maybe_it = insert_and_get_iterator(_key, {});
+        return maybe_it;
     }
 
 }
