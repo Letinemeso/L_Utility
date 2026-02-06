@@ -50,7 +50,7 @@
 		#ifdef L_ASSERT
 			#undef L_ASSERT
 		#endif
-        #define L_ASSERT(condition) if(!(condition)) { std::cout << #condition << "\n"; int a = 1; a /= 0; std::cout.flush(); } 1 == 1
+        #define L_ASSERT(condition) if(!(condition)) { std::cout << "Assert failed at\n" << __FILE__ << " (" << __LINE__ << ") \ncondition: " << #condition << std::endl; std::abort(); } 1 == 1
 
 
     #else	//L_DEBUG == true
