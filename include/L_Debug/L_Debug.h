@@ -52,6 +52,11 @@
 		#endif
         #define L_ASSERT(condition) if(!(condition)) { std::cout << "Assert failed at\n" << __FILE__ << " (" << __LINE__ << ") \ncondition: " << #condition << std::endl; std::abort(); } 1 == 1
 
+        #ifdef L_ASSERT_WITH_INFO
+            #undef L_ASSERT_WITH_INFO
+        #endif
+        #define L_ASSERT_WITH_INFO(condition, info) if(!(condition)) { std::cout << "Assert failed at\n" << __FILE__ << " (" << __LINE__ << ") \ncondition: " << #condition << "\ninfo: " << info << std::endl; std::abort(); } 1 == 1
+
 
     #else	//L_DEBUG == true
 
@@ -89,5 +94,10 @@
 			#undef L_ASSERT
 		#endif
 		#define L_ASSERT(condition)
+
+        #ifdef L_ASSERT_WITH_INFO
+            #undef L_ASSERT_WITH_INFO
+        #endif
+        #define L_ASSERT_WITH_INFO(condition, info)
 
 #endif	//L_DEBUG
