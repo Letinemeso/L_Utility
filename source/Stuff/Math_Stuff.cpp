@@ -318,6 +318,15 @@ bool Math::random_bool()
     return rand() % 2 == 0;
 }
 
+bool Math::random_bool(unsigned int _chance, unsigned int _out_of)
+{
+    if(_chance >= _out_of)
+        return true;
+
+    unsigned int random_value = random_number(0, _out_of);
+    return random_value < _chance;
+}
+
 glm::vec2 Math::random_vec2(const glm::vec2& _lower_limit, const glm::vec2& _upper_limit)
 {
     glm::vec2 result;
