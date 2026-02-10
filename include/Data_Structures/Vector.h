@@ -134,6 +134,7 @@ namespace LDS
 		void clear();
         void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
         void mark_full();      //  sets elements count to actual array size
+        void set_elements_amount(unsigned int _value);     //  forcefully sets elements count to whatever value (must be less than size)
 
 	public:
         void push(const _Data_Type& _data);
@@ -308,6 +309,13 @@ namespace LDS
     void Vector<_Data_Type>::mark_full()
     {
         m_elements_count = m_size;
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::set_elements_amount(unsigned int _value)
+    {
+        L_ASSERT(_value <= m_size);
+        m_elements_count = _value;
     }
 
 
