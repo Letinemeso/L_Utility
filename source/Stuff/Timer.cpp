@@ -1,5 +1,7 @@
 #include <Stuff/Timer.h>
 
+#include <Stuff/Math_Stuff.h>
+
 using namespace LST;
 
 
@@ -8,7 +10,7 @@ void Timer::start(float _alarm_time)
     m_alarm_time = _alarm_time;
     m_current_time = 0.0f;
 
-    if(m_alarm_time < 1e-6f)
+    if(m_alarm_time < LST::Math::Float_Precision_Tolerance)
         return;
 
     m_active = true;

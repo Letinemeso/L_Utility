@@ -12,6 +12,14 @@ namespace LST
 namespace Math
 {
 
+    constexpr unsigned int Max_Unsigned_Int = 0xFFFFFFFF;
+    constexpr unsigned int Max_Int = 0x7FFFFFFF;
+    constexpr unsigned int Min_Int = 0x80000000;
+
+    constexpr float Float_Precision_Tolerance = 1e-6f;
+    constexpr float Float_Precision_Tolerance_Risky = 1e-7f;
+    constexpr float Float_Precision_Tolerance_Very_Risky = 1e-9f;
+
     constexpr float PI = 3.141593f;
     constexpr float HALF_PI = PI / 2.0f;
     constexpr float QUARTER_PI = HALF_PI / 2.0f;

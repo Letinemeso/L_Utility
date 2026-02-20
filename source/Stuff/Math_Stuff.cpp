@@ -188,7 +188,7 @@ Math::Rotation_Around_Axis Math::calculate_rotation_around_axis(const glm::vec3&
 
     float angle = 2.0f * acosf(rotation_quat.w);
 
-    if (fabsf(angle) < 1e-6f)
+    if (fabsf(angle) < LST::Math::Float_Precision_Tolerance)
         return { {1.0f, 0.0f, 0.0f}, 0.0f };
 
     float sin_half_angle = std::sin(angle * 0.5f);
