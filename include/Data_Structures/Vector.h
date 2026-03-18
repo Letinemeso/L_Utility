@@ -121,6 +121,7 @@ namespace LDS
 	public:
         Vector(unsigned int _initial_capacity = 5);
         Vector(unsigned int _initial_capacity, const _Data_Type& _fill_with);
+        Vector(const _Data_Type* _raw_data, unsigned int _data_size);
         Vector(const Vector<_Data_Type>& _other);
         Vector(Vector<_Data_Type>&& _other);
         void operator=(const Vector<_Data_Type>& _other);
@@ -131,6 +132,7 @@ namespace LDS
 		void resize(unsigned int _new_size);
         void fill(const _Data_Type& _fill_with);
         void resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with);
+        void use_raw_data(const _Data_Type* _raw_data, unsigned int _data_size);
 		void clear();
         void mark_empty();      //  sets elements count to 0, which makes push(...) overwrite existing elements
         void mark_full();      //  sets elements count to actual array size
@@ -190,6 +192,12 @@ namespace LDS
         m_array = new _Data_Type[m_size];
         for(unsigned int i = 0; i < m_elements_count; ++i)
             m_array[i] = _fill_with;
+    }
+
+    template<typename _Data_Type>
+    Vector<_Data_Type>::Vector(const _Data_Type* _raw_data, unsigned int _data_size)
+    {
+        use_raw_data(_raw_data, _data_size);
     }
 
     template<typename _Data_Type>
@@ -287,6 +295,18 @@ namespace LDS
     {
         resize(_new_size);
         fill(_fill_with);
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::use_raw_data(const _Data_Type* _raw_data, unsigned int _data_size)
+    {
+        delete[] m_array;
+
+        m_size = _data_size;
+        m_elements_count = _data_size;
+        m_array = new _Data_Type[m_size];
+        for(unsigned int i = 0; i < m_elements_count; ++i)
+            m_array[i] = _raw_data[i];
     }
 
     template<typename _Data_Type>
