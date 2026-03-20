@@ -25,8 +25,11 @@ namespace __LTest_Utility
 
 
 #define RUN_TESTS \
-    int main() \
+    int main(int _amount, char* _values[]) \
     { \
+        L_ASSERT(_amount <= 2); \
+        if(_amount == 2) \
+            LTest::Test_Controller::instance().set_tests_mask(_values[1]); \
         LTest::Test_Controller::instance().run_tests(); \
     }
 
