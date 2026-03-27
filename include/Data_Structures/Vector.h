@@ -1,6 +1,7 @@
 #pragma once
 
-#include "L_Debug/L_Debug.h"
+#include <L_Debug/L_Debug.h>
+#include <Stuff/Cast_Tools.h>
 
 
 namespace LDS
@@ -266,12 +267,12 @@ namespace LDS
         if(_new_size < m_size)
         {
             for(unsigned int i=0; i<_new_size; ++i)
-                temp[i] = (_Data_Type&&)m_array[i];
+                temp[i] = LST::move(m_array[i]);
         }
         else
         {
             for(unsigned int i=0; i<m_size; ++i)
-                temp[i] = (_Data_Type&&)m_array[i];
+                temp[i] = LST::move(m_array[i]);
         }
 
         delete[] m_array;
@@ -357,7 +358,7 @@ namespace LDS
         if(m_elements_count == m_size)
             resize(m_size * 2);
 
-        m_array[m_elements_count] = (_Data_Type&&)_data;
+        m_array[m_elements_count] = LST::move(_data);
 
         ++m_elements_count;
     }
