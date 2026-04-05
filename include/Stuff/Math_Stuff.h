@@ -24,6 +24,7 @@ namespace Math
     constexpr float HALF_PI = PI / 2.0f;
     constexpr float QUARTER_PI = HALF_PI / 2.0f;
     constexpr float EIGHTH_PI = QUARTER_PI / 2.0f;
+    constexpr float SIXTEENTH_PI = EIGHTH_PI / 2.0f;
     constexpr float DOUBLE_PI = PI * 2.0f;
 
     constexpr float SQRT_2 = 1.41421356237f;
@@ -63,8 +64,6 @@ namespace Math
     glm::vec3 cross_product(const glm::vec3& _first, const glm::vec3& _second);
 
     glm::vec3 rotate_vector(const glm::vec3& _vector, const glm::vec3& _axis, float _angle);
-
-    glm::vec3 calculate_projection(const glm::vec3& _project_what, const glm::vec3& _project_on);
 
     glm::vec3 calculate_angles(const glm::vec3& _direction, const glm::vec3& _top);
 
