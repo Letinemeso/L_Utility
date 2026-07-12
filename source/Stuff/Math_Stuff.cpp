@@ -73,11 +73,29 @@ glm::vec3 Math::extend_vector_to_length(const glm::vec3& _vec, float _length)
     return result;
 }
 
+glm::vec3 Math::calculate_direction_vec(const glm::vec3& _from, const glm::vec3& _to)
+{
+    glm::vec3 result = _to - _from;
+    shrink_vector_to_1(result);
+    return result;
+}
+
 float Math::get_distance(const glm::vec3& _first, const glm::vec3& _second)
 {
 	if (_first == _second)
 		return 0.0f;
-	return sqrt(pow(_second.x - _first.x, 2) + pow(_second.y - _first.y, 2) + pow(_second.z - _first.z, 2));
+
+    glm::vec3 direction = _second - _first;
+    return vector_length(direction);
+}
+
+float Math::get_distance_squared(const glm::vec3& _first, const glm::vec3& _second)
+{
+    if (_first == _second)
+        return 0.0f;
+
+    glm::vec3 direction = _second - _first;
+    return vector_length_squared(direction);
 }
 
 float Math::dot_product(const glm::vec3& _first, const glm::vec3& _second)
