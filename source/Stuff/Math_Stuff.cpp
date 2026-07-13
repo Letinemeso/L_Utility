@@ -80,7 +80,7 @@ glm::vec3 Math::calculate_direction_vec(const glm::vec3& _from, const glm::vec3&
     return result;
 }
 
-float Math::get_distance(const glm::vec3& _first, const glm::vec3& _second)
+float Math::calculate_distance(const glm::vec3& _first, const glm::vec3& _second)
 {
 	if (_first == _second)
 		return 0.0f;
@@ -89,7 +89,7 @@ float Math::get_distance(const glm::vec3& _first, const glm::vec3& _second)
     return vector_length(direction);
 }
 
-float Math::get_distance_squared(const glm::vec3& _first, const glm::vec3& _second)
+float Math::calculate_distance_squared(const glm::vec3& _first, const glm::vec3& _second)
 {
     if (_first == _second)
         return 0.0f;

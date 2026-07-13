@@ -57,9 +57,9 @@ namespace Math
 
     glm::vec3 calculate_direction_vec(const glm::vec3& _from, const glm::vec3& _to);
 
-    float get_distance(const glm::vec3& _first, const glm::vec3& _second);
+    float calculate_distance(const glm::vec3& _first, const glm::vec3& _second);
 
-    float get_distance_squared(const glm::vec3& _first, const glm::vec3& _second);
+    float calculate_distance_squared(const glm::vec3& _first, const glm::vec3& _second);
 
     float dot_product(const glm::vec3& _first, const glm::vec3& _second);
 
