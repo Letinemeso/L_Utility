@@ -145,7 +145,6 @@ glm::vec3 Math::calculate_angles(const glm::vec3& _direction, const glm::vec3& _
     rotationMatrix[2] = -_direction;
 
     glm::vec3 result = glm::eulerAngles(glm::quat_cast(rotationMatrix));
-    result.y = DOUBLE_PI - result.y;
 
     return result;
 }
