@@ -32,6 +32,9 @@ namespace LST
         inline bool operator==(const Coordinates& _other) const { return x() == _other.x() && y() == _other.y() && z() == _other.z(); }
         inline bool operator!=(const Coordinates& _other) const { return !(*this == _other); }
 
+        bool operator<(const Coordinates& _other) const;
+        bool operator>(const Coordinates& _other) const;
+
         Coordinates operator+(const Coordinates& _other) const;
         Coordinates operator-(const Coordinates& _other) const;
 

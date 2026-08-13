@@ -1,9 +1,9 @@
-#include <Stuff/Coordinates.h>
+#include <Stuff/Signed_Coordinates.h>
 
 using namespace LST;
 
 
-bool Coordinates::operator<(const Coordinates& _other) const
+bool Signed_Coordinates::operator<(const Signed_Coordinates& _other) const
 {
     for(unsigned int i = 0; i < 3; ++i)
     {
@@ -13,7 +13,7 @@ bool Coordinates::operator<(const Coordinates& _other) const
     return false;
 }
 
-bool Coordinates::operator>(const Coordinates& _other) const
+bool Signed_Coordinates::operator>(const Signed_Coordinates& _other) const
 {
     for(unsigned int i = 0; i < 3; ++i)
     {
@@ -24,24 +24,24 @@ bool Coordinates::operator>(const Coordinates& _other) const
 }
 
 
-Coordinates Coordinates::operator+(const Coordinates& _other) const
+Signed_Coordinates Signed_Coordinates::operator+(const Signed_Coordinates& _other) const
 {
     L_ASSERT(valid());
     L_ASSERT(_other.valid());
 
-    Coordinates result;
+    Signed_Coordinates result;
     for(unsigned int i = 0; i < 3; ++i)
         result.m_data[i] = m_data[i] + _other.m_data[i];
 
     return result;
 }
 
-Coordinates Coordinates::operator-(const Coordinates& _other) const
+Signed_Coordinates Signed_Coordinates::operator-(const Signed_Coordinates& _other) const
 {
     L_ASSERT(valid());
     L_ASSERT(_other.valid());
 
-    Coordinates result;
+    Signed_Coordinates result;
     for(unsigned int i = 0; i < 3; ++i)
     {
         L_ASSERT(_other.m_data[i] <= m_data[i]);
@@ -52,12 +52,12 @@ Coordinates Coordinates::operator-(const Coordinates& _other) const
 }
 
 
-Coordinates Coordinates::center(const Coordinates& _first, const Coordinates& _second)
+Signed_Coordinates Signed_Coordinates::center(const Signed_Coordinates& _first, const Signed_Coordinates& _second)
 {
     L_ASSERT(_first.valid());
     L_ASSERT(_second.valid());
 
-    Coordinates result = _first + _second;
+    Signed_Coordinates result = _first + _second;
     for(unsigned int i = 0; i < 3; ++i)
         result[i] /= 2;
 
