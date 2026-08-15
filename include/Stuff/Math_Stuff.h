@@ -101,6 +101,10 @@ namespace Math
 
     float mod_float(float _value, float _divider);
 
+    int pow_i(int _number, unsigned int _power);
+
+    unsigned int pow_ui(unsigned int _number, unsigned int _power);
+
     bool vecs_are_equal(const glm::vec2& _first, const glm::vec2& _second);
 
 	bool vecs_are_equal(const glm::vec3& _first, const glm::vec3& _second);

@@ -280,6 +280,22 @@ float Math::mod_float(float _value, float _divider)
     return _value - (_divider * (float)whole_part);
 }
 
+int Math::pow_i(int _number, unsigned int _power)
+{
+    int result = 1;
+    for(unsigned int i = 0; i < _power; ++i)
+        result *= _number;
+    return result;
+}
+
+unsigned int Math::pow_ui(unsigned int _number, unsigned int _power)
+{
+    unsigned int result = 1;
+    for(unsigned int i = 0; i < _power; ++i)
+        result *= _number;
+    return result;
+}
+
 bool Math::vecs_are_equal(const glm::vec2& _first, const glm::vec2& _second)
 {
     return floats_are_equal(_first.x, _second.x) && floats_are_equal(_first.y, _second.y);
