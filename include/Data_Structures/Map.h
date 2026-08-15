@@ -166,6 +166,7 @@ namespace LDS
         inline Const_Iterator find(const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _less_func, const LST::Function<bool(const Search_Key_Type&, const Pair&)>& _equals_func, const Search_Key_Type& _key) const;
 
         inline Iterator find_or_insert(const Key_Type& _key);
+        inline Iterator find_or_insert(const Key_Type& _key, const Data_Type& _data_if_inserts);
 
     };
 
@@ -624,6 +625,15 @@ namespace LDS
         Iterator maybe_it = find(_key);
         if(!maybe_it.is_ok())
             maybe_it = insert_and_get_iterator(_key, {});
+        return maybe_it;
+    }
+
+    template<typename Key_Type, typename Data_Type>
+    typename Map<Key_Type, Data_Type>::Iterator Map<Key_Type, Data_Type>::find_or_insert(const Key_Type& _key, const Data_Type& _data_if_inserts)
+    {
+        Iterator maybe_it = find(_key);
+        if(!maybe_it.is_ok())
+            maybe_it = insert_and_get_iterator(_key, _data_if_inserts);
         return maybe_it;
     }
 
