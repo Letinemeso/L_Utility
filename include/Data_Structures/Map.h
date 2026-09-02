@@ -1,6 +1,7 @@
 #pragma once
 
-#include "AVL_Tree.h"
+#include <Stuff/Cast_Tools.h>
+#include <Data_Structures/AVL_Tree.h>
 
 
 namespace LDS
@@ -153,6 +154,8 @@ namespace LDS
 
     public:
         inline unsigned int size() const { return m_tree.size(); }
+
+        inline bool contains(const Key_Type& _key) const;
 
         inline Iterator iterator();
         inline Const_Iterator iterator() const;
@@ -511,25 +514,29 @@ namespace LDS
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::insert(const Key_Type& _key, const Data_Type& _data)
     {
-        m_tree.insert(Pair(_key, _data));
+        Pair pair(_key, _data);
+        m_tree.insert(LST::move(pair));
     }
 
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::insert(Key_Type&& _key, Data_Type&& _data)
     {
-        m_tree.insert(Pair((Key_Type&&)_key, (Data_Type&&)_data));
+        Pair pair((Key_Type&&)_key, (Data_Type&&)_data);
+        m_tree.insert(LST::move(pair));
     }
 
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::insert(Key_Type&& _key, const Data_Type& _data)
     {
-        m_tree.insert(Pair((Key_Type&&)_key, _data));
+        Pair pair((Key_Type&&)_key, _data);
+        m_tree.insert(LST::move(pair));
     }
 
     template<typename Key_Type, typename Data_Type>
     void Map<Key_Type, Data_Type>::insert(const Key_Type& _key, Data_Type&& _data)
     {
-        m_tree.insert(Pair(_key, (Data_Type&&)_data));
+        Pair pair(_key, (Data_Type&&)_data);
+        m_tree.insert(LST::move(pair));
     }
 
 
@@ -577,6 +584,13 @@ namespace LDS
         m_tree.clear();
     }
 
+
+
+    template<typename Key_Type, typename Data_Type>
+    inline bool Map<Key_Type, Data_Type>::contains(const Key_Type& _key) const
+    {
+        return find(_key).is_ok();
+    }
 
 
     template<typename Key_Type, typename Data_Type>
