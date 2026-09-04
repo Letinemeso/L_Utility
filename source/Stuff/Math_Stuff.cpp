@@ -264,6 +264,23 @@ bool Math::floats_are_equal(float _first, float _second, float _precision)
 	return fabs(_first-_second) < _precision;
 }
 
+bool Math::value_is_between(float _min, float _max, float _value)
+{
+    if(_min > _max)
+    {
+        float temp = _min;
+        _min = _max;
+        _max = temp;
+    }
+
+    if(_value < _min)
+        return false;
+    if(_value > _max)
+        return false;
+
+    return true;
+}
+
 int Math::float_to_int(float _value)
 {
     int result = (int)_value;

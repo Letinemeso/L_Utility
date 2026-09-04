@@ -97,6 +97,8 @@ namespace Math
 
 	bool floats_are_equal(float _first, float _second, float _precision = 0.0001f);
 
+    bool value_is_between(float _min, float _max, float _value);
+
     int float_to_int(float _value);
 
     float mod_float(float _value, float _divider);
