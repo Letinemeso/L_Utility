@@ -7,9 +7,13 @@ bool Signed_Coordinates::operator<(const Signed_Coordinates& _other) const
 {
     for(unsigned int i = 0; i < 3; ++i)
     {
-        if(m_data[i] < _other[i])
+        if(m_data[i] < _other.m_data[i])
             return true;
+
+        if(m_data[i] > _other.m_data[i])
+            return false;
     }
+
     return false;
 }
 
@@ -17,9 +21,13 @@ bool Signed_Coordinates::operator>(const Signed_Coordinates& _other) const
 {
     for(unsigned int i = 0; i < 3; ++i)
     {
-        if(m_data[i] > _other[i])
+        if(m_data[i] > _other.m_data[i])
             return true;
+
+        if(m_data[i] < _other.m_data[i])
+            return false;
     }
+
     return false;
 }
 
