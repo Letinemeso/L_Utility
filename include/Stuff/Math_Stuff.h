@@ -117,11 +117,15 @@ namespace Math
 
     float random_number_float(float _lower_limimt, float _upper_limit);
 
+    float random_number_float_normal_distribution(float _lower_limimt, float _upper_limit);
+
     bool random_bool();
 
     bool random_bool(unsigned int _chance, unsigned int _out_of = 100);
 
     glm::vec2 random_vec2(const glm::vec2& _lower_limit, const glm::vec2& _upper_limit);
+
+    glm::vec3 random_vec3(float _length);
 
     glm::vec3 random_vec3(const glm::vec3& _lower_limit, const glm::vec3& _upper_limit);
 

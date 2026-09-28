@@ -352,9 +352,27 @@ float Math::random_number_float(float _lower_limimt, float _upper_limit)
         return _lower_limimt;
 
     float difference = _upper_limit - _lower_limimt;
-    float ratio = (float)random_number(0, 10000) / 10000.0f;
+
+    constexpr float Inverse_Divider = 1.0f / 10000.0f;
+    float ratio = (float)random_number(0, 10000) * Inverse_Divider;
 
     return _lower_limimt + (difference * ratio);
+}
+
+float Math::random_number_float_normal_distribution(float _lower_limit, float _upper_limit)
+{
+    float first = random_number_float(0.0f, 1.0f);
+    float second = random_number_float(0.0f, 1.0f);
+
+    if (first < 1e-7f)
+        first = 1e-7f;
+
+    float random_ratio = sqrtf(-2.0f * std::log(first)) * std::cos(2.0f * PI * second);
+
+    L_ASSERT(_upper_limit >= _lower_limit);
+
+    float difference = _upper_limit - _lower_limit;
+    return _lower_limit + (difference * random_ratio);
 }
 
 bool Math::random_bool()
@@ -377,6 +395,17 @@ glm::vec2 Math::random_vec2(const glm::vec2& _lower_limit, const glm::vec2& _upp
 
     for(unsigned int i = 0; i < 2; ++i)
         result[i] = random_number_float(_lower_limit[i], _upper_limit[i]);
+
+    return result;
+}
+
+glm::vec3 Math::random_vec3(float _length)
+{
+    glm::vec3 result;
+    for(unsigned int i = 0; i < 3; ++i)
+        result[i] = random_number_float_normal_distribution(0.0f, 1.0f);
+
+    extend_vector_to_length(result, _length);
 
     return result;
 }
