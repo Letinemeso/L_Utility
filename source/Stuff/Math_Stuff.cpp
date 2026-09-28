@@ -127,6 +127,13 @@ glm::vec3 Math::cross_product(const glm::vec3& _first, const glm::vec3& _second)
     };
 }
 
+glm::vec3 Math::calculate_perpendicular(const glm::vec3& _first, const glm::vec3& _second)
+{
+    glm::vec3 result = cross_product(_first, _second);
+    LST::Math::shrink_vector_to_1(result);
+    return result;
+}
+
 glm::vec3 Math::rotate_vector(const glm::vec3& _vector, const glm::vec3& _axis, float _angle)
 {
 	glm::mat4x4 rotation_matrix = glm::rotate(_angle, _axis);
@@ -382,4 +389,10 @@ glm::vec3 Math::random_vec3(const glm::vec3& _lower_limit, const glm::vec3& _upp
         result[i] = random_number_float(_lower_limit[i], _upper_limit[i]);
 
     return result;
+}
+
+glm::vec3 Math::random_vec3_rotation(const glm::vec3& _initial_vec, const glm::vec3& _rotation_axis, float _min_angle, float _max_angle)
+{
+    float random_angle = LST::Math::random_number_float(_min_angle, _max_angle);
+    return LST::Math::rotate_vector(_initial_vec, _rotation_axis, random_angle);
 }

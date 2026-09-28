@@ -67,6 +67,8 @@ namespace Math
 
     glm::vec3 cross_product(const glm::vec3& _first, const glm::vec3& _second);
 
+    glm::vec3 calculate_perpendicular(const glm::vec3& _first, const glm::vec3& _second);
+
     glm::vec3 rotate_vector(const glm::vec3& _vector, const glm::vec3& _axis, float _angle);
 
     glm::vec3 calculate_angles(const glm::vec3& _direction, const glm::vec3& _top);
@@ -122,6 +124,8 @@ namespace Math
     glm::vec2 random_vec2(const glm::vec2& _lower_limit, const glm::vec2& _upper_limit);
 
     glm::vec3 random_vec3(const glm::vec3& _lower_limit, const glm::vec3& _upper_limit);
+
+    glm::vec3 random_vec3_rotation(const glm::vec3& _initial_vec, const glm::vec3& _rotation_axis, float _min_angle = 0.0f, float _max_angle = LST::Math::DOUBLE_PI);
 
 }	/*Math*/
 
