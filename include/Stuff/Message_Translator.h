@@ -11,7 +11,7 @@ namespace LST
     class Message_Translator final
     {
     public:
-        template<typename Message_Type>
+        template<typename _Message_Type>
         class Handle
         {
         private:
@@ -61,33 +61,33 @@ namespace LST
         inline static Message_Translator& instance() { static Message_Translator mt_instance; return mt_instance; }
 
     public:
-        template<typename Message_Type>
+        template<typename _Message_Type>
         void register_message_type();
 
-        template<typename Message_Type>
-        Handle<Message_Type> subscribe(const LST::Function<void(Message_Type&)>& _func);
+        template<typename _Message_Type>
+        Handle<_Message_Type> subscribe(const LST::Function<void(_Message_Type&)>& _func);
 
-        template<typename Message_Type>
-        void unsubscribe(const Handle<Message_Type>& _handle);
+        template<typename _Message_Type>
+        void unsubscribe(const Handle<_Message_Type>& _handle);
 
-        template<typename Message_Type>
-        void translate(Message_Type& _msg);
+        template<typename _Message_Type>
+        void translate(_Message_Type& _msg);
 
     };
 
 
-    template<typename Message_Type>
+    template<typename _Message_Type>
     void Message_Translator::register_message_type()
     {
-        L_ASSERT(!m_registred_message_types.find(Message_Type::__message_name_str()).is_ok());
+        L_ASSERT(!m_registred_message_types.find(_Message_Type::__message_name_str()).is_ok());
 
-        m_registred_message_types.insert(Message_Type::__message_name_str(), {});
+        m_registred_message_types.insert(_Message_Type::__message_name_str(), {});
     }
 
-    template<typename Message_Type>
-    typename Message_Translator::Handle<Message_Type> Message_Translator::subscribe(const LST::Function<void(Message_Type&)>& _func)
+    template<typename _Message_Type>
+    typename Message_Translator::Handle<_Message_Type> Message_Translator::subscribe(const LST::Function<void(_Message_Type&)>& _func)
     {
-        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
+        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(_Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
         Subscribers_List& subscribers_list = *maybe_registred_type_it;
@@ -110,19 +110,19 @@ namespace LST
                 handle_number,
                 [_func](void* _msg_voidptr)
                 {
-                    Message_Type* _msg = (Message_Type*)_msg_voidptr;
+                    _Message_Type* _msg = (_Message_Type*)_msg_voidptr;
                     _func(*_msg);
                 }
             });
 
-        Handle<Message_Type> handle(handle_number);
+        Handle<_Message_Type> handle(handle_number);
         return handle;
     }
 
-    template<typename Message_Type>
-    void Message_Translator::unsubscribe(const Handle<Message_Type>& _handle)
+    template<typename _Message_Type>
+    void Message_Translator::unsubscribe(const Handle<_Message_Type>& _handle)
     {
-        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
+        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(_Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
         m_released_handles.push_back(_handle.handle);
@@ -141,10 +141,10 @@ namespace LST
         L_ASSERT(false);    //  attempt to unsubscribe non-subscriber
     }
 
-    template<typename Message_Type>
-    void Message_Translator::translate(Message_Type& _msg)
+    template<typename _Message_Type>
+    void Message_Translator::translate(_Message_Type& _msg)
     {
-        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(Message_Type::__message_name_str());
+        Registred_Message_Types::Iterator maybe_registred_type_it = m_registred_message_types.find(_Message_Type::__message_name_str());
         L_ASSERT(maybe_registred_type_it.is_ok());
 
         void* msg_voidptr = (void*)&_msg;

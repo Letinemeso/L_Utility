@@ -1,5 +1,4 @@
-#ifndef FUNCTION_WRAPPER_H
-#define FUNCTION_WRAPPER_H
+#pragma once
 
 namespace LST
 {
@@ -92,6 +91,3 @@ namespace LST
     };
 
 }
-
-
-#endif // FUNCTION_WRAPPER_H
