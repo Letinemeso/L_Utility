@@ -19,13 +19,16 @@ INIT_TEST(BVH_Test_0_1)
 {
     LDS::Vector<LST::Border> plug;
 
+    LST::BVH::Context context;
+
     LST::Bounding_Volume_Hierarchy bvh;
 
-    bvh.register_borders(plug);
-    const LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 0);
 
-    bvh.process();
+    context.registered_borders.add(plug);
+
+    bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 0);
 }
 
@@ -35,10 +38,11 @@ INIT_TEST(BVH_Test_No_Intersections)
     for(unsigned int i = 0; i < 10; ++i)
         borders.push( construct_border( { 2.0f * (float)i, 0, 0 } ) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders);
 
-    bvh.register_borders(borders);
-    const LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 0);
 }
 
@@ -48,10 +52,11 @@ INIT_TEST(BVH_Test_9_Intersections)
     for(unsigned int i = 0; i < 10; ++i)
         borders.push( construct_border( { 0.75f * (float)i, 0, 0 } ) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders);
 
-    bvh.register_borders(borders);
-    const LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 9);
 }
 
@@ -62,10 +67,11 @@ INIT_TEST(BVH_Test_Mutual_Intersections)
     borders.push( construct_border({ 0.3, 0, 0 }) );
     borders.push( construct_border({ 0.15, 0.15, 0 }) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders);
 
-    bvh.register_borders(borders);
-    const LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 3);
 }
 
@@ -83,10 +89,11 @@ INIT_TEST(BVH_Test_Intersections_Spaced_Out)
     /* 6 */ borders.push( construct_border({ 20, 1.1, 0 }) );
     /* 7 */ borders.push( construct_border({ 20, 0.9, 0 }) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders);
 
-    bvh.register_borders(borders);
-    const LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 6);
 
     L_ASSERT(pairs.size() == 6);
@@ -133,14 +140,15 @@ INIT_TEST(BVH_Test_2_Groups_Intersections)
     /* 1 */ borders_1.push( construct_border({ 0, 10, 0.1 }) );
     /* 2 */ borders_1.push( construct_border({ 20, 1.1, 0 }) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders_0);
+    context.registered_borders.add(borders_1);
 
-    bvh.register_borders(borders_0);
-    bvh.register_borders(borders_1);
-    const LST::BVH::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 4);
 
-    const LST::BVH::Registered_Borders& registered_borders = bvh.registered_borders();
+    const LST::BVH::Registered_Borders& registered_borders = context.registered_borders;
 
     LST::BVH::ID_Pair pair = pairs[0];
     LST::BVH::Registered_Borders::Border_Location location_0 = registered_borders.calculate_border_location(pair.id_0);
@@ -189,15 +197,16 @@ INIT_TEST(BVH_Test_3_Groups_Intersections)
     /* 0 */ borders_2.push( construct_border({ 1.2, 0, 0 }) );
     /* 2 */ borders_2.push( construct_border({ 1.7, 0.4, 0 }) );
 
-    LST::Bounding_Volume_Hierarchy bvh;
+    LST::BVH::Context context;
+    context.registered_borders.add(borders_0);
+    context.registered_borders.add(borders_1);
+    context.registered_borders.add(borders_2);
 
-    bvh.register_borders(borders_0);
-    bvh.register_borders(borders_1);
-    bvh.register_borders(borders_2);
-    const LST::BVH::ID_Pairs_Vec& pairs = bvh.process();
+    LST::Bounding_Volume_Hierarchy bvh;
+    LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 2);
 
-    const LST::BVH::Registered_Borders& registered_borders = bvh.registered_borders();
+    const LST::BVH::Registered_Borders& registered_borders = context.registered_borders;
 
     LST::BVH::ID_Pair pair = pairs[0];
     LST::BVH::Registered_Borders::Border_Location location_0 = registered_borders.calculate_border_location(pair.id_0);

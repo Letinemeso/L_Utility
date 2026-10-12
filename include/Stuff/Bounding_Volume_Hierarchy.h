@@ -44,56 +44,64 @@ namespace LST
 
             inline unsigned int total_size() const { return m_total_size; }
             inline unsigned int groups_amount() const { return m_border_vecs.size(); }
+            inline unsigned int group_size(unsigned int _group_index) const { return m_border_vecs[_group_index]->size(); }
 
             inline unsigned int calculate_group(unsigned int _id) const { return calculate_border_location(_id).group; }
             inline unsigned int calculate_group_index(unsigned int _id) const { return calculate_border_location(_id).index; }
 
         };
 
+        struct Context
+        {
+            Filter_Function filter;
+            Registered_Borders registered_borders;
+        };
+
     private:
         using IDs_Vec = LDS::Vector<unsigned int>;
 
-    private:
-        mutable LST::Function<bool(unsigned int, unsigned int)> m_filter;
-        mutable Registered_Borders m_registered_borders;
-        mutable LDS::Vector<bool> m_exclusions;
+        struct Context_Internal
+        {
+            const Context& context;
+            LDS::Vector<bool> exclusions;
+            IDs_Vec groups_cache;
+            ID_Pairs_Vec result;
 
-        mutable ID_Pairs_Vec m_result;
+            Context_Internal(const Context& _context) : context(_context) {  }
+        };
 
     private:
-        unsigned int m_max_depth = 5;
+        unsigned int m_max_depth = 3;
         unsigned int m_min_objects_in_area = 2;
 
     public:
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
 
-        inline void set_filter(const Filter_Function& _func) const { m_filter = _func; }
-        inline void reset_registered_borders() const { m_registered_borders.clear(); }
-        inline void register_borders(const Borders_Vec& _borders) const { m_registered_borders.add(_borders); }
-
-        inline const Registered_Borders& registered_borders() const { return m_registered_borders; }
-
     private:
-        inline const Border& M_get_border(unsigned int _id) const { return m_registered_borders[_id]; }
+        const Border& M_get_border(const Context_Internal& _context, unsigned int _id) const;
 
         unsigned int M_calculate_exclusions_amount(unsigned int _elements_amount) const;
-        unsigned int M_calculate_exclusion_index(unsigned int _first_index, unsigned int _second_index) const;
-        void M_update_exclusions_cache() const;
+        unsigned int M_calculate_exclusion_index(const Context_Internal& _context, unsigned int _first_index, unsigned int _second_index) const;
+        void M_update_exclusions(Context_Internal& _context) const;
 
-        Border M_construct_common_border(const IDs_Vec& _ids) const;
-        IDs_Vec M_find_objects_inside(const Border& _border, const IDs_Vec& _ids) const;
+        void M_update_groups_cache(Context_Internal& _context) const;
+
+        Border M_construct_common_border(const Context_Internal& _context, const IDs_Vec& _ids) const;
+        IDs_Vec M_find_objects_inside(const Context_Internal& _context, const Border& _border, const IDs_Vec& _ids) const;
+        IDs_Vec M_find_objects_inside(const Context_Internal& _context, const Border& _border) const;
         bool M_compare_ids(const IDs_Vec& _ids_0, const IDs_Vec& _ids_1) const;
 
         unsigned int M_find_largest_component(const Border& _rb) const;
         Border M_split_border(const Border& _border, unsigned int _component, bool _first_half) const;
 
-        bool M_ids_share_group(unsigned int _id_0, unsigned int _id_1) const;
+        bool M_ids_share_group(const Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const;
 
-        void M_append_pairs(const IDs_Vec& _ids) const;
-        void M_find_intersections(const Border& _border, const IDs_Vec& _ids_inside, unsigned int _level) const;
+        void M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids) const;
+        void M_find_intersections(Context_Internal& _context, const Border& _border, const IDs_Vec& _ids_inside, unsigned int _level) const;
 
     public:
-        const ID_Pairs_Vec& process() const;
+        ID_Pairs_Vec process(const Context& _context) const;
+        ID_Pairs_Vec process(const Context& _context, const Border& _initial_border) const;
 
     };
 
