@@ -16,3 +16,6 @@ target_include_directories(L_Utility PUBLIC
                             "${PROJECT_SOURCE_DIR}/include"
                             "${PROJECT_SOURCE_DIR}/glm"
 )
+
+
+add_subdirectory(tests)
