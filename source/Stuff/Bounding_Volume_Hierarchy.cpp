@@ -3,6 +3,35 @@
 using namespace LST;
 
 
+Bounding_Volume_Hierarchy::Registered_Borders::Border_Location Bounding_Volume_Hierarchy::Registered_Borders::calculate_border_location(unsigned int _id) const
+{
+    unsigned int counter = 0;
+    for(unsigned int i = 0; i < m_border_vecs.size(); ++i)
+    {
+        const Borders_Vec& borders_vec = *m_border_vecs[i];
+
+        unsigned int local_id = _id - counter;
+        if(local_id < borders_vec.size())
+            return { i, local_id };
+
+        counter += m_border_vecs[i]->size();
+    }
+
+    L_ASSERT(false);
+    return {};
+}
+
+
+const Border& Bounding_Volume_Hierarchy::Registered_Borders::operator[](unsigned int _id) const
+{
+    Border_Location location = calculate_border_location(_id);
+    return (*m_border_vecs[location.group])[ location.index ];
+}
+
+
+
+
+
 unsigned int Bounding_Volume_Hierarchy::M_calculate_exclusions_amount(unsigned int _elements_amount) const
 {
     if(_elements_amount < 2)
@@ -18,12 +47,12 @@ unsigned int Bounding_Volume_Hierarchy::M_calculate_exclusion_index(unsigned int
     if(_first_index > _second_index)
         std::swap(_first_index, _second_index);
 
-    return (_first_index * m_total_objects_amount) - M_calculate_exclusions_amount(_first_index + 1) + (_second_index - _first_index - 1);
+    return (_first_index * m_registered_borders.total_size()) - M_calculate_exclusions_amount(_first_index + 1) + (_second_index - _first_index - 1);
 }
 
 void Bounding_Volume_Hierarchy::M_update_exclusions_cache() const
 {
-    unsigned int exclusions_size = M_calculate_exclusions_amount(m_total_objects_amount);
+    unsigned int exclusions_size = M_calculate_exclusions_amount(m_registered_borders.total_size());
     if(exclusions_size == 0)
         return;
 
@@ -113,6 +142,18 @@ LST::Border Bounding_Volume_Hierarchy::M_split_border(const LST::Border& _border
 }
 
 
+bool Bounding_Volume_Hierarchy::M_ids_share_group(unsigned int _id_0, unsigned int _id_1) const
+{
+    if(m_registered_borders.groups_amount() < 2)
+        return false;
+
+    unsigned int group_0 = m_registered_borders.calculate_group(_id_0);
+    unsigned int group_1 = m_registered_borders.calculate_group(_id_1);
+
+    return group_0 == group_1;
+}
+
+
 void Bounding_Volume_Hierarchy::M_append_pairs(const IDs_Vec& _ids) const
 {
     for(unsigned int i_0 = 0; i_0 < _ids.size() - 1; ++i_0)
@@ -127,6 +168,12 @@ void Bounding_Volume_Hierarchy::M_append_pairs(const IDs_Vec& _ids) const
             if(m_exclusions[exclusion_index])
                 continue;
             m_exclusions[exclusion_index] = true;
+
+            if(m_filter && !m_filter(id_0, id_1))
+                continue;
+
+            if(M_ids_share_group(id_0, id_1))
+                continue;
 
             const Border& border_0 = M_get_border(id_0);
             const Border& border_1 = M_get_border(id_1);
@@ -170,19 +217,17 @@ void Bounding_Volume_Hierarchy::M_find_intersections(const Border& _border, cons
 
 
 
-const Bounding_Volume_Hierarchy::ID_Pairs_Vec& Bounding_Volume_Hierarchy::process(const LDS::Vector<Border>& _borders) const
+const Bounding_Volume_Hierarchy::ID_Pairs_Vec& Bounding_Volume_Hierarchy::process() const
 {
     m_result.mark_empty();
 
-    if(_borders.size() < 2)
+    if(m_registered_borders.total_size() < 2)
         return m_result;
 
-    m_borders = &_borders;
-    m_total_objects_amount = _borders.size();
     M_update_exclusions_cache();
 
-    IDs_Vec initial_ids(m_total_objects_amount);
-    for(unsigned int i = 0; i < m_total_objects_amount; ++i)
+    IDs_Vec initial_ids(m_registered_borders.total_size());
+    for(unsigned int i = 0; i < m_registered_borders.total_size(); ++i)
         initial_ids.push(i);
 
     Border initial_border = M_construct_common_border(initial_ids);
