@@ -133,6 +133,7 @@ namespace LDS
 		void resize(unsigned int _new_size);
         void fill(const _Data_Type& _fill_with);
         void fill(const _Data_Type& _fill_with, unsigned int _fill_until);
+        void fill_raw(unsigned char _fill_with);
         void resize_and_fill(unsigned int _new_size, const _Data_Type& _fill_with);
         void use_raw_data(const _Data_Type* _raw_data, unsigned int _data_size);
 		void clear();
@@ -298,6 +299,13 @@ namespace LDS
         m_elements_count = _fill_until;
         for(unsigned int i = 0; i < m_elements_count; ++i)
             m_array[i] = _fill_with;
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::fill_raw(unsigned char _fill_with)
+    {
+        m_elements_count = m_size;
+        memset(m_array, _fill_with, sizeof(_Data_Type) * m_size);
     }
 
     template<typename _Data_Type>

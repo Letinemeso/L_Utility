@@ -148,39 +148,29 @@ INIT_TEST(BVH_Test_2_Groups_Intersections)
     LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 4);
 
-    const LST::BVH::Registered_Borders& registered_borders = context.registered_borders;
-
     LST::BVH::ID_Pair pair = pairs[0];
-    LST::BVH::Registered_Borders::Border_Location location_0 = registered_borders.calculate_border_location(pair.id_0);
-    LST::BVH::Registered_Borders::Border_Location location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 0 );
-    EXPECT_EQUAL( location_1.group, 1 );
-    EXPECT_EQUAL( location_0.index, 0 );
-    EXPECT_EQUAL( location_1.index, 0 );
+    EXPECT_EQUAL( pair.group_id_0, 0 );
+    EXPECT_EQUAL( pair.group_id_1, 1 );
+    EXPECT_EQUAL( pair.id_0, 0 );
+    EXPECT_EQUAL( pair.id_1, 0 );
 
     pair = pairs[1];
-    location_0 = registered_borders.calculate_border_location(pair.id_0);
-    location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 0 );
-    EXPECT_EQUAL( location_1.group, 1 );
-    EXPECT_EQUAL( location_0.index, 1 );
-    EXPECT_EQUAL( location_1.index, 0 );
+    EXPECT_EQUAL( pair.group_id_0, 0 );
+    EXPECT_EQUAL( pair.group_id_1, 1 );
+    EXPECT_EQUAL( pair.id_0, 1 );
+    EXPECT_EQUAL( pair.id_1, 0 );
 
     pair = pairs[2];
-    location_0 = registered_borders.calculate_border_location(pair.id_0);
-    location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 0 );
-    EXPECT_EQUAL( location_1.group, 1 );
-    EXPECT_EQUAL( location_0.index, 2 );
-    EXPECT_EQUAL( location_1.index, 1 );
+    EXPECT_EQUAL( pair.group_id_0, 0 );
+    EXPECT_EQUAL( pair.group_id_1, 1 );
+    EXPECT_EQUAL( pair.id_0, 2 );
+    EXPECT_EQUAL( pair.id_1, 1 );
 
     pair = pairs[3];
-    location_0 = registered_borders.calculate_border_location(pair.id_0);
-    location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 0 );
-    EXPECT_EQUAL( location_1.group, 1 );
-    EXPECT_EQUAL( location_0.index, 4 );
-    EXPECT_EQUAL( location_1.index, 2 );
+    EXPECT_EQUAL( pair.group_id_0, 0 );
+    EXPECT_EQUAL( pair.group_id_1, 1 );
+    EXPECT_EQUAL( pair.id_0, 4 );
+    EXPECT_EQUAL( pair.id_1, 2 );
 }
 
 
@@ -206,21 +196,15 @@ INIT_TEST(BVH_Test_3_Groups_Intersections)
     LST::Bounding_Volume_Hierarchy::ID_Pairs_Vec pairs = bvh.process(context);
     EXPECT_EQUAL(pairs.size(), 2);
 
-    const LST::BVH::Registered_Borders& registered_borders = context.registered_borders;
-
     LST::BVH::ID_Pair pair = pairs[0];
-    LST::BVH::Registered_Borders::Border_Location location_0 = registered_borders.calculate_border_location(pair.id_0);
-    LST::BVH::Registered_Borders::Border_Location location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 0 );
-    EXPECT_EQUAL( location_1.group, 1 );
-    EXPECT_EQUAL( location_0.index, 0 );
-    EXPECT_EQUAL( location_1.index, 0 );
+    EXPECT_EQUAL( pair.group_id_0, 0 );
+    EXPECT_EQUAL( pair.group_id_1, 1 );
+    EXPECT_EQUAL( pair.id_0, 0 );
+    EXPECT_EQUAL( pair.id_1, 0 );
 
     pair = pairs[1];
-    location_0 = registered_borders.calculate_border_location(pair.id_0);
-    location_1 = registered_borders.calculate_border_location(pair.id_1);
-    EXPECT_EQUAL( location_0.group, 1 );
-    EXPECT_EQUAL( location_1.group, 2 );
-    EXPECT_EQUAL( location_0.index, 0 );
-    EXPECT_EQUAL( location_1.index, 0 );
+    EXPECT_EQUAL( pair.group_id_0, 1 );
+    EXPECT_EQUAL( pair.group_id_1, 2 );
+    EXPECT_EQUAL( pair.id_0, 0 );
+    EXPECT_EQUAL( pair.id_1, 0 );
 }

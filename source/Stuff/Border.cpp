@@ -157,14 +157,19 @@ Border& Border::expand_with(const Border& _other)
     glm::vec3 other_offset = _other.m_global_center - _other.m_global_extents;
     glm::vec3 other_limit = _other.m_global_center + _other.m_global_extents;
 
-    Border_Construction_Helper helper;
+    glm::vec3 new_offset;
+    glm::vec3 new_limit;
 
-    helper.consider_point(this_offset);
-    helper.consider_point(this_limit);
-    helper.consider_point(other_offset);
-    helper.consider_point(other_limit);
+    for(unsigned int i = 0; i < 3; ++i)
+    {
+        new_offset[i] = std::min(this_offset[i], other_offset[i]);
+        new_limit[i] = std::max(this_limit[i], other_limit[i]);
+    }
 
-    init(helper);
+    m_local_center = (new_limit + new_offset) * 0.5f;
+    m_local_extents = (new_limit - new_offset) * 0.5f;
+    m_global_center = m_local_center;
+    m_global_extents = m_local_extents;
 
     return *this;
 }

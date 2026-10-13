@@ -3,29 +3,40 @@
 using namespace LST;
 
 
+void Bounding_Volume_Hierarchy::Registered_Borders::clear()
+{
+    m_groups.mark_empty();
+    m_total_size = 0;
+}
+
+void Bounding_Volume_Hierarchy::Registered_Borders::add(const Borders_Vec& _vec)
+{
+    m_groups.push({ &_vec, m_total_size });
+    m_total_size += _vec.size();
+}
+
+
+
 Bounding_Volume_Hierarchy::Registered_Borders::Border_Location Bounding_Volume_Hierarchy::Registered_Borders::calculate_border_location(unsigned int _id) const
 {
-    unsigned int counter = 0;
-    for(unsigned int i = 0; i < m_border_vecs.size(); ++i)
+    L_ASSERT(_id < m_total_size);
+
+    for(unsigned int i = m_groups.size() - 1; i > 0; --i)
     {
-        const Borders_Vec& borders_vec = *m_border_vecs[i];
+        unsigned int group_offset = m_groups[i].index_offset;
 
-        unsigned int local_id = _id - counter;
-        if(local_id < borders_vec.size())
-            return { i, local_id };
-
-        counter += m_border_vecs[i]->size();
+        if(_id >= group_offset)
+            return { i, _id - group_offset };
     }
 
-    L_ASSERT(false);
-    return {};
+    return {0, _id};
 }
 
 
 const Border& Bounding_Volume_Hierarchy::Registered_Borders::operator[](unsigned int _id) const
 {
     Border_Location location = calculate_border_location(_id);
-    return (*m_border_vecs[location.group])[ location.index ];
+    return (*m_groups[location.group].borders_vecs)[ location.index ];
 }
 
 
@@ -35,15 +46,6 @@ const Border& Bounding_Volume_Hierarchy::Registered_Borders::operator[](unsigned
 const Border& Bounding_Volume_Hierarchy::M_get_border(const Context_Internal& _context, unsigned int _id) const
 {
     return _context.context.registered_borders[_id];
-}
-
-
-unsigned int Bounding_Volume_Hierarchy::M_calculate_exclusions_amount(unsigned int _elements_amount) const
-{
-    if(_elements_amount < 2)
-        return 0;
-
-    return ( _elements_amount * ( _elements_amount - 1 ) ) / 2;
 }
 
 unsigned int Bounding_Volume_Hierarchy::M_calculate_exclusion_index(const Context_Internal& _context, unsigned int _first_index, unsigned int _second_index) const
@@ -62,7 +64,8 @@ void Bounding_Volume_Hierarchy::M_update_exclusions(Context_Internal& _context) 
     if(exclusions_size == 0)
         return;
 
-    _context.exclusions.resize_and_fill(exclusions_size, false);
+    _context.exclusions.resize(exclusions_size);
+    _context.exclusions.fill_raw(0);
 }
 
 
@@ -206,8 +209,22 @@ void Bounding_Volume_Hierarchy::M_append_pairs(Context_Internal& _context, const
             const Border& border_0 = M_get_border(_context, id_0);
             const Border& border_1 = M_get_border(_context, id_1);
 
-            if(border_0.intersects_with(border_1))
-                _context.result.push({id_0, id_1});
+            if(!border_0.intersects_with(border_1))
+                continue;
+
+            unsigned int group_0 = _context.groups_cache[id_0];
+            unsigned int group_1 = _context.groups_cache[id_1];
+
+            unsigned int index_0 = _context.context.registered_borders.calculate_group_index(group_0, id_0);
+            unsigned int index_1 = _context.context.registered_borders.calculate_group_index(group_1, id_1);
+
+            if(group_0 > group_1)
+            {
+                std::swap(group_0, group_1);
+                std::swap(index_0, index_1);
+            }
+
+            _context.result.push({group_0, index_0, group_1, index_1});
         }
     }
 }
