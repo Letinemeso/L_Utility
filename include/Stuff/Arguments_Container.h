@@ -98,9 +98,9 @@ namespace LST
 
     public:
         template <typename _Callable>
-        auto call_with_args(const _Callable& _callable);
+        decltype(auto) call_with_args(const _Callable& _callable);
         template <typename _Owner_Object_Type, typename _Function_Ptr_Type>
-        auto call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr);
+        decltype(auto) call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr);
 
     };
 
@@ -227,14 +227,14 @@ namespace LST
 
     template <typename... _Arg_Types>
     template <typename _Callable>
-    auto Arguments_Container<_Arg_Types...>::call_with_args(const _Callable& _callable)
+    decltype(auto) Arguments_Container<_Arg_Types...>::call_with_args(const _Callable& _callable)
     {
         return M_call_with_args_impl<_Callable>(_callable, Indices_Sequence_Helper());
     }
 
     template <typename... _Arg_Types>
     template <typename _Owner_Object_Type, typename _Function_Ptr_Type>
-    auto Arguments_Container<_Arg_Types...>::call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr)
+    decltype(auto) Arguments_Container<_Arg_Types...>::call_with_args(_Owner_Object_Type& _object, _Function_Ptr_Type _function_ptr)
     {
         return M_call_with_args_impl(_object, _function_ptr, Indices_Sequence_Helper());
     }
