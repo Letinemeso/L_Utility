@@ -21,7 +21,28 @@ namespace __LTest_Utility
 
     };
 
+    class Initializator_Registrator
+    {
+    public:
+        Initializator_Registrator(const LST::Function<void()>& _initializator)
+        {
+            LTest::Test_Controller::instance().add_initializator(_initializator);
+        }
+
+    };
+
 }
+
+
+#define INIT_TEST_INITILIZATOR(INITIALIZATOR_NAME) \
+    namespace __NS_ ## INITIALIZATOR_NAME \
+    { \
+        LST::Function<void()> initializator = [](){
+
+#define TEST_INITILIZATOR_END \
+        }; \
+        __LTest_Utility::Initializator_Registrator registrator(initializator); \
+    }
 
 
 #define RUN_TESTS \

@@ -8,8 +8,8 @@
 
 #include <Testing/Test.h>
 
-
 using namespace LTest;
+
 
 Test_Controller::Test_Controller()
 {
@@ -29,10 +29,18 @@ void Test_Controller::add_test(const std::string& _name, Test* _test)
     m_tests.push({_name, _test});
 }
 
+void Test_Controller::add_initializator(const LST::Function<void()>& _initializator)
+{
+    m_initializators.push(_initializator);
+}
+
 
 
 void Test_Controller::run_tests()
 {
+    for(unsigned int i = 0; i < m_initializators.size(); ++i)
+        m_initializators[i]();
+
     LDS::Vector<Test_Data> tests_to_run(m_tests.size());
 
     if(m_tests_mask.empty())

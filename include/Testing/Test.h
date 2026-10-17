@@ -10,6 +10,9 @@ namespace LTest
         bool m_success = true;
 
     public:
+        virtual ~Test() { }
+
+    public:
         inline void reset() { m_success = true; }
         inline void mark_failed() { m_success = false; }
 

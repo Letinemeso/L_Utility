@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Data_Structures/Vector.h>
+#include <Stuff/Function_Wrapper.h>
 
 
 namespace LTest
@@ -18,6 +19,7 @@ namespace LTest
         };
 
         LDS::Vector<Test_Data> m_tests;
+        LDS::Vector<LST::Function<void()>> m_initializators;
 
         std::string m_tests_mask;
 
@@ -41,6 +43,7 @@ namespace LTest
 
     public:
         void add_test(const std::string& _name, Test* _test);
+        void add_initializator(const LST::Function<void()>& _initializator);
 
     public:
         void run_tests();
