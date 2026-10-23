@@ -51,10 +51,7 @@ Signed_Coordinates Signed_Coordinates::operator-(const Signed_Coordinates& _othe
 
     Signed_Coordinates result;
     for(unsigned int i = 0; i < 3; ++i)
-    {
-        L_ASSERT(_other.m_data[i] <= m_data[i]);
         result.m_data[i] = m_data[i] - _other.m_data[i];
-    }
 
     return result;
 }
