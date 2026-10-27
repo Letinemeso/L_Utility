@@ -16,6 +16,9 @@ namespace Math
     constexpr unsigned int Max_Int = 0x7FFFFFFF;
     constexpr unsigned int Min_Int = 0x80000000;
 
+    constexpr float Max_Float = std::numeric_limits<float>::max();
+    constexpr float Min_Float = std::numeric_limits<float>::lowest();
+
     constexpr float Float_Precision_Tolerance = 1e-6f;
     constexpr float Float_Precision_Tolerance_Risky = 1e-7f;
     constexpr float Float_Precision_Tolerance_Very_Risky = 1e-9f;
