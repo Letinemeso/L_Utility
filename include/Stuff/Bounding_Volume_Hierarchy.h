@@ -95,6 +95,7 @@ namespace LST
     private:
         unsigned int m_max_depth = 3;
         unsigned int m_min_objects_in_area = 2;
+        unsigned int m_min_objects_for_sap = 16;    //  sap - sweep and prune
 
     public:
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
@@ -114,8 +115,7 @@ namespace LST
 
         bool M_ids_share_group(const Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const;
 
-        float M_calculate_min_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const;
-        float M_calculate_max_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const;
+        void M_append_by_sap(Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const;
         void M_process_common_ids(Context_Internal& _context, const Separation_Result& _separation_result, unsigned int _separation_axis) const;
 
         void M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids, unsigned int _with_id) const;

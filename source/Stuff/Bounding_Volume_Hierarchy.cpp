@@ -2,6 +2,7 @@
 
 #include <Stuff/Math_Stuff.h>
 #include <Stuff/Stopwatch.h>        //  TODO: remove after optimization
+#include <Stuff/Sorter.h>
 
 using namespace LST;
 
@@ -184,43 +185,58 @@ bool Bounding_Volume_Hierarchy::M_ids_share_group(const Context_Internal& _conte
 }
 
 
-float Bounding_Volume_Hierarchy::M_calculate_min_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const
+void Bounding_Volume_Hierarchy::M_append_by_sap(Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const
 {
-    float result = LST::Math::Max_Float;
+    if(_ids.size() < 2)
+        return;
 
+    unsigned int sap_axis = (_separation_axis + 1) % 3;
+    unsigned int sap_axis_next = (sap_axis + 1) % 3;
+
+    struct ID_Min
+    {
+        const LST::Border* border;
+        unsigned int id;
+        float min;
+
+        inline bool operator<(const ID_Min& _other) const { return min < _other.min; }
+    };
+
+    LDS::Vector<ID_Min> projections_vec(_ids.size());
     for(unsigned int i = 0; i < _ids.size(); ++i)
     {
-        const LST::Border& border = M_get_border(_context, _ids[i]);
-
-        float component_offset = border.calculate_offset(_separation_axis);
-
-        if(result > component_offset)
-            result = component_offset;
+        unsigned int id = _ids[i];
+        const LST::Border& border = M_get_border(_context, id);
+        projections_vec.push({ &border, id, border.calculate_offset(sap_axis) });
     }
 
-    return result;
-}
+    LST::Sorter<ID_Min> sorter;
+    sorter.sort(projections_vec);
 
-float Bounding_Volume_Hierarchy::M_calculate_max_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const
-{
-    float result = LST::Math::Min_Float;
-
-    for(unsigned int i = 0; i < _ids.size(); ++i)
+    for(unsigned int i = 0; i < projections_vec.size() - 1; ++i)
     {
-        const LST::Border& border = M_get_border(_context, _ids[i]);
+        const ID_Min& current = projections_vec[i];
+        float max = current.border->calculate_limit(sap_axis);
 
-        float component_limit = border.calculate_limit(_separation_axis);
+        for(unsigned int j = i + 1; j < projections_vec.size(); ++j)
+        {
+            const ID_Min& check = projections_vec[j];
 
-        if(result < component_limit)
-            result = component_limit;
+            if(check.min > max)
+                break;
+
+            if(current.border->intersects_with(*check.border, sap_axis_next))
+                M_append_pair(_context, current.id, check.id);
+        }
     }
-
-    return result;
 }
 
 void Bounding_Volume_Hierarchy::M_process_common_ids(Context_Internal& _context, const Separation_Result& _separation_result, unsigned int _separation_axis) const
 {
-    M_append_pairs(_context, _separation_result.common_ids);
+    if(_separation_result.common_ids.size() < m_min_objects_for_sap)
+        M_append_pairs(_context, _separation_result.common_ids);
+    else
+        M_append_by_sap(_context, _separation_result.common_ids, _separation_axis);
 
     float common_offset = LST::Math::Max_Float;
     float common_limit = LST::Math::Min_Float;
@@ -264,8 +280,6 @@ void Bounding_Volume_Hierarchy::M_process_common_ids(Context_Internal& _context,
 
 void Bounding_Volume_Hierarchy::M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids, unsigned int _with_id) const
 {
-    // std::cout << _ids.size() << std::endl;
-
     for(unsigned int i = 0; i < _ids.size(); ++i)
     {
         unsigned int id = _ids[i];
@@ -278,8 +292,6 @@ void Bounding_Volume_Hierarchy::M_append_pairs(Context_Internal& _context, const
 {
     if(_ids.size() < 2)
         return;
-
-    // std::cout << _ids.size() * _ids.size() << std::endl;
 
     for(unsigned int i_0 = 0; i_0 < _ids.size() - 1; ++i_0)
     {
@@ -355,8 +367,8 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
     if(_context.registered_borders.total_size() < 2)
         return {};
 
-    // LST::Stopwatch sw;
-    // sw.start();
+    LST::Stopwatch sw;
+    sw.start();
 
     Context_Internal context(_context);
 
@@ -370,9 +382,9 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
 
     M_find_intersections(context, initial_border, initial_ids, 0);
 
-    // sw.stop();
+    sw.stop();
 
-    // std::cout << sw.duration() * 1000.0f << std::endl;
+    std::cout << sw.duration() * 1000.0f << std::endl;
 
     return context.result;
 }

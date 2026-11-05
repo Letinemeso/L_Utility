@@ -141,6 +141,17 @@ bool Border::intersects_with(const Border& _other) const
     return true;
 }
 
+bool Border::intersects_with(const Border& _other, unsigned int _by_component) const
+{
+    if(!valid() || !_other.valid())
+        return false;
+
+    float vec_between_centers = m_global_center[_by_component] - _other.m_global_center[_by_component];
+    float extents_sum = m_global_extents[_by_component] + _other.m_global_extents[_by_component];
+
+    return fabsf(vec_between_centers) <= extents_sum;
+}
+
 
 
 Border& Border::expand_with(const Border& _other)

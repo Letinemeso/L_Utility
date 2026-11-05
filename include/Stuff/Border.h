@@ -74,6 +74,7 @@ namespace LST
     public:
         bool point_is_inside(const glm::vec3& _point) const;
         bool intersects_with(const Border& _other) const;
+        bool intersects_with(const Border& _other, unsigned int _by_component) const;
 
     public:
         Border& expand_with(const Border& _other);
