@@ -31,7 +31,7 @@ namespace LST
         unsigned int pivot_index = 0;
         for(unsigned int i = 1; i < _size; ++i)
         {
-            if(_subarray[i] >= pivot)
+            if(!(_subarray[i] < pivot))
                 continue;
 
             _Type temp = _subarray[pivot_index];
