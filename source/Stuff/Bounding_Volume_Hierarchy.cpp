@@ -1,5 +1,7 @@
 #include <Stuff/Bounding_Volume_Hierarchy.h>
 
+#include <Stuff/Stopwatch.h>        //  TODO: remove after optimization
+
 using namespace LST;
 
 
@@ -46,6 +48,32 @@ const Border& Bounding_Volume_Hierarchy::Registered_Borders::operator[](unsigned
 const Border& Bounding_Volume_Hierarchy::M_get_border(const Context_Internal& _context, unsigned int _id) const
 {
     return _context.context.registered_borders[_id];
+}
+
+unsigned int Bounding_Volume_Hierarchy::M_calculate_exclusion_index(const Context_Internal& _context, unsigned int _first_index, unsigned int _second_index) const
+{
+    L_ASSERT(_first_index != _second_index);
+
+    if(_first_index > _second_index)
+        std::swap(_first_index, _second_index);
+
+    return _context.exclusion_offsets[_first_index] + (_second_index - _first_index - 1);
+}
+
+void Bounding_Volume_Hierarchy::M_update_exclusions(Context_Internal& _context) const
+{
+    unsigned int borders_amount = _context.context.registered_borders.total_size();
+
+    unsigned int exclusions_size = M_calculate_exclusions_amount(borders_amount);
+    if(exclusions_size == 0)
+        return;
+
+    _context.exclusions.resize(exclusions_size);
+    _context.exclusions.fill_raw(0);
+
+    _context.exclusion_offsets.resize(borders_amount);
+    for(unsigned int i = 0; i < borders_amount; ++i)
+        _context.exclusion_offsets.push( (i * borders_amount) - M_calculate_exclusions_amount(i + 1) );
 }
 
 
@@ -160,8 +188,36 @@ void Bounding_Volume_Hierarchy::M_append_pairs(Context_Internal& _context, const
         {
             unsigned int id_1 = _ids[i_1];
 
-            uint64_t packed_pair = M_pack_pair(id_0, id_1);
-            _context.potential_pairs.push(packed_pair);
+            unsigned int exclusion_index = M_calculate_exclusion_index(_context, id_0, id_1);
+            if(_context.exclusions[exclusion_index])
+                continue;
+            _context.exclusions[exclusion_index] = true;
+
+            if(_context.context.filter && !_context.context.filter(id_0, id_1))
+                continue;
+
+            if(M_ids_share_group(_context, id_0, id_1))
+                continue;
+
+            const Border& border_0 = M_get_border(_context, id_0);
+            const Border& border_1 = M_get_border(_context, id_1);
+
+            if(!border_0.intersects_with(border_1))
+                continue;
+
+            unsigned int group_0 = _context.groups_cache[id_0];
+            unsigned int group_1 = _context.groups_cache[id_1];
+
+            unsigned int index_0 = _context.context.registered_borders.calculate_group_index(group_0, id_0);
+            unsigned int index_1 = _context.context.registered_borders.calculate_group_index(group_1, id_1);
+
+            if(group_0 > group_1)
+            {
+                std::swap(group_0, group_1);
+                std::swap(index_0, index_1);
+            }
+
+            _context.result.push({group_0, index_0, group_1, index_1});
         }
     }
 }
@@ -198,66 +254,18 @@ void Bounding_Volume_Hierarchy::M_find_intersections(Context_Internal& _context,
 }
 
 
-void Bounding_Volume_Hierarchy::M_try_pair(Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const
-{
-    if(_context.context.filter && !_context.context.filter(_id_0, _id_1))
-        return;
-
-    if(M_ids_share_group(_context, _id_0, _id_1))
-        return;
-
-    const Border& border_0 = M_get_border(_context, _id_0);
-    const Border& border_1 = M_get_border(_context, _id_1);
-
-    if(!border_0.intersects_with(border_1))
-        return;
-
-    unsigned int group_0 = _context.groups_cache[_id_0];
-    unsigned int group_1 = _context.groups_cache[_id_1];
-
-    unsigned int index_0 = _context.context.registered_borders.calculate_group_index(group_0, _id_0);
-    unsigned int index_1 = _context.context.registered_borders.calculate_group_index(group_1, _id_1);
-
-    if(group_0 > group_1)
-    {
-        std::swap(group_0, group_1);
-        std::swap(index_0, index_1);
-    }
-
-    _context.result.push({group_0, index_0, group_1, index_1});
-}
-
-void Bounding_Volume_Hierarchy::M_find_unique_pairs(Context_Internal& _context) const
-{
-    m_potential_pairs_sorter.sort(_context.potential_pairs);
-
-    for(unsigned int i = 0; i < _context.potential_pairs.size();)
-    {
-        uint64_t pair = _context.potential_pairs[i];
-
-        unsigned int id_0 = M_unpack_first(pair);
-        unsigned int id_1 = M_unpack_second(pair);
-
-        M_try_pair(_context, id_0, id_1);
-
-        ++i;
-        for(; i < _context.potential_pairs.size(); ++i)
-        {
-            if(_context.potential_pairs[i] != pair)
-                break;
-        }
-    }
-}
-
-
 
 Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const Context& _context) const
 {
     if(_context.registered_borders.total_size() < 2)
         return {};
 
-    Context_Internal context(_context, _context.registered_borders.total_size() * _context.registered_borders.total_size());
+    // LST::Stopwatch sw;
+    // sw.start();
 
+    Context_Internal context(_context);
+
+    M_update_exclusions(context);
     M_update_groups_cache(context);
 
     IDs_Vec initial_ids(_context.registered_borders.total_size());
@@ -267,7 +275,10 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
     Border initial_border = M_construct_common_border(context, initial_ids);
 
     M_find_intersections(context, initial_border, initial_ids, 0);
-    M_find_unique_pairs(context);
+
+    // sw.stop();
+
+    // std::cout << sw.duration() * 1000.0f << std::endl;
 
     return context.result;
 }

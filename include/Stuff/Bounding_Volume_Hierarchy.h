@@ -2,7 +2,6 @@
 
 #include <Stuff/Border.h>
 #include <Stuff/Function_Wrapper.h>
-#include <Stuff/Sorter.h>
 
 
 namespace LST
@@ -74,29 +73,29 @@ namespace LST
         struct Context_Internal
         {
             const Context& context;
+            LDS::Vector<bool> exclusions;
+            LDS::Vector<unsigned int> exclusion_offsets;
             IDs_Vec groups_cache;
-            LDS::Vector<uint64_t> potential_pairs;
             ID_Pairs_Vec result;
 
-            Context_Internal(const Context& _context, unsigned int _potential_pairs_amount) : context(_context), potential_pairs(_potential_pairs_amount) {  }
+            Context_Internal(const Context& _context) : context(_context) {  }
         };
 
     private:
         unsigned int m_max_depth = 3;
         unsigned int m_min_objects_in_area = 2;
 
-        LST::Sorter<uint64_t> m_potential_pairs_sorter;
-
     public:
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
 
     private:
-        inline uint64_t M_pack_pair(unsigned int _id_0, unsigned int _id_1) const { if(_id_0 > _id_1) std::swap(_id_0, _id_1); return ((uint64_t)_id_0 << 32) | (uint64_t)_id_1; }
-        inline unsigned int M_unpack_first(uint64_t _pair) const { return (unsigned int)(_pair >> 32); }
-        inline unsigned int M_unpack_second(uint64_t _pair) const { return (unsigned int)(_pair); }
+        inline unsigned int M_calculate_exclusions_amount(unsigned int _elements_amount) const { return ( _elements_amount * ( _elements_amount - 1 ) ) / 2; }
 
     private:
         const Border& M_get_border(const Context_Internal& _context, unsigned int _id) const;
+
+        unsigned int M_calculate_exclusion_index(const Context_Internal& _context, unsigned int _first_index, unsigned int _second_index) const;
+        void M_update_exclusions(Context_Internal& _context) const;
 
         void M_update_groups_cache(Context_Internal& _context) const;
 
