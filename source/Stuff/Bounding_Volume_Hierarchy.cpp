@@ -1,7 +1,6 @@
 #include <Stuff/Bounding_Volume_Hierarchy.h>
 
 #include <Stuff/Math_Stuff.h>
-#include <Stuff/Stopwatch.h>        //  TODO: remove after optimization
 #include <Stuff/Sorter.h>
 
 using namespace LST;
@@ -367,9 +366,6 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
     if(_context.registered_borders.total_size() < 2)
         return {};
 
-    LST::Stopwatch sw;
-    sw.start();
-
     Context_Internal context(_context);
 
     M_update_groups_cache(context);
@@ -381,10 +377,6 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
     Border initial_border = M_construct_common_border(context, initial_ids);
 
     M_find_intersections(context, initial_border, initial_ids, 0);
-
-    sw.stop();
-
-    std::cout << sw.duration() * 1000.0f << std::endl;
 
     return context.result;
 }
