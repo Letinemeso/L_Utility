@@ -70,11 +70,22 @@ namespace LST
     private:
         using IDs_Vec = LDS::Vector<unsigned int>;
 
+        struct Separation_Result
+        {
+            IDs_Vec ids_0;
+            IDs_Vec ids_1;
+            IDs_Vec common_ids;
+
+            Separation_Result(unsigned int _size)
+                : ids_0(_size), ids_1(_size), common_ids(_size) { }
+
+            Separation_Result(Separation_Result&& _from)
+            : ids_0(_from.ids_0), ids_1(_from.ids_1), common_ids(_from.common_ids) { }
+        };
+
         struct Context_Internal
         {
             const Context& context;
-            LDS::Vector<bool> exclusions;
-            LDS::Vector<unsigned int> exclusion_offsets;
             IDs_Vec groups_cache;
             ID_Pairs_Vec result;
 
@@ -89,30 +100,29 @@ namespace LST
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
 
     private:
-        inline unsigned int M_calculate_exclusions_amount(unsigned int _elements_amount) const { return ( _elements_amount * ( _elements_amount - 1 ) ) / 2; }
-
-    private:
         const Border& M_get_border(const Context_Internal& _context, unsigned int _id) const;
-
-        unsigned int M_calculate_exclusion_index(const Context_Internal& _context, unsigned int _first_index, unsigned int _second_index) const;
-        void M_update_exclusions(Context_Internal& _context) const;
 
         void M_update_groups_cache(Context_Internal& _context) const;
 
         Border M_construct_common_border(const Context_Internal& _context, const IDs_Vec& _ids) const;
-        IDs_Vec M_find_objects_inside(const Context_Internal& _context, const Border& _border, const IDs_Vec& _ids) const;
+        Separation_Result M_separate_objects(const Context_Internal& _context, const Border& _border_0, const Border& _border_1, const IDs_Vec& _ids) const;
         bool M_compare_ids(const IDs_Vec& _ids_0, const IDs_Vec& _ids_1) const;
 
         unsigned int M_find_largest_component(const Border& _rb) const;
-        Border M_split_border(const Border& _border, unsigned int _component, bool _first_half) const;
+        float M_calculate_local_separation_point(const Context_Internal& _context, const Border& _border, const IDs_Vec& _ids, unsigned int _separation_axis) const;
+        Border M_split_border(const Border& _border, unsigned int _component, float _local_separation_point, bool _first_half) const;
 
         bool M_ids_share_group(const Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const;
 
-        void M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids) const;
-        void M_find_intersections(Context_Internal& _context, const Border& _border, const IDs_Vec& _ids_inside, unsigned int _level) const;
+        float M_calculate_min_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const;
+        float M_calculate_max_projection(const Context_Internal& _context, const IDs_Vec& _ids, unsigned int _separation_axis) const;
+        void M_process_common_ids(Context_Internal& _context, const Separation_Result& _separation_result, unsigned int _separation_axis) const;
 
-        void M_try_pair(Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const;
-        void M_find_unique_pairs(Context_Internal& _context) const;
+        void M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids, unsigned int _with_id) const;
+        void M_append_pairs(Context_Internal& _context, const IDs_Vec& _ids) const;
+        void M_append_pair(Context_Internal& _context, unsigned int _id_0, unsigned int _id_1) const;
+
+        void M_find_intersections(Context_Internal& _context, const Border& _border, const IDs_Vec& _ids_inside, unsigned int _level) const;
 
     public:
         ID_Pairs_Vec process(const Context& _context) const;

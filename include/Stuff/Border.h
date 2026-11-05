@@ -58,6 +58,9 @@ namespace LST
         inline glm::vec3 calculate_offset() const { return m_global_center - m_global_extents; }
         inline glm::vec3 calculate_limit() const { return m_global_center + m_global_extents; }
 
+        inline float calculate_offset(unsigned int _component_index) const { return m_global_center[_component_index] - m_global_extents[_component_index]; }
+        inline float calculate_limit(unsigned int _component_index) const { return m_global_center[_component_index] + m_global_extents[_component_index]; }
+
     public:
         void init(const Border_Construction_Helper& _helper);
         void init(const float* _raw_data, unsigned int _raw_data_size);
