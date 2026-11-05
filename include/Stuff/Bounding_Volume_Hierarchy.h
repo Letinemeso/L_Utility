@@ -99,7 +99,6 @@ namespace LST
 
         Border M_construct_common_border(const Context_Internal& _context, const IDs_Vec& _ids) const;
         IDs_Vec M_find_objects_inside(const Context_Internal& _context, const Border& _border, const IDs_Vec& _ids) const;
-        IDs_Vec M_find_objects_inside(const Context_Internal& _context, const Border& _border) const;
         bool M_compare_ids(const IDs_Vec& _ids_0, const IDs_Vec& _ids_1) const;
 
         unsigned int M_find_largest_component(const Border& _rb) const;
@@ -112,7 +111,6 @@ namespace LST
 
     public:
         ID_Pairs_Vec process(const Context& _context) const;
-        ID_Pairs_Vec process(const Context& _context, const Border& _initial_border) const;
 
     };
 

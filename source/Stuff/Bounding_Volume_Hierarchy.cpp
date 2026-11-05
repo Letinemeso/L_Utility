@@ -111,21 +111,6 @@ Bounding_Volume_Hierarchy::IDs_Vec Bounding_Volume_Hierarchy::M_find_objects_ins
     return result;
 }
 
-Bounding_Volume_Hierarchy::IDs_Vec Bounding_Volume_Hierarchy::M_find_objects_inside(const Context_Internal& _context, const Border& _border) const
-{
-    IDs_Vec result(_context.context.registered_borders.total_size());
-
-    for(unsigned int i = 0; i < _context.context.registered_borders.total_size(); ++i)
-    {
-        const Border& id_border = M_get_border(_context, i);
-
-        if(_border.intersects_with(id_border))
-            result.push(i);
-    }
-
-    return result;
-}
-
 bool Bounding_Volume_Hierarchy::M_compare_ids(const IDs_Vec& _ids_0, const IDs_Vec& _ids_1) const
 {
     if(_ids_0.size() != _ids_1.size())
@@ -279,23 +264,6 @@ Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const
     Border initial_border = M_construct_common_border(context, initial_ids);
 
     M_find_intersections(context, initial_border, initial_ids, 0);
-
-    return context.result;
-}
-
-Bounding_Volume_Hierarchy::ID_Pairs_Vec Bounding_Volume_Hierarchy::process(const Context& _context, const Border& _initial_border) const
-{
-    if(_context.registered_borders.total_size() < 2)
-        return {};
-
-    Context_Internal context(_context);
-
-    M_update_exclusions(context);
-    M_update_groups_cache(context);
-
-    IDs_Vec initial_ids = M_find_objects_inside(_context, _initial_border);
-
-    M_find_intersections(context, _initial_border, initial_ids, 0);
 
     return context.result;
 }
