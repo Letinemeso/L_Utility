@@ -161,6 +161,7 @@ namespace LDS
 
         inline unsigned int size() const { return m_elements_count; }
         inline unsigned int capacity() const { return m_size; }
+        inline bool empty() const { return m_elements_count == 0; }
 
         _Data_Type& operator[](unsigned int _index);
         const _Data_Type& operator[](unsigned int _index) const;
