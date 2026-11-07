@@ -116,8 +116,8 @@ namespace LDS
 
 	private:
         _Data_Type* m_array = nullptr;
-		unsigned int m_elements_count = 0;
-		unsigned int m_size = 0;
+        unsigned int m_size = 0;
+        unsigned int m_capacity = 0;
 
 	public:
         Vector(unsigned int _initial_capacity = 5);
@@ -141,9 +141,14 @@ namespace LDS
         void mark_full();      //  sets elements count to actual array size
         void set_elements_amount(unsigned int _value);     //  forcefully sets elements count to whatever value (must be less than size)
 
+        void move_elements_forward(unsigned int _indices = 1);
+
 	public:
         void push(const _Data_Type& _data);
         void push(_Data_Type&& _data);
+
+        void push_front(const _Data_Type& _data);
+        void push_front(_Data_Type&& _data);
 
 		void pop(unsigned int _index);
 		Iterator pop(const Iterator& _where);
@@ -159,9 +164,11 @@ namespace LDS
         inline _Data_Type* raw_data() { return m_array; }
         inline const _Data_Type* raw_data() const { return m_array; }
 
-        inline unsigned int size() const { return m_elements_count; }
-        inline unsigned int capacity() const { return m_size; }
-        inline bool empty() const { return m_elements_count == 0; }
+        inline unsigned int size() const { return m_size; }
+        inline unsigned int capacity() const { return m_capacity; }
+        inline bool empty() const { return m_size == 0; }
+
+        inline bool can_move_elements_forward(unsigned int _indices = 1) const { return m_size + _indices <= m_capacity; }
 
         _Data_Type& operator[](unsigned int _index);
         const _Data_Type& operator[](unsigned int _index) const;
@@ -184,17 +191,17 @@ namespace LDS
     template<typename _Data_Type>
     Vector<_Data_Type>::Vector(unsigned int _initial_capacity)
     {
-        m_size = _initial_capacity;
-        m_array = new _Data_Type[m_size];
+        m_capacity = _initial_capacity;
+        m_array = new _Data_Type[m_capacity];
     }
 
     template<typename _Data_Type>
     Vector<_Data_Type>::Vector(unsigned int _initial_capacity, const _Data_Type& _fill_with)
     {
-        m_size = _initial_capacity;
-        m_elements_count = m_size;
-        m_array = new _Data_Type[m_size];
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        m_capacity = _initial_capacity;
+        m_size = m_capacity;
+        m_array = new _Data_Type[m_capacity];
+        for(unsigned int i = 0; i < m_size; ++i)
             m_array[i] = _fill_with;
     }
 
@@ -207,24 +214,24 @@ namespace LDS
     template<typename _Data_Type>
     Vector<_Data_Type>::Vector(const Vector<_Data_Type>& _other)
     {
+        m_capacity = _other.m_capacity;
         m_size = _other.m_size;
-        m_elements_count = _other.m_elements_count;
 
-        m_array = new _Data_Type[m_size];
-        for(unsigned int i=0; i<m_elements_count; ++i)
+        m_array = new _Data_Type[m_capacity];
+        for(unsigned int i=0; i<m_size; ++i)
             m_array[i] = _other[i];
     }
 
     template<typename _Data_Type>
     Vector<_Data_Type>::Vector(Vector<_Data_Type>&& _other)
     {
+        m_capacity = _other.m_capacity;
+        _other.m_capacity = 5;
         m_size = _other.m_size;
-        _other.m_size = 5;
-        m_elements_count = _other.m_elements_count;
-        _other.m_elements_count = 0;
+        _other.m_size = 0;
 
         m_array = _other.m_array;
-        _other.m_array = new _Data_Type[_other.m_size];
+        _other.m_array = new _Data_Type[_other.m_capacity];
     }
 
     template<typename _Data_Type>
@@ -232,11 +239,11 @@ namespace LDS
     {
         delete[] m_array;
 
+        m_capacity = _other.m_capacity;
         m_size = _other.m_size;
-        m_elements_count = _other.m_elements_count;
 
-        m_array = new _Data_Type[m_size];
-        for(unsigned int i=0; i<_other.m_elements_count; ++i)
+        m_array = new _Data_Type[m_capacity];
+        for(unsigned int i=0; i<_other.m_size; ++i)
             m_array[i] = _other[i];
     }
 
@@ -245,13 +252,13 @@ namespace LDS
     {
         delete[] m_array;
 
+        m_capacity = _other.m_capacity;
+        _other.m_capacity = 5;
         m_size = _other.m_size;
-        _other.m_size = 5;
-        m_elements_count = _other.m_elements_count;
-        _other.m_elements_count = 0;
+        _other.m_size = 0;
 
         m_array = _other.m_array;
-        _other.m_array = new _Data_Type[_other.m_size];
+        _other.m_array = new _Data_Type[_other.m_capacity];
     }
 
     template<typename _Data_Type>
@@ -267,46 +274,46 @@ namespace LDS
     {
         _Data_Type* temp = new _Data_Type[_new_size];
 
-        if(_new_size < m_size)
+        if(_new_size < m_capacity)
         {
             for(unsigned int i=0; i<_new_size; ++i)
                 temp[i] = LST::move(m_array[i]);
         }
         else
         {
-            for(unsigned int i=0; i<m_size; ++i)
+            for(unsigned int i=0; i<m_capacity; ++i)
                 temp[i] = LST::move(m_array[i]);
         }
 
         delete[] m_array;
         m_array = temp;
-        m_size = _new_size;
+        m_capacity = _new_size;
 
-        if(m_elements_count > m_size)
-            m_elements_count = m_size;
+        if(m_size > m_capacity)
+            m_size = m_capacity;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::fill(const _Data_Type& _fill_with)
     {
-        m_elements_count = m_size;
-        for(unsigned int i = 0; i < m_size; ++i)
+        m_size = m_capacity;
+        for(unsigned int i = 0; i < m_capacity; ++i)
             m_array[i] = _fill_with;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::fill(const _Data_Type& _fill_with, unsigned int _fill_until)
     {
-        m_elements_count = _fill_until;
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        m_size = _fill_until;
+        for(unsigned int i = 0; i < m_size; ++i)
             m_array[i] = _fill_with;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::fill_raw(unsigned char _fill_with)
     {
-        m_elements_count = m_size;
-        memset(m_array, _fill_with, sizeof(_Data_Type) * m_size);
+        m_size = m_capacity;
+        memset(m_array, _fill_with, sizeof(_Data_Type) * m_capacity);
     }
 
     template<typename _Data_Type>
@@ -321,10 +328,10 @@ namespace LDS
     {
         delete[] m_array;
 
+        m_capacity = _data_size;
         m_size = _data_size;
-        m_elements_count = _data_size;
-        m_array = new _Data_Type[m_size];
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        m_array = new _Data_Type[m_capacity];
+        for(unsigned int i = 0; i < m_size; ++i)
             m_array[i] = _raw_data[i];
     }
 
@@ -333,28 +340,42 @@ namespace LDS
     {
         delete[] m_array;
 
-        m_size = 5;
-        m_elements_count = 0;
-        m_array = new _Data_Type[m_size];
+        m_capacity = 5;
+        m_size = 0;
+        m_array = new _Data_Type[m_capacity];
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::mark_empty()
     {
-        m_elements_count = 0;
+        m_size = 0;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::mark_full()
     {
-        m_elements_count = m_size;
+        m_size = m_capacity;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::set_elements_amount(unsigned int _value)
     {
-        L_ASSERT(_value <= m_size);
-        m_elements_count = _value;
+        L_ASSERT(_value <= m_capacity);
+        m_size = _value;
+    }
+
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::move_elements_forward(unsigned int _indices)
+    {
+        L_ASSERT(_indices > 0);
+        L_ASSERT(can_move_elements_forward(_indices));
+
+        unsigned int size_after = m_size + _indices;
+        for(unsigned int i = size_after - 1; i >= _indices; ++i)
+            m_array[i] = LST::move(m_array[i - _indices]);
+
+        m_size = size_after;
     }
 
 
@@ -362,42 +383,65 @@ namespace LDS
     template<typename _Data_Type>
     void Vector<_Data_Type>::push(const _Data_Type& _data)
     {
-        if(m_elements_count == m_size)
-            resize(m_size * 2);
+        if(m_size == m_capacity)
+            resize(m_capacity * 2);
 
-        m_array[m_elements_count] = _data;
+        m_array[m_size] = _data;
 
-        ++m_elements_count;
+        ++m_size;
     }
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::push(_Data_Type&& _data)
     {
-        if(m_elements_count == m_size)
-            resize(m_size * 2);
+        if(m_size == m_capacity)
+            resize(m_capacity * 2);
 
-        m_array[m_elements_count] = LST::move(_data);
+        m_array[m_size] = LST::move(_data);
 
-        ++m_elements_count;
+        ++m_size;
+    }
+
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::push_front(const _Data_Type& _data)
+    {
+        if(m_size == m_capacity)
+            resize(m_capacity * 2);
+
+        move_elements_forward();
+
+        m_array[0] = _data;
+    }
+
+    template<typename _Data_Type>
+    void Vector<_Data_Type>::push_front(_Data_Type&& _data)
+    {
+        if(m_size == m_capacity)
+            resize(m_capacity * 2);
+
+        move_elements_forward();
+
+        m_array[0] = LST::move(_data);
     }
 
 
     template<typename _Data_Type>
     void Vector<_Data_Type>::pop(unsigned int _index)
     {
-        L_ASSERT(m_elements_count > 0);
-        L_ASSERT(_index < m_elements_count);
+        L_ASSERT(m_size > 0);
+        L_ASSERT(_index < m_size);
 
-        for(unsigned int i = _index; i < m_elements_count; ++i)
+        for(unsigned int i = _index; i < m_size; ++i)
             m_array[i] = m_array[i + 1];
 
-        --m_elements_count;
+        --m_size;
     }
 
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::pop(const Iterator& _where)
     {
-        L_ASSERT(m_elements_count > 0);
+        L_ASSERT(m_size > 0);
         L_ASSERT(_where.m_it.m_parent == this);
 
         unsigned int index = _where.m_it.m_current_index;
@@ -406,13 +450,13 @@ namespace LDS
 
         Iterator return_it(this);
 
-        if(m_elements_count == 0)
+        if(m_size == 0)
         {
             return_it.m_it.m_end_reached = true;
         }
-        else if(_where.m_it.m_current_index == m_elements_count)
+        else if(_where.m_it.m_current_index == m_size)
         {
-            return_it.m_it.m_current_index = m_elements_count - 1;
+            return_it.m_it.m_current_index = m_size - 1;
             return_it.m_it.m_end_reached = true;
         }
         else
@@ -426,7 +470,7 @@ namespace LDS
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::pop(const Const_Iterator& _where)
     {
-        L_ASSERT(m_elements_count > 0);
+        L_ASSERT(m_size > 0);
         L_ASSERT(_where.m_it.m_parent == this);
 
         unsigned int index = _where.m_it.m_current_index;
@@ -435,13 +479,13 @@ namespace LDS
 
         Const_Iterator return_it(this);
 
-        if(m_elements_count == 0)
+        if(m_size == 0)
         {
             return_it.m_it.m_end_reached = true;
         }
-        else if(_where.m_it.m_current_index == m_elements_count)
+        else if(_where.m_it.m_current_index == m_size)
         {
-            return_it.m_it.m_current_index = m_elements_count - 1;
+            return_it.m_it.m_current_index = m_size - 1;
             return_it.m_it.m_end_reached = true;
         }
         else
@@ -456,9 +500,9 @@ namespace LDS
     template<typename _Data_Type>
     void Vector<_Data_Type>::swap(unsigned int _f_index, unsigned int _s_index)
     {
-        L_ASSERT(_f_index < m_elements_count);
+        L_ASSERT(_f_index < m_size);
 
-        L_ASSERT(_s_index < m_elements_count);
+        L_ASSERT(_s_index < m_size);
 
         _Data_Type temp = m_array[_f_index];
         m_array[_f_index] = m_array[_s_index];
@@ -471,12 +515,12 @@ namespace LDS
         L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
 
         unsigned int first_index = _first.m_it.m_current_index;
-        L_ASSERT(first_index < m_elements_count);
+        L_ASSERT(first_index < m_size);
 
         unsigned int second_index = _second.m_it.m_current_index;
-        L_ASSERT(second_index < m_elements_count);
+        L_ASSERT(second_index < m_size);
 
-        L_ASSERT(second_index != m_elements_count);
+        L_ASSERT(second_index != m_size);
 
         swap(first_index, second_index);
     }
@@ -487,12 +531,12 @@ namespace LDS
         L_ASSERT(_first.m_it.m_parent == this && _second.m_it.m_parent == this);
 
         unsigned int first_index = _first.m_it.m_current_index;
-        L_ASSERT(first_index < m_elements_count);
+        L_ASSERT(first_index < m_size);
 
         unsigned int second_index = _second.m_it.m_current_index;
-        L_ASSERT(second_index < m_elements_count);
+        L_ASSERT(second_index < m_size);
 
-        L_ASSERT(second_index != m_elements_count);
+        L_ASSERT(second_index != m_size);
 
         swap(first_index, second_index);
     }
@@ -510,8 +554,8 @@ namespace LDS
 
         delete[] m_array;
         m_array = new_data;
+        m_capacity = total_size;
         m_size = total_size;
-        m_elements_count = total_size;
     }
 
 
@@ -519,7 +563,7 @@ namespace LDS
     template<typename _Data_Type>
     _Data_Type& Vector<_Data_Type>::operator[](unsigned int _index)
     {
-        L_ASSERT(_index < m_size);
+        L_ASSERT(_index < m_capacity);
 
         return m_array[_index];
     }
@@ -527,7 +571,7 @@ namespace LDS
     template<typename _Data_Type>
     const _Data_Type& Vector<_Data_Type>::operator[](unsigned int _index) const
     {
-        L_ASSERT(_index < m_elements_count);
+        L_ASSERT(_index < m_size);
 
         return m_array[_index];
     }
@@ -536,7 +580,7 @@ namespace LDS
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::at(unsigned int _index)
     {
-        L_ASSERT(_index < m_elements_count);
+        L_ASSERT(_index < m_size);
 
         Iterator result(this);
         result.m_it.m_current_index = _index;
@@ -546,7 +590,7 @@ namespace LDS
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::at(unsigned int _index) const
     {
-        L_ASSERT(_index < m_elements_count);
+        L_ASSERT(_index < m_size);
 
         Const_Iterator result(this);
         result.m_it.m_current_index = _index;
@@ -570,7 +614,7 @@ namespace LDS
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Iterator Vector<_Data_Type>::find(const _Data_Type& _what)
     {
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        for(unsigned int i = 0; i < m_size; ++i)
         {
             if(m_array[i] != _what)
                 continue;
@@ -586,7 +630,7 @@ namespace LDS
     template<typename _Data_Type>
     typename Vector<_Data_Type>::Const_Iterator Vector<_Data_Type>::find(const _Data_Type& _what) const
     {
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        for(unsigned int i = 0; i < m_size; ++i)
         {
             if(m_array[i] != _what)
                 continue;
@@ -603,7 +647,7 @@ namespace LDS
     template<typename _Data_Type>
     bool Vector<_Data_Type>::contains(const _Data_Type& _what) const
     {
-        for(unsigned int i = 0; i < m_elements_count; ++i)
+        for(unsigned int i = 0; i < m_size; ++i)
         {
             if(m_array[i] == _what)
                 return true;
