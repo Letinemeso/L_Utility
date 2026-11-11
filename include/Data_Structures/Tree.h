@@ -21,7 +21,9 @@ namespace LDS
 			Node* child_right = nullptr;
 
 			Node(const Data_Type& _data) : data(_data) { }
-			Node(Data_Type&& _data) : data((Data_Type&&)_data) { }
+            Node(Data_Type&& _data) : data((Data_Type&&)_data) { }
+
+            [[nodiscard]] virtual Node* construct_copy() const { return new Node(data); }
 		};
 
 	protected:
@@ -141,9 +143,9 @@ namespace LDS
 	public:
 		Tree();
 		Tree(const Tree<Data_Type>& _other);
-		virtual void operator=(const Tree<Data_Type>& _other);
+        void operator=(const Tree<Data_Type>& _other);
 		Tree(Tree<Data_Type>&& _other);
-		virtual void operator=(Tree<Data_Type>&& _other);
+        void operator=(Tree<Data_Type>&& _other);
 		virtual ~Tree();
 
 	protected:
@@ -373,7 +375,7 @@ namespace LDS
 
         L_ASSERT(_where == nullptr);
 
-        _where = M_allocate_node(_subroot->data);
+        _where = _subroot->construct_copy();
 
         M_copy_subtree(_subroot->child_left, _where->child_left);
         M_copy_subtree(_subroot->child_right, _where->child_right);

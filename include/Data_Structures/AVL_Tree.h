@@ -14,15 +14,23 @@ namespace LDS
 	class AVL_Tree : public Tree<Data_Type>
 	{
 	private:
-		using Tree<Data_Type>::m_size;
+        using Tree<Data_Type>::m_size;
 
 	private:
-		struct AVL_Node : public Tree<Data_Type>::Node
+        struct AVL_Node : public Tree<Data_Type>::Node
 		{
 			int balance = 0;
 			int depth = 1;
 			AVL_Node(const Data_Type& _data) : Tree<Data_Type>::Node(_data) { }
 			AVL_Node(Data_Type&& _data) : Tree<Data_Type>::Node((Data_Type&&)_data) { }
+
+            [[nodiscard]] typename Tree<Data_Type>::Node* construct_copy() const override
+            {
+                AVL_Node* result = new AVL_Node(Tree<Data_Type>::Node::data);
+                result->balance = balance;
+                result->depth = depth;
+                return result;
+            }
 		};
 
 	private:
@@ -41,14 +49,6 @@ namespace LDS
 			right_left,
 			left_right
 		};
-
-	public:
-		AVL_Tree();
-		AVL_Tree(const AVL_Tree<Data_Type>& _other);
-		void operator=(const AVL_Tree<Data_Type>& _other);
-		AVL_Tree(AVL_Tree<Data_Type>&& _other);
-		void operator=(AVL_Tree<Data_Type>&& _other);
-		~AVL_Tree();
 
 	private:
 		int M_subtree_depth(const AVL_Node* _subroot) const;
@@ -72,43 +72,7 @@ namespace LDS
 		void M_erase_node(Node* _node) override;
 		void M_insert_node(Node* _subtree, Node* _insert_where) override;
 
-	};
-
-    template<typename Data_Type>
-    AVL_Tree<Data_Type>::AVL_Tree() : Tree<Data_Type> ()
-    {
-
-    }
-
-    template<typename Data_Type>
-    AVL_Tree<Data_Type>::AVL_Tree(const AVL_Tree<Data_Type>& _other) : Tree<Data_Type> (_other)
-    {
-
-    }
-
-    template<typename Data_Type>
-    void AVL_Tree<Data_Type>::operator=(const AVL_Tree<Data_Type>& _other)
-    {
-        ((Tree<Data_Type>*)this)->operator=(_other);
-    }
-
-    template<typename Data_Type>
-    AVL_Tree<Data_Type>::AVL_Tree(AVL_Tree<Data_Type>&& _other) : Tree<Data_Type> ((Tree<Data_Type>&&)_other)
-    {
-
-    }
-
-    template<typename Data_Type>
-    void AVL_Tree<Data_Type>::operator=(AVL_Tree<Data_Type>&& _other)
-    {
-        ((Tree<Data_Type>*)this)->operator=((Tree<Data_Type>&&)_other);
-    }
-
-    template<typename Data_Type>
-    AVL_Tree<Data_Type>::~AVL_Tree()
-    {
-
-    }
+    };
 
 
 
