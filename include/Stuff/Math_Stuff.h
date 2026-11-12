@@ -33,6 +33,11 @@ namespace Math
     constexpr float SQRT_2 = 1.41421356237f;
     constexpr float SQRT_3 = 1.73205080756f;
 
+
+    constexpr glm::vec3 Default_View_Vec = { 0.0f, 0.0f, -1.0f };
+    constexpr glm::vec3 Default_Up_Vec = { 0.0f, 1.0f, 0.0f };
+
+
     struct Rotation_Around_Axis
     {
         glm::vec3 axis;
@@ -87,6 +92,10 @@ namespace Math
     glm::mat4x4 calculate_rotation_matrix(const glm::vec3& _euler_angles);
 
     Rotation_Around_Axis calculate_rotation_around_axis(const glm::vec3& _euler_angles);
+
+    glm::vec3 calculate_view_direction(const glm::quat& _rotation);
+
+    glm::vec3 calculate_up_direction(const glm::quat& _rotation);
 
     float mixed_vector_multiplication(const glm::vec3& _first, const glm::vec3& _second, const glm::vec3& _third);
 

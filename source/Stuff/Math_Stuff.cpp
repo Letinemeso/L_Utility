@@ -6,6 +6,15 @@
 
 using namespace LST;
 
+namespace LST
+{
+namespace Math
+{
+    constexpr glm::vec4 Default_View_Vec4 = {Default_View_Vec, 1.0f};
+    constexpr glm::vec4 Default_Up_Vec4 = {Default_Up_Vec, 1.0f};
+}
+}
+
 
 //	LEti::Math (just some universal math functions suitable for both 2d and 3d calculations)
 
@@ -211,6 +220,16 @@ Math::Rotation_Around_Axis Math::calculate_rotation_around_axis(const glm::vec3&
     result.angle = angle;
 
     return result;
+}
+
+glm::vec3 Math::calculate_view_direction(const glm::quat& _rotation)
+{
+    return glm::mat4_cast(_rotation) * Default_View_Vec4;
+}
+
+glm::vec3 Math::calculate_up_direction(const glm::quat& _rotation)
+{
+    return glm::mat4_cast(_rotation) * Default_Up_Vec4;
 }
 
 float Math::mixed_vector_multiplication(const glm::vec3& _first, const glm::vec3& _second, const glm::vec3& _third)
